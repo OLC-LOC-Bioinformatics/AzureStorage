@@ -1,0 +1,21 @@
+# Compiled Python Files #
+#########################
+*.pyc
+
+# Edited text files #
+#####################
+*~
+
+# Log files #
+#############
+*.log
+
+# Package files #
+#################
+build/
+dist/
+*.egg-info/
+
+# pycache files #
+#################
+__pycache__/
