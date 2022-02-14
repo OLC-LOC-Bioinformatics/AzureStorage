@@ -5,7 +5,9 @@ setup(
     version="0.0.1",
     entry_points={
         'console_scripts': [
-            'AzureDownload = azure_download.azure_download:cli',
+            'AzureCredentials = azure_storage.azure_credentials:cli',
+            'AzureDownload = azure_storage.azure_download:cli',
+            'AzureUpload = azure_storage.azure_upload:cli'
         ],
     },
     packages=find_packages(),
