@@ -74,7 +74,6 @@ class AzureUpload(object):
             # Using the same logic as above, extract the root directory e.g. outputs/files/reports, where
             # 'outputs/files' is the supplied  directory, would return 'outputs'
             root_path = root.split(os.sep)[0]
-            print(f'r, {root}, rel {rel_path}, root path {root_path}')
             for file_name in files:
                 # Add the file name to the calculated relative path to set the name of the blob in Azure storage e.g.
                 # files/reports/summary.tsv

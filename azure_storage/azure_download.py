@@ -84,13 +84,13 @@ class AzureDownload(object):
                                                         container_name=self.container_name)
         # Run the proper method depending on whether a file or a folder is requested
         if self.category == 'file':
-            self.download_blob()
+            self.download_file()
         elif self.category == 'folder':
             self.download_folder()
         else:
             logging.error(f'Something is wrong. There is no {self.category} option available')
 
-    def download_blob(self):
+    def download_file(self):
         """
         Download the specified file from Azure storage
         """
@@ -102,7 +102,7 @@ class AzureDownload(object):
         logging.getLogger().setLevel(logging.WARNING)
         for blob_file in generator:
             # Filter for the blob name
-            if os.path.basename(blob_file.name) == os.path.basename(self.object_name):
+            if os.path.join(self.container_name, blob_file.name) == self.object_name:
                 # Update the blob presence variable
                 present = True
                 # Create the blob client
@@ -133,18 +133,18 @@ class AzureDownload(object):
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
         for blob_file in generator:
+            # Create the path of the file by adding the container name to the path of the file
             blob_path = os.path.join(self.container_name, os.path.split(blob_file.name)[0])
-            if os.path.normpath(blob_path) == os.path.normpath(self.object_name):
+            # Ensure that the supplied folder path is present in the blob path
+            if os.path.normpath(self.object_name) in os.path.normpath(blob_path):
                 # Update the folder presence boolean
                 present = True
                 # Create the blob client
                 blob_client = create_blob_client(blob_service_client=self.blob_service_client,
                                                  container_name=self.container_name,
                                                  blob_file=blob_file)
-                # Extract the folder structure of the blob e.g. 220202-m05722/InterOp
-                folder_structure = os.path.split(os.path.dirname(blob_file.name))
-                # Determine the path to output the file. Join the supplied path and the folder name
-                download_path = os.path.join(self.output_path, folder_structure[-1])
+                # Determine the path to output the file. Join the supplied path and the path of the blob
+                download_path = os.path.join(self.output_path, os.path.join(os.path.dirname(blob_file.name)))
                 # Create the path if required
                 os.makedirs(download_path, exist_ok=True)
                 # Set the name of file by removing any path information

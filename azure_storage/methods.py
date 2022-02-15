@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 import coloredlogs
+import datetime
 import logging
 # Communication string storing imports
 import getpass
 import keyring
+import os
 
 # Azure-related imports
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobSasPermissions, BlobServiceClient, generate_blob_sas
 
 
 def setup_logging(arguments):
@@ -157,6 +159,37 @@ def create_blob_client(blob_service_client, container_name, blob_file):
     blob_client = blob_service_client.get_blob_client(container=container_name,
                                                       blob=blob_file)
     return blob_client
+
+
+def creat_blob_sas(blob_file, account_name, container_name, account_key, expiry, sas_urls):
+    """
+
+    :param blob_file:
+    :param account_name:
+    :param container_name:
+    :param account_key:
+    :param expiry:
+    :param sas_urls:
+    :return:
+    """
+    # Set the name of file by removing any path information
+    file_name = os.path.basename(blob_file.name)
+    # Create the blob SAS. Use a start time 15 minutes in the past, and the requested expiry
+    sas_token = generate_blob_sas(
+        account_name=account_name,
+        container_name=container_name,
+        blob_name=blob_file.name,
+        account_key=account_key,
+        permission=BlobSasPermissions(read=True),
+        start=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
+        expiry=datetime.datetime.utcnow() + datetime.timedelta(days=expiry))
+    # Generate the SAS URL using the account name, the domain, the container name, the blob name, and the
+    # SAS token in the following format:
+    # 'https://' + account_name + '.blob.core.windows.net/' + container_name + '/' + blob_name + '?' + blob
+    sas_urls[file_name] = \
+        f'https://{account_name}.blob.core.windows.net/{container_name}/' \
+        f'{blob_file.name}?{sas_token}'
+    return sas_urls
 
 
 def write_sas(verbosity, output_file, sas_urls):

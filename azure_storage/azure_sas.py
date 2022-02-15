@@ -1,11 +1,9 @@
 #!/usr/bin/env python
 # Local imports
 from azure_storage.methods import create_blob_client, create_container_client, create_blob_service_client,\
-    extract_account_key, extract_connection_string, extract_container_name, setup_arguments, write_sas
-from azure.storage.blob import BlobSasPermissions, generate_blob_sas
+    creat_blob_sas, extract_account_key, extract_connection_string, extract_container_name, setup_arguments, write_sas
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
-import datetime
 import logging
 import azure
 import os
@@ -35,23 +33,13 @@ class AzureContainerSAS(object):
             # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
             logging.getLogger().setLevel(logging.WARNING)
             for blob_file in generator:
-                # Set the name of file by removing any path information
-                file_name = os.path.basename(blob_file.name)
-                # Create the blob SAS. Use a start time 15 minutes in the past, and the requested expiry
-                sas_token = generate_blob_sas(
-                    account_name=self.account_name,
-                    container_name=self.container_name,
-                    blob_name=blob_file.name,
-                    account_key=self.account_key,
-                    permission=BlobSasPermissions(read=True),
-                    start=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
-                    expiry=datetime.datetime.utcnow() + datetime.timedelta(days=self.expiry))
-                # Generate the SAS URL using the account name, the domain, the container name, the blob name, and the
-                # SAS token in the following format:
-                # 'https://' + account_name + '.blob.core.windows.net/' + container_name + '/' + blob_name + '?' + blob
-                self.sas_urls[file_name] = \
-                    f'https://{self.account_name}.blob.core.windows.net/{self.container_name}/' \
-                    f'{blob_file.name}?{sas_token}'
+                # Create the SAS URLs
+                self.sas_urls = creat_blob_sas(blob_file=blob_file,
+                                               account_name=self.account_name,
+                                               container_name=self.container_name,
+                                               account_key=self.account_key,
+                                               expiry=self.expiry,
+                                               sas_urls=self.sas_urls)
         except azure.core.exceptions.ResourceNotFoundError:
             logging.error(f' The specified container, {self.container_name}, does not exist.')
 
@@ -97,12 +85,70 @@ class AzureSAS(object):
         self.blob_service_client = create_blob_service_client(connect_str=self.connect_str)
         self.container_client = create_container_client(blob_service_client=self.blob_service_client,
                                                         container_name=self.container_name)
+        # Run the proper method depending on whether a file or a folder is requested
+        if self.category == 'file':
+            self.file_sas()
+        elif self.category == 'folder':
+            self.folder_sas()
+        else:
+            logging.error(f'Something is wrong. There is no {self.category} option available')
+        write_sas(verbosity=self.verbosity,
+                  output_file=self.output_file,
+                  sas_urls=self.sas_urls)
 
     def file_sas(self):
-        pass
+        """
+        Create a SAS for the specified file from Azure storage
+        """
+        # Create a generator containing all the blobs in the container
+        generator = self.container_client.list_blobs()
+        # Create a boolean to determine if the blob has been located
+        present = False
+        # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
+        logging.getLogger().setLevel(logging.WARNING)
+        for blob_file in generator:
+            # Filter for the blob name
+            if os.path.join(self.container_name, blob_file.name) == self.object_name:
+                # Update the blob presence variable
+                present = True
+                self.sas_urls = creat_blob_sas(blob_file=blob_file,
+                                               account_name=self.account_name,
+                                               container_name=self.container_name,
+                                               account_key=self.account_key,
+                                               expiry=self.expiry,
+                                               sas_urls=self.sas_urls)
+        # Send a warning to the user that the blob could not be found
+        if not present:
+            logging.error(f'Could not locate the desired file {self.object_name}')
+            quit()
 
     def folder_sas(self):
-        pass
+        """
+        Create SAS for all the files in the specified folder in Azure storage
+        """
+        # Create a generator containing all the blobs in the container
+        generator = self.container_client.list_blobs()
+        # Boolean to track whether the folder was located
+        present = False
+        # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
+        logging.getLogger().setLevel(logging.WARNING)
+        for blob_file in generator:
+            # Create the path of the file by adding the container name to the path of the file
+            blob_path = os.path.join(self.container_name, os.path.split(blob_file.name)[0])
+            # Ensure that the supplied folder path is present in the blob path
+            if os.path.normpath(self.object_name) in os.path.normpath(blob_path):
+                # Update the folder presence boolean
+                present = True
+                self.sas_urls = creat_blob_sas(blob_file=blob_file,
+                                               account_name=self.account_name,
+                                               container_name=self.container_name,
+                                               account_key=self.account_key,
+                                               expiry=self.expiry,
+                                               sas_urls=self.sas_urls)
+        # Send a warning to the user that the blob could not be found
+        if not present:
+            logging.error(f'Could not locate the desired folder {self.object_name}')
+            quit()
 
     def __init__(self, object_name, output_file, account_name, passphrase, expiry, verbosity, category):
         # Set the container name variable
@@ -156,11 +202,11 @@ def container_sas(args):
 
 def file_sas(args):
     """
-        Run the AzureDownload class for a file
-        :param args: type ArgumentParser arguments
-        """
+    Run the AzureSAS class for a file
+    :param args: type ArgumentParser arguments
+    """
     logging.info(f'Creating SAS for {args.file} in Azure storage account {args.account_name}')
-    # Create the file download object
+    # Create the file SAS object
     sas_file = AzureSAS(object_name=args.file,
                         output_file=args.output_file,
                         account_name=args.account_name,
@@ -172,7 +218,20 @@ def file_sas(args):
 
 
 def folder_sas(args):
-    pass
+    """
+    Run the AzureSAS class for a folder
+    :param args: type ArgumentParser arguments
+    """
+    logging.info(f'Creating SAS for all files in folder {args.folder} in Azure storage account {args.account_name}')
+    # Create the folder SAS object
+    sas_folder = AzureSAS(object_name=args.folder,
+                          output_file=args.output_file,
+                          account_name=args.account_name,
+                          passphrase=args.passphrase,
+                          expiry=args.expiry,
+                          verbosity=args.verbosity,
+                          category='folder')
+    sas_folder.main()
 
 
 def cli():
