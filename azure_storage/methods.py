@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from azure.storage.blob import BlobSasPermissions, BlobServiceClient, generate_blob_sas
 import coloredlogs
 import datetime
 import logging
@@ -6,9 +7,6 @@ import logging
 import getpass
 import keyring
 import os
-
-# Azure-related imports
-from azure.storage.blob import BlobSasPermissions, BlobServiceClient, generate_blob_sas
 
 
 def setup_logging(arguments):
@@ -161,16 +159,16 @@ def create_blob_client(blob_service_client, container_name, blob_file):
     return blob_client
 
 
-def creat_blob_sas(blob_file, account_name, container_name, account_key, expiry, sas_urls):
+def create_blob_sas(blob_file, account_name, container_name, account_key, expiry, sas_urls):
     """
-
-    :param blob_file:
-    :param account_name:
-    :param container_name:
-    :param account_key:
-    :param expiry:
-    :param sas_urls:
-    :return:
+    Create SAS URL for blob
+    :param blob_file: type container_client.list_blobs() object
+    :param account_name: type str: Name of Azure storage account
+    :param container_name: type str: Name of container in Azure storage in which the blob is located
+    :param account_key: type str: Account key of Azure storage account
+    :param expiry: type int: Number of days that the SAS URL will be valid
+    :param sas_urls: type dict: Dictionary of file name: SAS URL (empty)
+    :return: populated sas_urls
     """
     # Set the name of file by removing any path information
     file_name = os.path.basename(blob_file.name)

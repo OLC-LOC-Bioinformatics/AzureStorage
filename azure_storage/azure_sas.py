@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-# Local imports
 from azure_storage.methods import create_blob_client, create_container_client, create_blob_service_client,\
-    creat_blob_sas, extract_account_key, extract_connection_string, extract_container_name, setup_arguments, write_sas
+    create_blob_sas, extract_account_key, extract_connection_string, extract_container_name, setup_arguments, write_sas
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
@@ -34,12 +33,12 @@ class AzureContainerSAS(object):
             logging.getLogger().setLevel(logging.WARNING)
             for blob_file in generator:
                 # Create the SAS URLs
-                self.sas_urls = creat_blob_sas(blob_file=blob_file,
-                                               account_name=self.account_name,
-                                               container_name=self.container_name,
-                                               account_key=self.account_key,
-                                               expiry=self.expiry,
-                                               sas_urls=self.sas_urls)
+                self.sas_urls = create_blob_sas(blob_file=blob_file,
+                                                account_name=self.account_name,
+                                                container_name=self.container_name,
+                                                account_key=self.account_key,
+                                                expiry=self.expiry,
+                                                sas_urls=self.sas_urls)
         except azure.core.exceptions.ResourceNotFoundError:
             logging.error(f' The specified container, {self.container_name}, does not exist.')
 
@@ -111,12 +110,12 @@ class AzureSAS(object):
             if os.path.join(self.container_name, blob_file.name) == self.object_name:
                 # Update the blob presence variable
                 present = True
-                self.sas_urls = creat_blob_sas(blob_file=blob_file,
-                                               account_name=self.account_name,
-                                               container_name=self.container_name,
-                                               account_key=self.account_key,
-                                               expiry=self.expiry,
-                                               sas_urls=self.sas_urls)
+                self.sas_urls = create_blob_sas(blob_file=blob_file,
+                                                account_name=self.account_name,
+                                                container_name=self.container_name,
+                                                account_key=self.account_key,
+                                                expiry=self.expiry,
+                                                sas_urls=self.sas_urls)
         # Send a warning to the user that the blob could not be found
         if not present:
             logging.error(f'Could not locate the desired file {self.object_name}')
@@ -139,12 +138,12 @@ class AzureSAS(object):
             if os.path.normpath(self.object_name) in os.path.normpath(blob_path):
                 # Update the folder presence boolean
                 present = True
-                self.sas_urls = creat_blob_sas(blob_file=blob_file,
-                                               account_name=self.account_name,
-                                               container_name=self.container_name,
-                                               account_key=self.account_key,
-                                               expiry=self.expiry,
-                                               sas_urls=self.sas_urls)
+                self.sas_urls = create_blob_sas(blob_file=blob_file,
+                                                account_name=self.account_name,
+                                                container_name=self.container_name,
+                                                account_key=self.account_key,
+                                                expiry=self.expiry,
+                                                sas_urls=self.sas_urls)
         # Send a warning to the user that the blob could not be found
         if not present:
             logging.error(f'Could not locate the desired folder {self.object_name}')

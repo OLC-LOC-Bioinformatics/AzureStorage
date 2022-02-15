@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 from azure_storage.methods import create_blob_client, create_container, create_container_client, \
     create_blob_service_client, extract_connection_string, setup_arguments
-
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
