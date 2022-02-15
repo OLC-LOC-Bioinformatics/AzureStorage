@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from AzureStorage.azure_storage.methods import set_connection_string
+from azure_storage.methods import set_connection_string, setup_arguments
 from argparse import ArgumentParser
 import logging
 
@@ -31,6 +31,8 @@ def cli():
                         default='info',
                         help='Set the logging level. Default is info.')
     parser.set_defaults(func=credentials)
+    # Set up the arguments, and run the appropriate subparser
+    setup_arguments(parser=parser)
 
 
 if __name__ == '__main__':

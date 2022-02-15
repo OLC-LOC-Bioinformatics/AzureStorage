@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 from setuptools import setup, find_packages
 setup(
     name="AzureStorage",
@@ -7,7 +7,8 @@ setup(
         'console_scripts': [
             'AzureCredentials = azure_storage.azure_credentials:cli',
             'AzureDownload = azure_storage.azure_download:cli',
-            'AzureUpload = azure_storage.azure_upload:cli'
+            'AzureUpload = azure_storage.azure_upload:cli',
+            'AzureSAS = azure_storage.azure_sas:cli'
         ],
     },
     packages=find_packages(),

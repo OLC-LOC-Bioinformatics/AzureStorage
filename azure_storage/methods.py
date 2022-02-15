@@ -7,10 +7,13 @@ import keyring
 
 # Azure-related imports
 from azure.storage.blob import BlobServiceClient
-import azure
 
 
 def setup_logging(arguments):
+    """
+    Set the custom colour scheme and message format to used by coloredlogs
+    :param arguments: type parsed ArgumentParser object
+    """
     # Set up logging
     coloredlogs.DEFAULT_LEVEL_STYLES = {'debug': {'bold': True, 'color': 'green'},
                                         'info': {'bold': True, 'color': 'blue'},
@@ -20,6 +23,26 @@ def setup_logging(arguments):
                                         }
     coloredlogs.DEFAULT_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
     coloredlogs.install(level=arguments.verbosity.upper())
+
+
+def setup_arguments(parser):
+    """
+    Finalise setting up the ArgumentParser arguments into an object, and running subparser functions, or displaying the
+    help message
+    :param parser: type: ArgumentParser object
+    :return: parsed ArgumentParser object
+    """
+    # Get the arguments into an object
+    arguments = parser.parse_args()
+    # Run the appropriate function for each sub-parser.
+    if hasattr(arguments, 'func'):
+        # Set up logging
+        setup_logging(arguments=arguments)
+        arguments.func(arguments)
+    # If the 'func' attribute doesn't exist, display the basic help
+    else:
+        parser.parse_args(['-h'])
+    return arguments
 
 
 def set_connection_string(passphrase, account_name):
@@ -59,6 +82,33 @@ def extract_connection_string(passphrase, account_name):
         connect_str = set_connection_string(passphrase=passphrase,
                                             account_name=account_name)
     return connect_str
+
+
+def extract_account_key(connect_str):
+    """
+    Extract the account key from the connection string. This is necessary for the method that creates the blob SAS,
+    as it doesn't accept connection strings
+    :param connect_str: type str: Connection string for the Azure storage account
+    :return account_key: String of the account key extracted from the connection string
+    """
+    # Split the connection string on ';', use the entry corresponding to the account key, and strip off the
+    # 'AccountKey='
+    # DefaultEndpointsProtocol=https;AccountName=carlingst01;AccountKey=[REDACTED];EndpointSuffix=core.windows.net
+    account_key = connect_str.split(';')[2].split('AccountKey=')[-1]
+    return account_key
+
+
+def extract_container_name(object_name):
+    """
+    Extract the name of the container in which the blob is to be downloaded
+    :param object_name: type str: Name and path of file/folder to download from Azure storage
+    :return: container_name: String of the container name extracted from the object name
+    """
+    # Split the container name from the file name (and possibly path). Use the first entry.
+    # For a blob: 220202-m05722/2022-SEQ-0001_S1_L001_R1_001.fastq.gz yields 220202-m05722
+    # For a folder: 220202-m05722/InterOp yields 220202-m05722
+    container_name = object_name.split('/')[0]
+    return container_name
 
 
 def create_blob_service_client(connect_str):
@@ -107,3 +157,21 @@ def create_blob_client(blob_service_client, container_name, blob_file):
     blob_client = blob_service_client.get_blob_client(container=container_name,
                                                       blob=blob_file)
     return blob_client
+
+
+def write_sas(verbosity, output_file, sas_urls):
+    """
+    Write the SAS URLs to the output file
+    :param verbosity: type str: Desired logging level
+    :param output_file: type str: Name and path of the file in which the SAS URLs are to be written
+    :param sas_urls: type dict: Dictionary of file name: SAS URL
+    """
+    # Return to the requested logging level, as it has been increased to WARNING to suppress the log being
+    # filled with information from azure.core.pipeline.policies.http_logging_policy
+    coloredlogs.install(level=verbosity.upper())
+    with open(output_file, 'w') as output:
+        for file_name, sas_url in sas_urls.items():
+            # Write the SAS URL to the output file
+            output.write(f'{sas_url}\n')
+            # Print the file name and SAS URL to the terminal
+            logging.info(f'{file_name}\t{sas_url}')
