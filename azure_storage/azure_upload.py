@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 from azure_storage.methods import create_blob_client, create_container, create_container_client, \
-    create_blob_service_client, extract_connection_string, setup_arguments
+    create_blob_service_client, extract_connection_string, setup_arguments, validate_container_name
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
 import azure
 import os
+import re
 
 
 class AzureUpload(object):
 
     def main(self):
+        self.container_name = validate_container_name(container_name=self.container_name)
         self.connect_str = extract_connection_string(passphrase=self.passphrase,
                                                      account_name=self.account_name)
         self.blob_service_client = create_blob_service_client(connect_str=self.connect_str)
@@ -58,6 +60,12 @@ class AzureUpload(object):
         except azure.core.exceptions.ResourceExistsError:
             logging.error(f'The file {self.object_name} already exists in container {self.container_name} in '
                           f'storage account {self.account_name}')
+        except azure.core.exceptions.HttpResponseError:
+            logging.error(f'Container name, {self.container_name} is invalid. Container names must be between 3 and 63 '
+                          f'characters, start with a letter or number, and can contain only letters, numbers, and the '
+                          f'dash (-) character. Every dash (-) character must be immediately preceded and followed by '
+                          f'a letter or number; consecutive dashes are not permitted in container names. All letters '
+                          f'in a container name must be lowercase.')
 
     def upload_folder(self):
         """
@@ -115,6 +123,7 @@ class AzureUpload(object):
         self.connect_str = str()
         self.blob_service_client = None
         self.container_client = None
+        self.retry = False
 
 
 def file_upload(args):

@@ -7,6 +7,7 @@ import logging
 import getpass
 import keyring
 import os
+import re
 
 
 def setup_logging(arguments):
@@ -117,8 +118,48 @@ def create_blob_service_client(connect_str):
     :param connect_str: type str: Connection string for Azure storage
     :return: blob_service_client: type BlobServiceClient
     """
-    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
-    return blob_service_client
+    try:
+        blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+        return blob_service_client
+    except ValueError:
+        logging.error('Your connection string was rejected. Please ensure that you entered it properly, and that it '
+                      'is valid')
+        quit()
+
+
+def validate_container_name(container_name):
+    if not re.match('^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$', container_name):
+        logging.warning(f'Container name, {container_name} is invalid. Container names must be between 3 and 63 '
+                        f'characters, start with a letter or number, and can contain only letters, numbers, and the '
+                        f'dash (-) character. Every dash (-) character must be immediately preceded and followed by '
+                        f'a letter or number; consecutive dashes are not permitted in container names. All letters '
+                        f'in a container name must be lowercase.')
+        logging.info('Attempting to fix the container name')
+        # Swap out dashes for underscores, as they will be removed in the following regex
+        container_name = container_name.replace('-', '_')
+        # Use re to remove all non-word characters (including dashes)
+        container_name = re.sub(r'[^\w]', '', container_name)
+        # Replace multiple underscores with a single one. Uses logic from: https://stackoverflow.com/a/46701355
+        # Also ensure that the container name is in lowercase
+        container_name = re.sub(r'[^\w\s]|(_)(?=\1)', '', container_name).lower()
+        # Swap out underscores for dashes
+        container_name = container_name.replace('_', '-')
+    # Ensure that the container name isn't length zero, or the while loop below will be infinite
+    if len(container_name) == 0:
+        logging.error('Attempting to fix the container name left zero valid characters! Please enter a new name.')
+        quit()
+    # If the container name is too long, slice it to be 63 characters
+    if len(container_name) >= 63:
+        logging.warning(f'Container name {container_name} was too long. Using {container_name[:62]} instead')
+        container_name = container_name[:62]
+    # If the container name is too short, keep adding the container name to itself to bump up the length
+    while len(container_name) < 3:
+        logging.warning(f'Container name {container_name} was too short (only {len(container_name)} characters). '
+                        f'Using {container_name + container_name} instead')
+        container_name = container_name + container_name
+    # Use the validated container name
+    logging.info(f'Using {container_name} as the container name')
+    return container_name
 
 
 def create_container(blob_service_client, container_name):

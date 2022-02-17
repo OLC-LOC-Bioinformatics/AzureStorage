@@ -32,7 +32,8 @@ def cli():
                         help='Set the logging level. Default is info.')
     parser.set_defaults(func=credentials)
     # Set up the arguments, and run the appropriate subparser
-    setup_arguments(parser=parser)
+    arguments = setup_arguments(parser=parser)
+    return arguments
 
 
 if __name__ == '__main__':
