@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 from azure_storage.methods import create_blob_client, create_container, create_container_client, \
-    create_blob_service_client, extract_connection_string, setup_arguments, validate_container_name
+    create_blob_service_client, create_parent_parser, extract_connection_string, setup_arguments, validate_container_name
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
 import azure
 import os
-import re
 
 
 class AzureUpload(object):
@@ -39,6 +38,7 @@ class AzureUpload(object):
                 self.upload_folder()
         else:
             logging.error(f'Something is wrong. There is no {self.category} option available')
+            raise SystemExit
 
     def upload_file(self):
         """
@@ -58,8 +58,10 @@ class AzureUpload(object):
                 blob_client.upload_blob(data)
         # If a file with that name already exists in that container, warn the user
         except azure.core.exceptions.ResourceExistsError:
-            logging.error(f'The file {self.object_name} already exists in container {self.container_name} in '
-                          f'storage account {self.account_name}')
+            logging.warning(f'The file {file_name} already exists in container {self.container_name} in '
+                            f'storage account {self.account_name}')
+            raise SystemExit
+        # Despite the attempt to correct the container name, it may still be invalid
         except azure.core.exceptions.HttpResponseError:
             logging.error(f'Container name, {self.container_name} is invalid. Container names must be between 3 and 63 '
                           f'characters, start with a letter or number, and can contain only letters, numbers, and the '
@@ -95,10 +97,10 @@ class AzureUpload(object):
                     with open(os.path.join(root_path, upload_file), "rb") as data:
                         # Upload the file to Azure storage
                         blob_client.upload_blob(data)
-                # Log an error if a file with that name already exists in the specified container
+                # Print a warning if a file with that name already exists in the specified container
                 except azure.core.exceptions.ResourceExistsError:
-                    logging.error(f'The file {self.object_name} already exists in container {self.container_name} in '
-                                  f'storage account {self.account_name}')
+                    logging.warning(f'The file {upload_file} already exists in container {self.container_name} '
+                                    f'in storage account {self.account_name}')
 
     def __init__(self, object_name, container_name, account_name, passphrase, category):
         # Set the name of the file/folder to upload
@@ -108,13 +110,13 @@ class AzureUpload(object):
                 assert os.path.isfile(self.object_name)
             except AssertionError:
                 logging.error(f'Cannot locate the specified file to upload: {self.object_name}')
-                quit()
+                raise SystemExit
         else:
             try:
                 assert os.path.isdir(self.object_name)
             except AssertionError:
                 logging.error(f'Cannot located the specified folder to upload: {self.object_name}')
-                quit()
+                raise SystemExit
         # Initialise necessary class variables
         self.passphrase = passphrase
         self.account_name = account_name
@@ -159,29 +161,8 @@ def folder_upload(args):
 
 def cli():
     parser = ArgumentParser(description='Upload files or folders to Azure storage')
-    subparsers = parser.add_subparsers(title='Available functionality')
-    # Create a parental parser that can be inherited by subparsers
-    parent_parser = ArgumentParser(add_help=False)
-    parent_parser.add_argument('-c', '--container_name',
-                               required=True,
-                               type=str,
-                               default=str(),
-                               help='Name of the Azure storage container to which the files are to be uploaded. '
-                                    'If you want to specify a nested container, use "/" to separate the containers '
-                                    'e.g. sequencing-runs/220202-m05722')
-    parent_parser.add_argument('-a', '--account_name',
-                               required=True,
-                               type=str,
-                               help='Name of the Azure storage account')
-    parent_parser.add_argument('-p', '--passphrase',
-                               default='AzureStorage',
-                               type=str,
-                               help='The passphrase to use when encrypting the azure storage-specific connection '
-                                    'string to the system keyring. Default is "AzureStorage".')
-    parent_parser.add_argument('-v', '--verbosity',
-                               choices=['debug', 'info', 'warning', 'error', 'critical'],
-                               default='info',
-                               help='Set the logging level. Default is info.')
+    # Create the parental parser, and the subparser
+    subparsers, parent_parser = create_parent_parser(parser=parser)
     # File upload subparser
     file_subparser = subparsers.add_parser(parents=[parent_parser],
                                            name='file',

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from azure_storage.methods import create_blob_client, create_container_client, create_blob_service_client,\
-    extract_connection_string, extract_container_name, setup_arguments
+    extract_connection_string, create_parent_parser, extract_container_name, setup_arguments
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
@@ -62,7 +62,7 @@ class AzureContainerDownload(object):
             assert os.path.isdir(self.output_path)
         except AssertionError:
             logging.error(f'Could not use the supplied output path: {self.output_path}')
-            quit()
+            raise SystemExit
         # Create the output path
         os.makedirs(self.output_path, exist_ok=True)
         # Initialise necessary class variables
@@ -89,6 +89,7 @@ class AzureDownload(object):
             self.download_folder()
         else:
             logging.error(f'Something is wrong. There is no {self.category} option available')
+            raise SystemExit
 
     def download_file(self):
         """
@@ -120,7 +121,7 @@ class AzureDownload(object):
         # Send a warning to the user that the blob could not be found
         if not present:
             logging.error(f'Could not locate the desired file {self.object_name}')
-            quit()
+            raise SystemExit
 
     def download_folder(self):
         """
@@ -155,10 +156,11 @@ class AzureDownload(object):
                 with open(download_file, 'wb') as downloaded_file:
                     # Write the data from the blob client to the local file
                     downloaded_file.write(blob_client.download_blob().readall())
-        # Send a warning to the user that the blob could not be found
+        # Send a warning to the user that the folder could not be found
         if not present:
-            logging.error(f'Could not locate the desired folder {self.object_name}')
-            quit()
+            logging.error(f'Could not locate the desired folder {self.object_name} in container {self.container_name}, '
+                          f'in Azure storage account {self.account_name}')
+            raise SystemExit
 
     def __init__(self, object_name, output_path, account_name, passphrase, category):
         # Set the name of the file/folder to download
@@ -225,22 +227,12 @@ def folder_download(args):
 
 def cli():
     parser = ArgumentParser(description='Download containers/files/folders from Azure storage')
-    subparsers = parser.add_subparsers(title='Available functionality')
-    # Create a parental parser that can be inherited by the subparsers
-    parent_parser = ArgumentParser(add_help=False)
-    parent_parser.add_argument('-a', '--account_name',
-                               required=True,
-                               type=str,
-                               help='Name of the Azure storage account')
-    parent_parser.add_argument('-p', '--passphrase',
-                               default='AzureStorage',
-                               type=str,
-                               help='The passphrase to use when encrypting the azure storage-specific connection '
-                                    'string to the system keyring. Default is "AzureStorage".')
-    parent_parser.add_argument('-v', '--verbosity',
-                               choices=['debug', 'info', 'warning', 'error', 'critical'],
-                               default='info',
-                               help='Set the logging level. Default is info.')
+    # Create the parental parser, and the subparser
+    subparsers, parent_parser = create_parent_parser(parser=parser,
+                                                     container=False)
+    parent_parser.add_argument('-o', '--output_path',
+                               default=os.getcwd(),
+                               help='Name and path of directory in which the outputs are to be saved.')
     # Container downloading parser
     container_subparser = subparsers.add_parser(parents=[parent_parser],
                                                 name='container',
@@ -252,13 +244,6 @@ def cli():
                                      type=str,
                                      default=str(),
                                      help='Name of container to download from Azure storage.')
-    container_subparser.add_argument('-o', '--output_path',
-                                     default=os.getcwd(),
-                                     help='Name and path of directory in which the container is to be saved. Note that '
-                                          'if you specified a nested container, only that will be used e.g. '
-                                          '$output_path/220202-m05722 will be the location of the container whether '
-                                          'you specified sequencing-runs/220202-m05722 or 220202-m05722 as the name '
-                                          'of the container.')
     container_subparser.set_defaults(func=container)
     # Blob (file) downloading subparser
     file_subparser = subparsers.add_parser(parents=[parent_parser],
@@ -272,9 +257,6 @@ def cli():
                                 help='Path of blob file to download from Azure storage. Note that this includes'
                                      'the container name '
                                      'e.g. 220202-m05722/2022-SEQ-0001_S1_L001_R1_001.fastq.gz')
-    file_subparser.add_argument('-o', '--output_path',
-                                default=os.getcwd(),
-                                help='Name and path of directory in which the file is to be saved.')
     file_subparser.set_defaults(func=file_download)
     # Folder downloading subparser
     folder_subparser = subparsers.add_parser(parents=[parent_parser],
@@ -287,9 +269,6 @@ def cli():
                                   required=True,
                                   help='Name of the container and folder to download from Azure storage '
                                        'e.g. sequencing-runs/220202-m05722/InterOp')
-    folder_subparser.add_argument('-o', '--output_path',
-                                  default=os.getcwd(),
-                                  help='Name and path of directory in which the folder is to be saved.')
     folder_subparser.set_defaults(func=folder_download)
     # Set up the arguments, and run the appropriate subparser
     arguments = setup_arguments(parser=parser)

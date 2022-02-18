@@ -7,15 +7,26 @@ import argparse
 
 
 class TestCredentials(unittest.TestCase):
-    @patch("getpass.getpass")
-    def test_set_credentials(self, getpass):
-        getpass.return_value = "xxx"
-        assert set_connection_string(passphrase='12234', account_name='abcd') == 'xxx'
+
+    def setUp(self) -> None:
+        self.connect_str = \
+            'DefaultEndpointsProtocol=https;AccountName=testcredentials;AccountKey=xxx;EndpointSuffix=core.windows.net'
+
+    @patch('getpass.getpass')
+    def test_set_credentials_invalid(self, getpass):
+        getpass.return_value = self.connect_str
+        with self.assertRaises(SystemExit):
+            set_connection_string(passphrase='12234', account_name='credentials')
+
+    @patch('getpass.getpass')
+    def test_set_credentials_valid(self, getpass):
+        getpass.return_value = self.connect_str
+        assert set_connection_string(passphrase='12234', account_name='testcredentials') == self.connect_str
 
     @patch('argparse.ArgumentParser.parse_args')
     @patch('getpass.getpass')
     def test_credentials_integration(self, getpass, mock_args):
-        getpass.return_value = 'fwiuhfw7h2h#@#f'
+        getpass.return_value = self.connect_str
         mock_args.return_value = argparse.Namespace(passphrase='122346', account_name='abcde')
         cli()
 

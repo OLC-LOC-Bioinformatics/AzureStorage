@@ -1,13 +1,48 @@
 #!/usr/bin/env python
-from azure.storage.blob import BlobSasPermissions, BlobServiceClient, generate_blob_sas
+from azure.storage.blob import BlobSasPermissions, BlobServiceClient, generate_blob_sas, RetentionPolicy
+from argparse import ArgumentParser
 import coloredlogs
 import datetime
 import logging
 # Communication string storing imports
 import getpass
 import keyring
+import azure
 import os
 import re
+
+
+def create_parent_parser(parser, container=True):
+    """
+    Create a parent parser with arguments common to multiple scripts
+    :param parser: type ArgumentParser object
+    :param container: type bool: Boolean on whether the container argument should be added to the parser
+    :return: subparsers: type ArgumentParser.add_subparsers
+    :return: parent_parser: type ArgumentParser: Populated ArgumentParser object
+    """
+    subparsers = parser.add_subparsers(title='Available functionality')
+    # Create a parental parser that can be inherited by subparsers
+    parent_parser = ArgumentParser(add_help=False)
+    if container:
+        parent_parser.add_argument('-c', '--container_name',
+                                   required=True,
+                                   type=str,
+                                   default=str(),
+                                   help='Name of the Azure storage container')
+    parent_parser.add_argument('-a', '--account_name',
+                               required=True,
+                               type=str,
+                               help='Name of the Azure storage account')
+    parent_parser.add_argument('-p', '--passphrase',
+                               default='AzureStorage',
+                               type=str,
+                               help='The passphrase to use when encrypting the azure storage-specific connection '
+                                    'string to the system keyring. Default is "AzureStorage".')
+    parent_parser.add_argument('-v', '--verbosity',
+                               choices=['debug', 'info', 'warning', 'error', 'critical'],
+                               default='info',
+                               help='Set the logging level. Default is info.')
+    return subparsers, parent_parser
 
 
 def setup_logging(arguments):
@@ -58,11 +93,38 @@ def set_connection_string(passphrase, account_name):
     # password isn't printed to the screen
     connect_str = getpass.getpass(prompt='Please enter the connection string for your Azure storage account:\n')\
         .encode('utf-8').decode()
+    # Ensure that the account name provided and the account name specified in the connection string match
+    confirm_account_match(account_name=account_name,
+                          connect_str=connect_str)
     # Set the password in the keyring. Use the passphrase as the service ID, the account name as the username,
     # and the connection string as the password
     keyring.set_password(passphrase, account_name, connect_str)
     logging.info('Successfully entered credentials into keyring')
     return connect_str
+
+
+def confirm_account_match(account_name, connect_str):
+    """
+    Ensure that the account name provided matches the account name stored in the connection string.
+    :param connect_str: type str: Connection string for the Azure storage account
+    :param account_name: type str: Name of the Azure storage account
+    """
+    # Attempt to extract the account name from the connection string
+    try:
+        connect_str_account_name = connect_str.split(';')[1].split('AccountName=')[-1]
+        # Ensure that the account name provided matches the account name found in the connection string
+        if account_name != connect_str_account_name:
+            logging.error(f'The supplied account name {account_name} does not match the account name stored in the '
+                          f'connection string ({connect_str_account_name}). Please ensure that you are providing the '
+                          f'appropriate connection string for your account.')
+            raise SystemExit
+    # If splitting on 'AccountName=' fails, the connection string is either malformed or invalid
+    except IndexError:
+        logging.error('Could not parse the account key from the connection string in the keyring. Please ensure that '
+                      'it has been entered, and the it conforms to the proper format: '
+                      'DefaultEndpointsProtocol=https;AccountName=[REDACTED];AccountKey=[REDACTED];'
+                      'EndpointSuffix=core.windows.net')
+        raise SystemExit
 
 
 def extract_connection_string(passphrase, account_name):
@@ -78,10 +140,13 @@ def extract_connection_string(passphrase, account_name):
     # If the connection string can't be found in the keyring using the supplied passphrase, prompt the user for
     # the passphrase, and store it
     if not connect_str:
-        logging.warning(f'Connection string linked to the provided passphrase: {passphrase} and account name: '
-                        f'{account_name} not found in the system keyring. You will now be prompted to enter it.')
+        logging.warning(f'Connection string linked to the provided passphrase {passphrase} and account name '
+                        f'{account_name} was not found in the system keyring. You will now be prompted to enter it.')
         connect_str = set_connection_string(passphrase=passphrase,
                                             account_name=account_name)
+    # Confirm that the account name provided matches the one found in the connection string
+    confirm_account_match(account_name=account_name,
+                          connect_str=connect_str)
     return connect_str
 
 
@@ -94,8 +159,15 @@ def extract_account_key(connect_str):
     """
     # Split the connection string on ';', use the entry corresponding to the account key, and strip off the
     # 'AccountKey='
-    # DefaultEndpointsProtocol=https;AccountName=carlingst01;AccountKey=[REDACTED];EndpointSuffix=core.windows.net
-    account_key = connect_str.split(';')[2].split('AccountKey=')[-1]
+    # DefaultEndpointsProtocol=https;AccountName=[REDACTED];AccountKey=[REDACTED];EndpointSuffix=core.windows.net
+    try:
+        account_key = connect_str.split(';')[2].split('AccountKey=')[-1]
+    except IndexError:
+        logging.error('Could not parse the account key from the connection string in the keyring. Please ensure that '
+                      'it has been entered, and the it conforms to the proper format: '
+                      'DefaultEndpointsProtocol=https;AccountName=[REDACTED];AccountKey=[REDACTED];'
+                      'EndpointSuffix=core.windows.net')
+        raise SystemExit
     return account_key
 
 
@@ -110,21 +182,6 @@ def extract_container_name(object_name):
     # For a folder: 220202-m05722/InterOp yields 220202-m05722
     container_name = object_name.split('/')[0]
     return container_name
-
-
-def create_blob_service_client(connect_str):
-    """
-    Create a blob service client using the connection string
-    :param connect_str: type str: Connection string for Azure storage
-    :return: blob_service_client: type BlobServiceClient
-    """
-    try:
-        blob_service_client = BlobServiceClient.from_connection_string(connect_str)
-        return blob_service_client
-    except ValueError:
-        logging.error('Your connection string was rejected. Please ensure that you entered it properly, and that it '
-                      'is valid')
-        quit()
 
 
 def validate_container_name(container_name):
@@ -147,7 +204,7 @@ def validate_container_name(container_name):
     # Ensure that the container name isn't length zero, or the while loop below will be infinite
     if len(container_name) == 0:
         logging.error('Attempting to fix the container name left zero valid characters! Please enter a new name.')
-        quit()
+        raise SystemExit
     # If the container name is too long, slice it to be 63 characters
     if len(container_name) >= 63:
         logging.warning(f'Container name {container_name} was too long. Using {container_name[:62]} instead')
@@ -160,6 +217,21 @@ def validate_container_name(container_name):
     # Use the validated container name
     logging.info(f'Using {container_name} as the container name')
     return container_name
+
+
+def create_blob_service_client(connect_str):
+    """
+    Create a blob service client using the connection string
+    :param connect_str: type str: Connection string for Azure storage
+    :return: blob_service_client: type BlobServiceClient
+    """
+    try:
+        blob_service_client = BlobServiceClient.from_connection_string(connect_str)
+        return blob_service_client
+    except ValueError:
+        logging.error('Your connection string was rejected. Please ensure that you entered it properly, and that it '
+                      'is valid')
+        raise SystemExit
 
 
 def create_container(blob_service_client, container_name):
@@ -222,13 +294,28 @@ def create_blob_sas(blob_file, account_name, container_name, account_key, expiry
         permission=BlobSasPermissions(read=True),
         start=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
         expiry=datetime.datetime.utcnow() + datetime.timedelta(days=expiry))
+    # Create the SAS URL, and add it to the dictionary with the file_name as the key
+    sas_urls[file_name] = create_sas_url(account_name=account_name,
+                                         container_name=container_name,
+                                         blob_name=blob_file.name,
+                                         sas_token=sas_token)
+    return sas_urls
+
+
+def create_sas_url(account_name, container_name, blob_name, sas_token):
+    """
+
+    :param account_name:
+    :param container_name:
+    :param blob_name:
+    :param sas_token:
+    :return:
+    """
     # Generate the SAS URL using the account name, the domain, the container name, the blob name, and the
     # SAS token in the following format:
     # 'https://' + account_name + '.blob.core.windows.net/' + container_name + '/' + blob_name + '?' + blob
-    sas_urls[file_name] = \
-        f'https://{account_name}.blob.core.windows.net/{container_name}/' \
-        f'{blob_file.name}?{sas_token}'
-    return sas_urls
+    sas_url = f'https://{account_name}.blob.core.windows.net/{container_name}/{blob_name}?{sas_token}'
+    return sas_url
 
 
 def write_sas(verbosity, output_file, sas_urls):
@@ -247,3 +334,39 @@ def write_sas(verbosity, output_file, sas_urls):
             output.write(f'{sas_url}\n')
             # Print the file name and SAS URL to the terminal
             logging.info(f'{file_name}\t{sas_url}')
+
+
+def set_blob_retention_policy(blob_service_client, days=8):
+    """
+
+    """
+    # Create a retention policy to retain deleted blobs
+    delete_retention_policy = RetentionPolicy(enabled=True, days=days)
+    # Set the retention policy on the service
+    blob_service_client.set_service_properties(delete_retention_policy=delete_retention_policy)
+    return blob_service_client
+
+
+def move_blob(blob_service, blob_file, source_container, target_container):
+    pass
+
+
+def delete_container(blob_service_client, container_name, account_name):
+    """
+    Delete a container in Azure storage
+    :param blob_service_client: type: BlobServiceClient
+    :param container_name: type str: Name of the container of interest
+    :param account_name: type str: Name of the Azure storage account
+    """
+
+    test_containers = blob_service_client.list_containers(name_starts_with=container_name)
+    if not test_containers:
+        logging.error(f'Could not locate container {container_name} in {account_name}. Please ensure that you '
+                      f'correctly entered all the information.')
+        raise SystemExit
+    # Delete container if it exists
+    try:
+        blob_service_client.delete_container(container_name)
+    except azure.core.exceptions.ResourceNotFoundError:
+        logging.error(f'Could not locate {container_name} in {account_name}. Perhaps it has already been deleted?')
+        raise SystemExit
