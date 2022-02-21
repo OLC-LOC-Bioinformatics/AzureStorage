@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 from azure_storage.methods import create_blob_client, create_container, create_container_client, \
-    create_blob_service_client, create_parent_parser, delete_container, extract_connection_string, \
-    extract_container_name, setup_arguments, set_blob_retention_policy, validate_container_name
+    create_blob_service_client, create_parent_parser, delete_container, delete_file, delete_folder, \
+    extract_connection_string, extract_container_name, setup_arguments, set_blob_retention_policy, \
+    validate_container_name
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
@@ -46,76 +47,19 @@ class AzureDelete(object):
                                                              days=self.retention_time)
         # Run the proper method depending on whether a file or a folder is requested
         if self.category == 'file':
-            self.delete_file()
+            delete_file(container_client=self.container_client,
+                        object_name=self.object_name,
+                        blob_service_client=self.blob_service_client,
+                        container_name=self.container_name,
+                        account_name=self.account_name)
         elif self.category == 'folder':
-            self.delete_folder()
+            delete_folder(container_client=self.container_client,
+                          object_name=self.object_name,
+                          blob_service_client=self.blob_service_client,
+                          container_name=self.container_name,
+                          account_name=self.account_name)
         else:
             logging.error(f'Something is wrong. There is no {self.category} option available')
-            raise SystemExit
-
-    def delete_file(self):
-        """
-        Delete the file from Azure storage
-        """
-        # Create a generator containing all the blobs in the container
-        generator = self.container_client.list_blobs()
-        # Create a boolean to determine if the blob has been located
-        present = False
-        try:
-            for blob_file in generator:
-                # Filter for the blob name
-                if os.path.join(blob_file.name) == self.object_name:
-                    # Update the blob presence variable
-                    present = True
-                    # Create the blob client
-                    blob_client = create_blob_client(blob_service_client=self.blob_service_client,
-                                                     container_name=self.container_name,
-                                                     blob_file=blob_file)
-                    # Soft delete the blob
-                    blob_client.delete_blob()
-        except azure.core.exceptions.HttpResponseError:
-            logging.error(f'There was an error deleting file {self.object_name} in container {self.container_name} '
-                          f'in Azure storage account {self.account_name}. Please ensure that all arguments have been '
-                          f'entered correctly')
-            raise SystemExit
-        # Send a warning to the user that the blob could not be found
-        if not present:
-            logging.error(f'Could not locate the desired file {self.object_name}')
-            raise SystemExit
-
-    def delete_folder(self):
-        """
-        Delete the folder from Azure storage
-        """
-        # Create a generator containing all the blobs in the container
-        generator = self.container_client.list_blobs()
-        # Create a boolean to determine if the blob has been located
-        present = False
-        try:
-            for blob_file in generator:
-                # Create the path of the file by extracting the path of the file
-                blob_path = os.path.join(os.path.split(blob_file.name)[0])
-                # Ensure that the supplied folder path is present in the blob path
-                if os.path.normpath(self.object_name) in os.path.normpath(blob_path):
-                    # Update the folder presence boolean
-                    present = True
-                    # Create the blob client
-                    blob_client = create_blob_client(blob_service_client=self.blob_service_client,
-                                                     container_name=self.container_name,
-                                                     blob_file=blob_file)
-                    # Soft delete the blob
-                    blob_client.delete_blob()
-        except azure.core.exceptions.HttpResponseError:
-            logging.error(f'There was an error deleting folder {self.object_name} in container {self.container_name} '
-                          f'in Azure storage account {self.account_name}. Please ensure that all arguments have been '
-                          f'entered correctly')
-            raise SystemExit
-        # Send a warning to the user that the blob could not be found
-        if not present:
-            logging.error(
-                f'There was an error deleting folder {self.object_name} in container {self.container_name}, '
-                f'in Azure storage account {self.account_name}. Please ensure that all arguments have been '
-                f'entered correctly')
             raise SystemExit
 
     def __init__(self, object_name, container_name, account_name, passphrase, retention_time, category):

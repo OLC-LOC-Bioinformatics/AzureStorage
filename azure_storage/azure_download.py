@@ -97,7 +97,7 @@ class AzureDownload(object):
         """
         # Create a generator containing all the blobs in the container
         generator = self.container_client.list_blobs()
-        # Create a boolean to determine if the blob has been located
+        # Create a boolean to determine if the file has been located
         present = False
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)

@@ -8,6 +8,7 @@ import logging
 import getpass
 import keyring
 import azure
+import time
 import os
 import re
 
@@ -81,6 +82,22 @@ def setup_arguments(parser):
     return arguments
 
 
+def set_account_name(passphrase, account_name=None):
+    """
+    Store the account name in the system keyring
+    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
+    :param account_name: type str: Name of the Azure storage account
+    """
+    # Only prompt the user for the account name if it was not provided
+    if account_name is None:
+        # Prompt the user for the account name
+        account_name = input('Please enter your account name\n').encode('utf-8').decode()
+    # Set the account name into the keyring. Treat it as a password, and use the passphrase as both the service ID,
+    # and the username
+    keyring.set_password(passphrase, passphrase, account_name)
+    return account_name
+
+
 def set_connection_string(passphrase, account_name):
     """
     Prompt the user for the connection string, and store it the system keyring
@@ -132,7 +149,7 @@ def extract_connection_string(passphrase, account_name):
     Extract the connection string from the keyring using the account name and passphrase
     :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
     :param account_name: type str: Name of the Azure storage account
-    connect_str: String of the connection string
+    :return: connect_str: String of the connection string
     """
     # Use the passphrase and the account name to extract the connection string from the keyring
     connect_str = keyring.get_password(passphrase,
@@ -148,6 +165,23 @@ def extract_connection_string(passphrase, account_name):
     confirm_account_match(account_name=account_name,
                           connect_str=connect_str)
     return connect_str
+
+
+def extract_account_name(passphrase):
+    """
+    Extract the account name from the system keyring
+    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
+    :return: account_name: Name of the Azure storage account
+    """
+    # Use the passphrase to extract the account name
+    account_name = keyring.get_password(passphrase,
+                                        passphrase)
+    # If the account name hasn't been entered into the keyring, prompt the user to enter it
+    if not account_name:
+        logging.warning(f'Account name linked to the provided passphrase {passphrase} was not found in the system '
+                        f'keyring. You will now be prompted to enter it.')
+        account_name = set_account_name(passphrase=passphrase)
+    return account_name
 
 
 def extract_account_key(connect_str):
@@ -169,6 +203,26 @@ def extract_account_key(connect_str):
                       'EndpointSuffix=core.windows.net')
         raise SystemExit
     return account_key
+
+
+def delete_keyring_credentials(passphrase, account_name=None):
+    """
+    Delete the password associated with the passphrase and account name from the system keyring
+    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
+    :param account_name: type str: Name of the Azure storage account
+    :return: account_name: Name of the Azure storage account
+    """
+    if not account_name:
+        # Prompt the user for the account name
+        account_name = input('Please enter your account name\n').encode('utf-8').decode()
+    try:
+        # Delete the password from the system keyring
+        keyring.delete_password(passphrase, account_name)
+    except keyring.errors.PasswordDeleteError:
+        logging.error(f'Connection string associated with passphrase {passphrase} and account name {account_name} '
+                      f'not found in system keyring. Please ensure that you supplied the correct arguments.')
+        raise SystemExit
+    return account_name
 
 
 def extract_container_name(object_name):
@@ -277,7 +331,7 @@ def create_blob_sas(blob_file, account_name, container_name, account_key, expiry
     Create SAS URL for blob
     :param blob_file: type container_client.list_blobs() object
     :param account_name: type str: Name of Azure storage account
-    :param container_name: type str: Name of container in Azure storage in which the blob is located
+    :param container_name: type str: Name of container in Azure storage in which the file is located
     :param account_key: type str: Account key of Azure storage account
     :param expiry: type int: Number of days that the SAS URL will be valid
     :param sas_urls: type dict: Dictionary of file name: SAS URL (empty)
@@ -347,8 +401,75 @@ def set_blob_retention_policy(blob_service_client, days=8):
     return blob_service_client
 
 
-def move_blob(blob_service, blob_file, source_container, target_container):
-    pass
+def move_prep(passphrase, account_name, container_name, target_container):
+    """
+    Prepare all the necessary clients for moving container/files/folders in Azure storage
+    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
+    :param account_name: type str: Name of Azure storage account
+    :param container_name: type str: Name of the container of interest
+    :param target_container: type str: Name of the new container into which the container/file/folder is to be copied
+    :return: blob_service_client: type BlobServiceClient
+    :return: source_container_client: type BlobServiceClient.ContainerClient for source container
+    :return: target_container_client: type BlobServiceClient.ContainerClient for target container
+    """
+    # Extract the connection string from the system keyring
+    connect_str = extract_connection_string(passphrase=passphrase,
+                                            account_name=account_name)
+    blob_service_client = create_blob_service_client(connect_str=connect_str)
+    source_container_client = create_container_client(blob_service_client=blob_service_client,
+                                                      container_name=container_name)
+    # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
+    logging.getLogger().setLevel(logging.WARNING)
+    try:
+        target_container_client = create_container(blob_service_client=blob_service_client,
+                                                   container_name=target_container)
+    except azure.core.exceptions.ResourceExistsError:
+        target_container_client = create_container_client(blob_service_client=blob_service_client,
+                                                          container_name=target_container)
+    return blob_service_client, source_container_client, target_container_client
+
+
+def copy_blob(blob_file, blob_service_client, container_name, target_container, path):
+    """
+    Copy a blob from one container to another
+    :param blob_file: type iterable from BlobServiceClient.ContainerClient.list_blobs
+    :param container_name: type str: Name of the container in which the file is located
+    :param blob_service_client: type: BlobServiceClient
+    :param target_container: type str: Name of the new container into which the file is to be copied
+    :param path: type str: Path of folders in which the files are to be placed
+    """
+    # Create the blob client
+    blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                     container_name=container_name,
+                                     blob_file=blob_file)
+    # Extract the folder structure of the blob e.g. 220202-m05722/InterOp
+    folder_structure = list(os.path.split(os.path.dirname(blob_file.name)))
+    # Add the nested folder to the path as requested
+    if path is None:
+        # Determine the path to output the file. Join the name of the container and the joined (splatted)
+        # folder structure. Logic: https://stackoverflow.com/a/14826889
+        target_path = os.path.join(os.path.join(*folder_structure))
+    else:
+        target_path = path
+    # Set the name of file by removing any path information
+    file_name = os.path.basename(blob_file.name)
+    # Finally, set the name and the path of the output file
+    target_file = os.path.join(target_path, file_name)
+    # Create a blob client for the target blob
+    target_blob_client = blob_service_client.get_blob_client(target_container,
+                                                             target_file)
+    # Copy the source file to the target file - allow up to 1000 seconds total
+    target_blob_client.start_copy_from_url(blob_client.url)
+    # Ensure that the copy is complete before proceeding
+    for i in range(100):
+        # Extract the properties of the target blob client
+        target_blob_properties = target_blob_client.get_blob_properties()
+        # Break when the status is set to 'success'. The copy is successful
+        if target_blob_properties.copy.status == 'success':
+            # Copy finished
+            break
+        # Sleep for 10 seconds
+        time.sleep(10)
 
 
 def delete_container(blob_service_client, container_name, account_name):
@@ -369,4 +490,81 @@ def delete_container(blob_service_client, container_name, account_name):
         blob_service_client.delete_container(container_name)
     except azure.core.exceptions.ResourceNotFoundError:
         logging.error(f'Could not locate {container_name} in {account_name}. Perhaps it has already been deleted?')
+        raise SystemExit
+
+
+def delete_file(container_client, object_name, blob_service_client, container_name, account_name):
+    """
+    Delete a file from Azure storage
+    :param container_client: type BlobServiceClient.ContainerClient
+    :param object_name: type str: Name and path of file/folder to download from Azure storage
+    :param blob_service_client: type: BlobServiceClient
+    :param container_name: type str: Name of the container of interest
+    :param account_name: type str: Name of the Azure storage account
+    """
+    # Create a generator containing all the blobs in the container
+    generator = container_client.list_blobs()
+    # Create a boolean to determine if the blob has been located
+    present = False
+    try:
+        for blob_file in generator:
+            # Filter for the blob name
+            if os.path.join(blob_file.name) == object_name:
+                # Update the blob presence variable
+                present = True
+                # Create the blob client
+                blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                                 container_name=container_name,
+                                                 blob_file=blob_file)
+                # Soft delete the blob
+                blob_client.delete_blob()
+    except azure.core.exceptions.HttpResponseError:
+        logging.error(f'There was an error deleting file {object_name} in container {container_name} '
+                      f'in Azure storage account {account_name}. Please ensure that all arguments have been '
+                      f'entered correctly')
+        raise SystemExit
+    # Send a warning to the user that the blob could not be found
+    if not present:
+        logging.error(f'Could not locate the desired file {object_name}')
+        raise SystemExit
+
+
+def delete_folder(container_client, object_name, blob_service_client, container_name, account_name):
+    """
+    Delete a folder from Azure storage
+    :param container_client: type BlobServiceClient.ContainerClient
+    :param object_name: type str: Name and path of file/folder to download from Azure storage
+    :param blob_service_client: type: BlobServiceClient
+    :param container_name: type str: Name of the container of interest
+    :param account_name: type str: Name of the Azure storage account
+    """
+    # Create a generator containing all the blobs in the container
+    generator = container_client.list_blobs()
+    # Create a boolean to determine if the blob has been located
+    present = False
+    try:
+        for blob_file in generator:
+            # Create the path of the file by extracting the path of the file
+            blob_path = os.path.join(os.path.split(blob_file.name)[0])
+            # Ensure that the supplied folder path is present in the blob path
+            if os.path.normpath(object_name) in os.path.normpath(blob_path):
+                # Update the folder presence boolean
+                present = True
+                # Create the blob client
+                blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                                 container_name=container_name,
+                                                 blob_file=blob_file)
+                # Soft delete the blob
+                blob_client.delete_blob()
+    except azure.core.exceptions.HttpResponseError:
+        logging.error(f'There was an error deleting folder {object_name} in container {container_name} '
+                      f'in Azure storage account {account_name}. Please ensure that all arguments have been '
+                      f'entered correctly')
+        raise SystemExit
+    # Send a warning to the user that the blob could not be found
+    if not present:
+        logging.error(
+            f'There was an error deleting folder {object_name} in container {container_name}, '
+            f'in Azure storage account {account_name}. Please ensure that all arguments have been '
+            f'entered correctly')
         raise SystemExit
