@@ -121,7 +121,7 @@ def set_connection_string(passphrase, account_name):
 
 def confirm_account_match(account_name, connect_str):
     """
-    Ensure that the account name provided matches the account name stored in the connection string.
+    Ensure that the account name provided matches the account name stored in the connection string
     :param connect_str: type str: Connection string for the Azure storage account
     :param account_name: type str: Name of the Azure storage account
     """
@@ -141,6 +141,7 @@ def confirm_account_match(account_name, connect_str):
                       'DefaultEndpointsProtocol=https;AccountName=[REDACTED];AccountKey=[REDACTED];'
                       'EndpointSuffix=core.windows.net')
         raise SystemExit
+    return True
 
 
 def extract_connection_string(passphrase, account_name):
@@ -262,6 +263,9 @@ def validate_container_name(container_name, object_type='container'):
         container_name = re.sub(r'[^\w\s]|(_)(?=\1)', '', container_name).lower()
         # Swap out underscores for dashes
         container_name = container_name.replace('_', '-')
+        # Ensure that the container name doesn't start or end with a dash
+        container_name = re.sub(r'^-+', '', container_name)
+        container_name = re.sub(r'-+$', '', container_name)
     # Ensure that the container name isn't length zero, or the while loop below will be infinite
     if len(container_name) == 0:
         logging.error(f'Attempting to fix the {object_type} name left zero valid characters! '
