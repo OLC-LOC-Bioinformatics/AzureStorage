@@ -1,13 +1,9 @@
 #!/usr/bin/env python
-from azure_storage.methods import create_blob_client, create_container, create_container_client, \
-    create_blob_service_client, create_parent_parser, delete_container, delete_file, delete_folder, \
-    extract_connection_string, extract_container_name, setup_arguments, set_blob_retention_policy, \
-    validate_container_name
+from azure_storage.methods import create_container_client, create_blob_service_client, create_parent_parser, \
+    delete_container, delete_file, delete_folder, extract_connection_string, setup_arguments, set_blob_retention_policy
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
-import azure
-import os
 
 
 class AzureContainerDelete(object):

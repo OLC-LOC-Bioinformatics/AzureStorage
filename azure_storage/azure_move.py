@@ -1,7 +1,6 @@
 #!/usr/bin/env python
-from azure_storage.methods import create_blob_client, create_container, create_container_client, \
-    create_blob_service_client, create_parent_parser, delete_container, delete_file, delete_folder, copy_blob, \
-    extract_connection_string, move_prep, setup_arguments, validate_container_name
+from azure_storage.methods import create_parent_parser, delete_container, delete_file, delete_folder, copy_blob, \
+     move_prep, setup_arguments, validate_container_name
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
@@ -12,6 +11,15 @@ import os
 class AzureContainerMove(object):
 
     def main(self):
+        # Ensure that the target container has a valid name
+        self.target_container = validate_container_name(container_name=self.target_container,
+                                                        object_type='target container')
+        # Ensure that the supplied path is valid
+        if self.path:
+            self.path = validate_container_name(container_name=self.path,
+                                                object_type='target path')
+        # Ensure that the target container has a valid name
+        self.target_container = validate_container_name(container_name=self.target_container)
         # Prepare all the necessary clients
         self.blob_service_client, self.source_container_client, self.target_container_client = move_prep(
             passphrase=self.passphrase,
@@ -58,6 +66,13 @@ class AzureContainerMove(object):
 class AzureMove(object):
 
     def main(self):
+        # Ensure that the target container has a valid name
+        self.target_container = validate_container_name(container_name=self.target_container,
+                                                        object_type='target container')
+        # Ensure that the supplied path is valid
+        if self.path:
+            self.path = validate_container_name(container_name=self.path,
+                                                object_type='target path')
         # Prepare all the necessary clients
         self.blob_service_client, self.source_container_client, self.target_container_client = move_prep(
             passphrase=self.passphrase,
@@ -132,7 +147,9 @@ class AzureMove(object):
                               blob_service_client=self.blob_service_client,
                               container_name=self.container_name,
                               target_container=self.target_container,
-                              path=self.path)
+                              path=self.path,
+                              object_name=self.object_name,
+                              category=self.category)
         except azure.core.exceptions.ResourceNotFoundError:
             logging.error(f' The specified container, {self.container_name}, does not exist.')
             raise SystemExit
@@ -177,7 +194,7 @@ def file_move(args):
     Run the AzureMove method for a file
     :param args: type ArgumentParser arguments
     """
-    logging.info(f'Moving file {args.file} to {args.target_container} in Azure storage '
+    logging.info(f'Moving file {args.file} from {args.container_name} to {args.target_container} in Azure storage '
                  f'account {args.account_name}')
     move_file = AzureMove(object_name=args.file,
                           container_name=args.container_name,
@@ -194,7 +211,7 @@ def folder_move(args):
     Run the AzureMove method for a folder
     :param args: type ArgumentParser arguments
     """
-    logging.info(f'Moving folder {args.folder} to {args.target_container} in Azure storage '
+    logging.info(f'Moving folder {args.folder} from {args.container_name} to {args.target_container} in Azure storage '
                  f'account {args.account_name}')
     move_folder = AzureMove(object_name=args.folder,
                             container_name=args.container_name,

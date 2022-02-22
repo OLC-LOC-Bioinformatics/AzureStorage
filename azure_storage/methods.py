@@ -4,7 +4,6 @@ from argparse import ArgumentParser
 import coloredlogs
 import datetime
 import logging
-# Communication string storing imports
 import getpass
 import keyring
 import azure
@@ -238,14 +237,22 @@ def extract_container_name(object_name):
     return container_name
 
 
-def validate_container_name(container_name):
+def validate_container_name(container_name, object_type='container'):
+    """
+    Use a regex to check if the supplied name follows the guidelines for Azure nomenclature. If it doesn't, attempt to
+    rename the container/object
+    :param container_name: type str: Name of the container/object of interest
+    :param object_type: type str: Name of the object being validated. Default is container, but target container, and
+    target path are other options
+    :return: container_name: String of sanitised container name
+    """
     if not re.match('^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$', container_name):
-        logging.warning(f'Container name, {container_name} is invalid. Container names must be between 3 and 63 '
-                        f'characters, start with a letter or number, and can contain only letters, numbers, and the '
-                        f'dash (-) character. Every dash (-) character must be immediately preceded and followed by '
-                        f'a letter or number; consecutive dashes are not permitted in container names. All letters '
-                        f'in a container name must be lowercase.')
-        logging.info('Attempting to fix the container name')
+        logging.warning(f'{object_type.capitalize()} name, {container_name} is invalid. {object_type.capitalize()} '
+                        f'names must be between 3 and 63 characters, start with a letter or number, and can contain '
+                        f'only letters, numbers, and the dash (-) character. Every dash (-) character must be '
+                        f'immediately preceded and followed by a letter or number; consecutive dashes are not '
+                        f'permitted in {object_type} names. All letters in a {object_type} name must be lowercase.')
+        logging.info(f'Attempting to fix the {object_type} name')
         # Swap out dashes for underscores, as they will be removed in the following regex
         container_name = container_name.replace('-', '_')
         # Use re to remove all non-word characters (including dashes)
@@ -257,19 +264,21 @@ def validate_container_name(container_name):
         container_name = container_name.replace('_', '-')
     # Ensure that the container name isn't length zero, or the while loop below will be infinite
     if len(container_name) == 0:
-        logging.error('Attempting to fix the container name left zero valid characters! Please enter a new name.')
+        logging.error(f'Attempting to fix the {object_type} name left zero valid characters! '
+                      'Please enter a new name.')
         raise SystemExit
     # If the container name is too long, slice it to be 63 characters
     if len(container_name) >= 63:
-        logging.warning(f'Container name {container_name} was too long. Using {container_name[:62]} instead')
+        logging.warning(f'{object_type.capitalize()} name {container_name} was too long. Using {container_name[:62]} '
+                        f'instead')
         container_name = container_name[:62]
     # If the container name is too short, keep adding the container name to itself to bump up the length
     while len(container_name) < 3:
-        logging.warning(f'Container name {container_name} was too short (only {len(container_name)} characters). '
-                        f'Using {container_name + container_name} instead')
+        logging.warning(f'{object_type.capitalize()} name {container_name} was too short (only {len(container_name)} '
+                        f'characters). Using {container_name + container_name} instead')
         container_name = container_name + container_name
     # Use the validated container name
-    logging.info(f'Using {container_name} as the container name')
+    logging.info(f'Using {container_name} as the {object_type} name')
     return container_name
 
 
@@ -277,7 +286,7 @@ def create_blob_service_client(connect_str):
     """
     Create a blob service client using the connection string
     :param connect_str: type str: Connection string for Azure storage
-    :return: blob_service_client: type BlobServiceClient
+    :return: blob_service_client: type azure.storage.blob.BlobServiceClient
     """
     try:
         blob_service_client = BlobServiceClient.from_connection_string(connect_str)
@@ -291,9 +300,9 @@ def create_blob_service_client(connect_str):
 def create_container(blob_service_client, container_name):
     """
     Create a new container and container-specific client from the blob service client
-    :param blob_service_client: type: BlobServiceClient
+    :param blob_service_client: type: type azure.storage.blob.BlobServiceClient
     :param container_name: type str: Name of the container of interest
-    :return: container_client: type BlobServiceClient.ContainerClient
+    :return: container_client: type azure.storage.blob.BlobServiceClient.ContainerClient
     """
     container_client = blob_service_client.create_container(container_name)
     return container_client
@@ -302,9 +311,9 @@ def create_container(blob_service_client, container_name):
 def create_container_client(blob_service_client, container_name):
     """
     Create a container-specific client from the blob service client
-    :param blob_service_client: type: BlobServiceClient
+    :param blob_service_client: type: azure.storage.blob.BlobServiceClient
     :param container_name: type str: Name of the container of interest
-    :return: container_client: type BlobServiceClient.ContainerClient
+    :return: container_client: type azure.storage.blob.BlobServiceClient.ContainerClient
     """
     # Create the container client from the blob service client with the get container client method
     # and the container name
@@ -315,10 +324,10 @@ def create_container_client(blob_service_client, container_name):
 def create_blob_client(blob_service_client, container_name, blob_file):
     """
     Create a blob-specific client
-    :param blob_service_client: type: BlobServiceClient
+    :param blob_service_client: type: azure.storage.blob.BlobServiceClient
     :param container_name: type str: Name of the container of interest
-    :param blob_file: type iterable from BlobServiceClient.ContainerClient.list_blobs
-    :return: blob_client: type BlobServiceClient.BlobClient
+    :param blob_file: type iterable from azure.storage.blob.BlobServiceClient.ContainerClient.list_blobs
+    :return: blob_client: type azure.storage.blob.BlobServiceClient.BlobClient
     """
     # Create a blob client for the current blob
     blob_client = blob_service_client.get_blob_client(container=container_name,
@@ -358,12 +367,12 @@ def create_blob_sas(blob_file, account_name, container_name, account_key, expiry
 
 def create_sas_url(account_name, container_name, blob_name, sas_token):
     """
-
-    :param account_name:
-    :param container_name:
-    :param blob_name:
-    :param sas_token:
-    :return:
+    Create the SAS URL from the required components
+    :param account_name: type str: Name of Azure storage account
+    :param container_name: type str: Name of the container of interest
+    :param blob_name: type str: Name and path of the file of interest
+    :param sas_token: type azure.storage.blob.generate_blob_sas
+    :return: sas_url: String of the SAS URL
     """
     # Generate the SAS URL using the account name, the domain, the container name, the blob name, and the
     # SAS token in the following format:
@@ -392,7 +401,10 @@ def write_sas(verbosity, output_file, sas_urls):
 
 def set_blob_retention_policy(blob_service_client, days=8):
     """
-
+    Set the retention policy for a blob
+    :param blob_service_client: type: azure.storage.blob.BlobServiceClient
+    :param days: type int: Number of days to retain deleted blobs. Default is 8
+    :return: blob_service_client: Client with the retention policy implemented
     """
     # Create a retention policy to retain deleted blobs
     delete_retention_policy = RetentionPolicy(enabled=True, days=days)
@@ -408,9 +420,9 @@ def move_prep(passphrase, account_name, container_name, target_container):
     :param account_name: type str: Name of Azure storage account
     :param container_name: type str: Name of the container of interest
     :param target_container: type str: Name of the new container into which the container/file/folder is to be copied
-    :return: blob_service_client: type BlobServiceClient
-    :return: source_container_client: type BlobServiceClient.ContainerClient for source container
-    :return: target_container_client: type BlobServiceClient.ContainerClient for target container
+    :return: blob_service_client: type azure.storage.blob.BlobServiceClient
+    :return: source_container_client: type azure.storage.blob.BlobServiceClient.ContainerClient for source container
+    :return: target_container_client: type azure.storage.blob.BlobServiceClient.ContainerClient for target container
     """
     # Extract the connection string from the system keyring
     connect_str = extract_connection_string(passphrase=passphrase,
@@ -429,14 +441,16 @@ def move_prep(passphrase, account_name, container_name, target_container):
     return blob_service_client, source_container_client, target_container_client
 
 
-def copy_blob(blob_file, blob_service_client, container_name, target_container, path):
+def copy_blob(blob_file, blob_service_client, container_name, target_container, path, object_name=None, category=None):
     """
     Copy a blob from one container to another
-    :param blob_file: type iterable from BlobServiceClient.ContainerClient.list_blobs
+    :param blob_file: type iterable from azure.storage.blob.BlobServiceClient.ContainerClient.list_blobs
     :param container_name: type str: Name of the container in which the file is located
-    :param blob_service_client: type: BlobServiceClient
+    :param blob_service_client: type: azure.storage.blob.BlobServiceClient
     :param target_container: type str: Name of the new container into which the file is to be copied
     :param path: type str: Path of folders in which the files are to be placed
+    :param object_name: type str: Name and path of file/folder to download from Azure storage
+    :param category: type str: Category of object to be copied. Limited to file or folder
     """
     # Create the blob client
     blob_client = create_blob_client(blob_service_client=blob_service_client,
@@ -454,7 +468,14 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     # Set the name of file by removing any path information
     file_name = os.path.basename(blob_file.name)
     # Finally, set the name and the path of the output file
-    target_file = os.path.join(target_path, file_name)
+    if category is None:
+        target_file = os.path.join(target_path, file_name)
+    # If a folder is being moved, extract the common path between the blob file and the supplied folder name. Find the
+    # relative path between the blob file and the common path. Uses logic from https://stackoverflow.com/a/7288019
+    else:
+        target_file = os.path.join(target_path,
+                                   os.path.relpath(blob_file.name,
+                                                   os.path.commonpath([blob_file.name, object_name])))
     # Create a blob client for the target blob
     target_blob_client = blob_service_client.get_blob_client(target_container,
                                                              target_file)
@@ -475,7 +496,7 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
 def delete_container(blob_service_client, container_name, account_name):
     """
     Delete a container in Azure storage
-    :param blob_service_client: type: BlobServiceClient
+    :param blob_service_client: type: azure.storage.blob.BlobServiceClient
     :param container_name: type str: Name of the container of interest
     :param account_name: type str: Name of the Azure storage account
     """
@@ -496,9 +517,9 @@ def delete_container(blob_service_client, container_name, account_name):
 def delete_file(container_client, object_name, blob_service_client, container_name, account_name):
     """
     Delete a file from Azure storage
-    :param container_client: type BlobServiceClient.ContainerClient
+    :param container_client: type azure.storage.blob.BlobServiceClient.ContainerClient
     :param object_name: type str: Name and path of file/folder to download from Azure storage
-    :param blob_service_client: type: BlobServiceClient
+    :param blob_service_client: type: azure.storage.blob.BlobServiceClient
     :param container_name: type str: Name of the container of interest
     :param account_name: type str: Name of the Azure storage account
     """
@@ -532,9 +553,9 @@ def delete_file(container_client, object_name, blob_service_client, container_na
 def delete_folder(container_client, object_name, blob_service_client, container_name, account_name):
     """
     Delete a folder from Azure storage
-    :param container_client: type BlobServiceClient.ContainerClient
+    :param container_client: type azure.storage.blob.BlobServiceClient.ContainerClient
     :param object_name: type str: Name and path of file/folder to download from Azure storage
-    :param blob_service_client: type: BlobServiceClient
+    :param blob_service_client: type: azure.storage.blob.BlobServiceClient
     :param container_name: type str: Name of the container of interest
     :param account_name: type str: Name of the Azure storage account
     """

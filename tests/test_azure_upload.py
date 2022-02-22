@@ -15,6 +15,5 @@ class MyTestCase(unittest.TestCase):
         assert self.account_name
 
 
-
 if __name__ == '__main__':
     unittest.main()
