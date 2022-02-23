@@ -6,6 +6,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
 import azure
+import sys
 import os
 
 
@@ -16,7 +17,6 @@ class AzureUpload(object):
         self.connect_str = extract_connection_string(passphrase=self.passphrase,
                                                      account_name=self.account_name)
         self.blob_service_client = create_blob_service_client(connect_str=self.connect_str)
-
         self.container_client = create_container_client(blob_service_client=self.blob_service_client,
                                                         container_name=self.container_name)
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
@@ -25,57 +25,92 @@ class AzureUpload(object):
         if self.category == 'file':
             # If the container doesn't exist, run the container creation method, and re-run the upload
             try:
-                self.upload_file()
+                self.upload_file(object_name=self.object_name,
+                                 blob_service_client=self.blob_service_client,
+                                 container_name=self.container_name,
+                                 account_name=self.account_name,
+                                 path=self.path)
             except azure.core.exceptions.ResourceNotFoundError:
                 self.container_client = create_container(blob_service_client=self.blob_service_client,
                                                          container_name=self.container_name)
-                self.upload_file()
+                self.upload_file(object_name=self.object_name,
+                                 blob_service_client=self.blob_service_client,
+                                 container_name=self.container_name,
+                                 account_name=self.account_name,
+                                 path=self.path)
         elif self.category == 'folder':
             try:
-                self.upload_folder()
+                self.upload_folder(object_name=self.object_name,
+                                   blob_service_client=self.blob_service_client,
+                                   container_name=self.container_name,
+                                   account_name=self.account_name,
+                                   path=self.path)
             except azure.core.exceptions.ResourceNotFoundError:
                 self.container_client = create_container(blob_service_client=self.blob_service_client,
                                                          container_name=self.container_name)
-                self.upload_folder()
+                self.upload_folder(object_name=self.object_name,
+                                   blob_service_client=self.blob_service_client,
+                                   container_name=self.container_name,
+                                   account_name=self.account_name,
+                                   path=self.path)
         else:
             logging.error(f'Something is wrong. There is no {self.category} option available')
             raise SystemExit
 
-    def upload_file(self):
+    @staticmethod
+    def upload_file(object_name, blob_service_client, container_name, account_name, path):
         """
         Upload a single file to Azure storage
+        :param object_name: type str: Name and path of file/folder to download from Azure storage
+        :param blob_service_client: type: azure.storage.blob.BlobServiceClient
+        :param container_name: type str: Name of the container of interest
+        :param account_name: type str: Name of the Azure storage account
+        :param path: type str: Path of folders in which the files are to be placed
         """
         # Extract the name of the file from the provided name, as it may include the path
-        file_name = os.path.basename(self.object_name)
+        file_name = os.path.basename(object_name)
+        if path is not None:
+            file_name = os.path.join(path, file_name)
         # Create a blob client for this file in the container in which it will be stored
-        blob_client = create_blob_client(blob_service_client=self.blob_service_client,
-                                         container_name=self.container_name,
+        blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                         container_name=container_name,
                                          blob_file=file_name)
         # Attempt to upload the file to the specified container.
         try:
             # Read in the file data as binary
-            with open(self.object_name, "rb") as data:
+            with open(object_name, "rb") as data:
                 # Upload the file data to the blob
                 blob_client.upload_blob(data)
         # If a file with that name already exists in that container, warn the user
         except azure.core.exceptions.ResourceExistsError:
-            logging.warning(f'The file {file_name} already exists in container {self.container_name} in '
-                            f'storage account {self.account_name}')
+            logging.warning(f'The file {file_name} already exists in container {container_name} in '
+                            f'storage account {account_name}')
             raise SystemExit
         # Despite the attempt to correct the container name, it may still be invalid
         except azure.core.exceptions.HttpResponseError:
-            logging.error(f'Container name, {self.container_name} is invalid. Container names must be between 3 and 63 '
+            logging.error(f'Container name, {container_name} is invalid. Container names must be between 3 and 63 '
                           f'characters, start with a letter or number, and can contain only letters, numbers, and the '
                           f'dash (-) character. Every dash (-) character must be immediately preceded and followed by '
                           f'a letter or number; consecutive dashes are not permitted in container names. All letters '
                           f'in a container name must be lowercase.')
+            raise SystemExit
+        except FileNotFoundError:
+            logging.error(f'Could not find the specified file {object_name} to upload. Please ensure that the '
+                          f'supplied name and path are correct.')
+            raise SystemExit
 
-    def upload_folder(self):
+    @staticmethod
+    def upload_folder(object_name, blob_service_client, container_name, account_name, path):
         """
         Upload all the files (and sub-folders as applicable) in the specified folder to Azure storage
+        :param object_name: type str: Name and path of file/folder to download from Azure storage
+        :param blob_service_client: type: azure.storage.blob.BlobServiceClient
+        :param container_name: type str: Name of the container of interest
+        :param account_name: type str: Name of the Azure storage account
+        :param path: type str: Path of folders in which the files are to be placed
         """
         # Use os.walk to find all the files and folders in the supplied directory
-        for root, dirs, files in os.walk(self.object_name):
+        for root, dirs, files in os.walk(object_name):
             # Determine the relative path for the current sub-folder to the supplied root folder by creating a list
             # from the splitting of the root path using the OS-appropriate separator (os.sep) and slicing the list to
             # remove the first entry (the root) e.g. outputs/files/reports, where 'outputs/files' is the supplied
@@ -83,27 +118,49 @@ class AzureUpload(object):
             rel_path = os.path.join(os.sep.join(root.split(os.sep)[1:]))
             # Using the same logic as above, extract the root directory e.g. outputs/files/reports, where
             # 'outputs/files' is the supplied  directory, would return 'outputs'
-            root_path = root.split(os.sep)[0]
+            # root_path = root.split(os.sep)[0]
+            # Ensure that the root path starts with the appropriate separator when an absolute path is provided
+            # if object_name.startswith(os.sep):
+            #     root_path = os.sep + root_path
             for file_name in files:
+                # If the path is supplied, the folders of interest must be extract in order to keep the original
+                # folder structure
+                if path is not None:
+                    # Set the target folder as the relative path between the root and the supplied folder name
+                    #  e.g. /home/users/files/folder/nested_folder and /home/users/files/folder would return
+                    # nested_folder, while identical root and folder would return a dot (.)
+                    target_folder = os.path.relpath(root, start=object_name.rstrip(os.sep))
+                    # If the target_folder is a dot, treat it as empty
+                    target_folder = target_folder if target_folder != '.' else ''
+                    # Create the target file in the container by joining the desired path, the target folder and the
+                    # name of the file
+                    target_file = os.path.join(path, target_folder, file_name)
                 # Add the file name to the calculated relative path to set the name of the blob in Azure storage e.g.
                 # files/reports/summary.tsv
-                upload_file = os.path.join(rel_path, file_name)
+                else:
+                    target_file = os.path.join(rel_path, file_name)
                 # Create a blob client for this file using the supplied container name
-                blob_client = create_blob_client(blob_service_client=self.blob_service_client,
-                                                 container_name=self.container_name,
-                                                 blob_file=upload_file)
+                blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                                 container_name=container_name,
+                                                 blob_file=target_file)
+                # Set the local name and path of the file, so it can be opened
+                local_file = os.path.join(root, file_name)
                 # Attempt to upload the file to the specified container
                 try:
                     # Re-add the root path to find the file on the local system
-                    with open(os.path.join(root_path, upload_file), "rb") as data:
+                    with open(os.path.join(local_file), "rb") as data:
                         # Upload the file to Azure storage
                         blob_client.upload_blob(data)
                 # Print a warning if a file with that name already exists in the specified container
                 except azure.core.exceptions.ResourceExistsError:
-                    logging.warning(f'The file {upload_file} already exists in container {self.container_name} '
-                                    f'in storage account {self.account_name}')
+                    logging.warning(f'The file {local_file} already exists in container {container_name} '
+                                    f'in storage account {account_name} as {target_file}')
+                except FileNotFoundError:
+                    logging.error(f'Could not find the specified file {local_file} to upload. Please ensure that the '
+                                  f'supplied name and path are correct.')
+                    raise SystemExit
 
-    def __init__(self, object_name, container_name, account_name, passphrase, category):
+    def __init__(self, object_name, container_name, account_name, passphrase, path, category):
         # Set the name of the file/folder to upload
         self.object_name = object_name
         if category == 'file':
@@ -122,6 +179,7 @@ class AzureUpload(object):
         self.passphrase = passphrase
         self.account_name = account_name
         self.container_name = container_name
+        self.path = path
         self.category = category
         self.connect_str = str()
         self.blob_service_client = None
@@ -141,6 +199,7 @@ def file_upload(args):
                                 account_name=args.account_name,
                                 container_name=args.container_name,
                                 passphrase=args.passphrase,
+                                path=args.reset_path,
                                 category='file')
     file_uploader.main()
 
@@ -156,6 +215,7 @@ def folder_upload(args):
                                   account_name=args.account_name,
                                   container_name=args.container_name,
                                   passphrase=args.passphrase,
+                                  path=args.reset_path,
                                   category='folder')
     folder_uploader.main()
 
@@ -164,6 +224,11 @@ def cli():
     parser = ArgumentParser(description='Upload files or folders to Azure storage')
     # Create the parental parser, and the subparser
     subparsers, parent_parser = create_parent_parser(parser=parser)
+    parent_parser.add_argument('-r', '--reset_path',
+                               type=str,
+                               help='Set the path of the file/folder within a folder in the target container '
+                                    'e.g. sequence_data/220202-m05722. If you want to place it directly in the '
+                                    'container without any nesting, use "" or \'\'')
     # File upload subparser
     file_subparser = subparsers.add_parser(parents=[parent_parser],
                                            name='file',
@@ -194,6 +259,9 @@ def cli():
     # information from azure.core.pipeline.policies.http_logging_policy
     coloredlogs.install(level=arguments.verbosity.upper())
     logging.info('Upload complete')
+    # Prevent the arguments being printed to the console (they are returned in order for the tests to work)
+    sys.stderr = open(os.devnull, 'w')
+    return arguments
 
 
 if __name__ == '__main__':

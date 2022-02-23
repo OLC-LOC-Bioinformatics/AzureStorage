@@ -5,6 +5,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
 import azure
+import sys
 import os
 
 
@@ -305,6 +306,9 @@ def cli():
     # information from azure.core.pipeline.policies.http_logging_policy
     coloredlogs.install(level=arguments.verbosity.upper())
     logging.info('SAS creation complete')
+    # Prevent the arguments being printed to the console (they are returned in order for the tests to work)
+    sys.stderr = open(os.devnull, 'w')
+    return arguments
 
 
 if __name__ == '__main__':

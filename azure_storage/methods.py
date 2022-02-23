@@ -504,7 +504,6 @@ def delete_container(blob_service_client, container_name, account_name):
     :param container_name: type str: Name of the container of interest
     :param account_name: type str: Name of the Azure storage account
     """
-
     test_containers = blob_service_client.list_containers(name_starts_with=container_name)
     if not test_containers:
         logging.error(f'Could not locate container {container_name} in {account_name}. Please ensure that you '

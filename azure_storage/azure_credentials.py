@@ -3,6 +3,8 @@ from azure_storage.methods import create_parent_parser, delete_keyring_credentia
     set_account_name, set_connection_string, setup_arguments
 from argparse import ArgumentParser, RawTextHelpFormatter
 import logging
+import sys
+import os
 
 
 def store_credentials(args):
@@ -55,6 +57,8 @@ def cli():
     delete_subparser.set_defaults(func=delete_credentials)
     # Set up the arguments, and run the appropriate subparser
     arguments = setup_arguments(parser=parser)
+    # Prevent the arguments being printed to the console (they are returned in order for the tests to work)
+    sys.stderr = open(os.devnull, 'w')
     return arguments
 
 

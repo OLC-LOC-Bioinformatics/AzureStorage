@@ -4,6 +4,8 @@ from azure_storage.methods import create_container_client, create_blob_service_c
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
+import sys
+import os
 
 
 class AzureContainerDelete(object):
@@ -165,6 +167,9 @@ def cli():
     # information from azure.core.pipeline.policies.http_logging_policy
     coloredlogs.install(level=arguments.verbosity.upper())
     logging.info('Deletion complete')
+    # Prevent the arguments being printed to the console (they are returned in order for the tests to work)
+    sys.stderr = open(os.devnull, 'w')
+    return arguments
 
 
 if __name__ == '__main__':

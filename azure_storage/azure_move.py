@@ -5,6 +5,7 @@ from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
 import azure
+import sys
 import os
 
 
@@ -14,10 +15,6 @@ class AzureContainerMove(object):
         # Ensure that the target container has a valid name
         self.target_container = validate_container_name(container_name=self.target_container,
                                                         object_type='target container')
-        # Ensure that the supplied path is valid
-        if self.path:
-            self.path = validate_container_name(container_name=self.path,
-                                                object_type='target path')
         # Ensure that the target container has a valid name
         self.target_container = validate_container_name(container_name=self.target_container)
         # Prepare all the necessary clients
@@ -277,6 +274,9 @@ def cli():
     # information from azure.core.pipeline.policies.http_logging_policy
     coloredlogs.install(level=arguments.verbosity.upper())
     logging.info('Move complete')
+    # Prevent the arguments being printed to the console (they are returned in order for the tests to work)
+    sys.stderr = open(os.devnull, 'w')
+    return arguments
 
 
 if __name__ == '__main__':

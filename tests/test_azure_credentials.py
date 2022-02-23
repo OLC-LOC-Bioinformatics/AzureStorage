@@ -3,8 +3,8 @@ from azure_storage.methods import extract_account_name, extract_connection_strin
     set_account_name, set_connection_string, setup_arguments
 from azure_storage.azure_credentials import cli, delete_credentials, store_credentials
 from unittest.mock import patch
-import pytest
 import argparse
+import pytest
 
 
 connect_str = \
