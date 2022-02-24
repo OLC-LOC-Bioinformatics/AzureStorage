@@ -10,8 +10,6 @@ import string
 import azure
 import os
 
-from azure_storage.methods import delete_container
-
 letters = string.ascii_lowercase
 long_container = ''.join(random.choice(letters) for i in range(65))
 
@@ -140,6 +138,21 @@ def test_upload_file_integration(mock_args, variables):
     assert os.path.join(path, os.path.basename(file_name)) in [blob.name for blob in blobs]
 
 
+@patch('argparse.ArgumentParser.parse_args')
+def test_upload_file_integration_invalid_file(mock_args, variables):
+    with pytest.raises(SystemExit):
+        file_name = 'file_5.txt'
+        path = str()
+        mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                    account_name=variables.account_name,
+                                                    container_name=variables.container_name,
+                                                    verbosity='info',
+                                                    file=os.path.join(variables.file_path, file_name),
+                                                    reset_path=path)
+        arguments = cli()
+        file_upload(args=arguments)
+
+
 @pytest.mark.parametrize('folder_name,path,check_file',
                          [('folder_2', '', 'folder_test_1.txt'),
                           ('folder_2', 'nested_folder', 'folder_test_1.txt'),
@@ -171,7 +184,16 @@ def test_upload_folder_integration(mock_args, variables):
     assert os.path.join(path, 'triple_nested_file.txt') in [blob.name for blob in blobs]
 
 
-def test_delete_container(variables):
-    delete_container(blob_service_client=variables.blob_service_client,
-                     container_name=variables.container_name,
-                     account_name=variables.account_name)
+@patch('argparse.ArgumentParser.parse_args')
+def test_upload_folder_integration_invalid(mock_args, variables):
+    with pytest.raises(SystemExit):
+        folder_name = 'folder/nested/double_nested/triple_nested'
+        path = 'triple_nested'
+        mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                    account_name=variables.account_name,
+                                                    container_name=variables.container_name,
+                                                    verbosity='info',
+                                                    folder=os.path.join(variables.file_path, folder_name),
+                                                    reset_path=path)
+        arguments = cli()
+        folder_upload(args=arguments)

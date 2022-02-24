@@ -369,6 +369,34 @@ def create_blob_sas(blob_file, account_name, container_name, account_key, expiry
     return sas_urls
 
 
+def sas_prep(container_name, passphrase, account_name):
+    """
+    Validate container names, extract connection strings, and account keys, and create necessary clients for
+    SAS URL creation
+    :param container_name: type str: Name of the container of interest
+    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
+    :param account_name: type str: Name of the Azure storage account
+    :return: container_name: Validated container name
+    :return: connect_str: Connection string for Azure storage
+    :return: account_key: Account key for Azure storage
+    :return: blob_service_client: azure.storage.blob.BlobServiceClient
+    :return: container_client: azure.storage.blob.BlobServiceClient.ContainerClient
+    """
+    # Validate the container name
+    container_name = validate_container_name(container_name=container_name)
+    # Retrieve the connection string from the system keyring
+    connect_str = extract_connection_string(passphrase=passphrase,
+                                            account_name=account_name)
+    # Extract the account key from the connection string
+    account_key = extract_account_key(connect_str=connect_str)
+    # Create the blob service client
+    blob_service_client = create_blob_service_client(connect_str=connect_str)
+    # Create the container client from the blob service client
+    container_client = create_container_client(blob_service_client=blob_service_client,
+                                               container_name=container_name)
+    return container_name, connect_str, account_key, blob_service_client, container_client
+
+
 def create_sas_url(account_name, container_name, blob_name, sas_token):
     """
     Create the SAS URL from the required components
@@ -385,16 +413,13 @@ def create_sas_url(account_name, container_name, blob_name, sas_token):
     return sas_url
 
 
-def write_sas(verbosity, output_file, sas_urls):
+def write_sas(output_file, sas_urls):
     """
     Write the SAS URLs to the output file
-    :param verbosity: type str: Desired logging level
     :param output_file: type str: Name and path of the file in which the SAS URLs are to be written
     :param sas_urls: type dict: Dictionary of file name: SAS URL
     """
-    # Return to the requested logging level, as it has been increased to WARNING to suppress the log being
-    # filled with information from azure.core.pipeline.policies.http_logging_policy
-    coloredlogs.install(level=verbosity.upper())
+    # Create the output file
     with open(output_file, 'w') as output:
         for file_name, sas_url in sas_urls.items():
             # Write the SAS URL to the output file
