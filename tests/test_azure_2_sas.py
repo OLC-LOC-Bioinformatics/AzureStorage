@@ -27,6 +27,11 @@ def delete_output_file(output_file):
     assert not os.path.isfile(output_file)
 
 
+def read_contents(output_file):
+    contents = open(output_file, 'r').readlines()
+    return contents
+
+
 def test_sas_prep(variables):
     variables.container_name, variables.connection_string, variables.account_key, \
         variables.blob_service_client, variables.container_client = \
@@ -74,7 +79,7 @@ def test_sas_urls_output_exists(variables):
 
 
 def test_sas_urls_output_contents(variables):
-    contents = open(variables.output_file, 'r').readlines()
+    contents = read_contents(output_file=variables.output_file)
     assert contents[0]\
         .startswith(f'https://{variables.account_name}.blob.core.windows.net/{variables.container_name}/')
 
@@ -118,7 +123,7 @@ def test_file_sas_integration(mock_args, variables):
 
 
 def test_file_sas_urls_integration_output_contents(variables):
-    contents = open(variables.output_file, 'r').readlines()
+    contents = read_contents(output_file=variables.output_file)
     assert contents[0]\
         .startswith(f'https://{variables.account_name}.blob.core.windows.net/{variables.container_name}/')
 
@@ -167,14 +172,40 @@ def test_folder_sas_integration(mock_args, variables):
                                                 expiry=1)
     arguments = cli()
     folder_sas(args=arguments)
-
-
-def test_folder_sas_urls_integration_output_contents(variables):
-    contents = open(variables.output_file, 'r').readlines()
-    assert contents[0]\
+    contents = read_contents(output_file=variables.output_file)
+    assert contents[0] \
         .startswith(f'https://{variables.account_name}.blob.core.windows.net/{variables.container_name}/')
 
 
+def test_folder_sas_urls_integration_output_length(variables):
+    contents = read_contents(output_file=variables.output_file)
+    assert len(contents) == 3
+
+
+def test_container_sas(variables):
+    variables.sas_urls = AzureContainerSAS.container_sas(container_client=variables.container_client,
+                                                         account_name=variables.account_name,
+                                                         container_name=variables.container_name,
+                                                         account_key=variables.account_key,
+                                                         expiry=1,
+                                                         sas_urls=dict())
+    assert len(variables.sas_urls) == 7
+
+
+@patch('argparse.ArgumentParser.parse_args')
+def test_container_sas_integration(mock_args, variables):
+    delete_output_file(output_file=variables.output_file)
+    mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                account_name=variables.account_name,
+                                                container_name=variables.container_name,
+                                                verbosity='info',
+                                                output_file=variables.output_file,
+                                                expiry=1)
+    arguments = cli()
+    container_sas(args=arguments)
+    contents = read_contents(output_file=variables.output_file)
+    assert len(contents) == 7
+
+
 def test_delete_output_file(variables):
-    os.remove(variables.output_file)
-    assert not os.path.isfile(variables.output_file)
+    delete_output_file(output_file=variables.output_file)

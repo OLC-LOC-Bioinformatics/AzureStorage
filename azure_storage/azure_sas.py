@@ -32,8 +32,7 @@ class AzureContainerSAS(object):
         # Return to the requested logging level, as it has been increased to WARNING to suppress the log being
         # filled with information from azure.core.pipeline.policies.http_logging_policy
         coloredlogs.install(level=self.verbosity.upper())
-        write_sas(verbosity=self.verbosity,
-                  output_file=self.output_file,
+        write_sas(output_file=self.output_file,
                   sas_urls=self.sas_urls)
         # Write the SAS URLs to the output file
         write_sas(output_file=self.output_file,

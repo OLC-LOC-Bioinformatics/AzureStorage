@@ -6,6 +6,7 @@ import datetime
 import logging
 import getpass
 import keyring
+import pathlib
 import azure
 import time
 import os
@@ -453,6 +454,10 @@ def move_prep(passphrase, account_name, container_name, target_container):
     :return: source_container_client: type azure.storage.blob.BlobServiceClient.ContainerClient for source container
     :return: target_container_client: type azure.storage.blob.BlobServiceClient.ContainerClient for target container
     """
+    # Validate the container names
+    container_name = validate_container_name(container_name=container_name)
+    target_container = validate_container_name(container_name=target_container,
+                                               object_type='target container')
     # Extract the connection string from the system keyring
     connect_str = extract_connection_string(passphrase=passphrase,
                                             account_name=account_name)
@@ -467,10 +472,11 @@ def move_prep(passphrase, account_name, container_name, target_container):
     except azure.core.exceptions.ResourceExistsError:
         target_container_client = create_container_client(blob_service_client=blob_service_client,
                                                           container_name=target_container)
-    return blob_service_client, source_container_client, target_container_client
+    return container_name, target_container, blob_service_client, source_container_client, target_container_client
 
 
-def copy_blob(blob_file, blob_service_client, container_name, target_container, path, object_name=None, category=None):
+def copy_blob(blob_file, blob_service_client, container_name, target_container, path, object_name=None, category=None,
+              common_path=None):
     """
     Copy a blob from one container to another
     :param blob_file: type iterable from azure.storage.blob.BlobServiceClient.ContainerClient.list_blobs
@@ -480,6 +486,7 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     :param path: type str: Path of folders in which the files are to be placed
     :param object_name: type str: Name and path of file/folder to download from Azure storage
     :param category: type str: Category of object to be copied. Limited to file or folder
+    :param common_path: type str: Calculated common path between the specified file/folder and the blob_file.name
     """
     # Create the blob client
     blob_client = create_blob_client(blob_service_client=blob_service_client,
@@ -493,21 +500,35 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
         # folder structure. Logic: https://stackoverflow.com/a/14826889
         target_path = os.path.join(os.path.join(*folder_structure))
     else:
-        target_path = path
+        target_path = os.path.join(path, os.path.join(*folder_structure))
     # Set the name of file by removing any path information
     file_name = os.path.basename(blob_file.name)
     # Finally, set the name and the path of the output file
     if category is None:
-        target_file = os.path.join(target_path, file_name)
-    # If a folder is being moved, extract the common path between the blob file and the supplied folder name. Find the
-    # relative path between the blob file and the common path. Uses logic from https://stackoverflow.com/a/7288019
+        try:
+            target_file = os.path.join(path, file_name)
+        except TypeError:
+            target_file = file_name
+    # If a folder is being moved, join the path, the common path between the blob file and the supplied folder name
+    # with the file name
     else:
-        target_file = os.path.join(target_path,
-                                   os.path.relpath(blob_file.name,
-                                                   os.path.commonpath([blob_file.name, object_name])))
+        if object_name is not None:
+            try:
+                target_file = os.path.join(path, common_path, os.path.basename(blob_file.name))
+            except TypeError:
+                target_file = os.path.join(common_path, os.path.basename(blob_file.name))
+        # If a container is being moved, join the target path and the name of the directory of the blob_file to the
+        # file name
+        else:
+            # Create a pathlib.Path object from the blob file
+            file_path = pathlib.Path(blob_file.name)
+            # Determine the parental path of the file. If the file is in the root, it will be a dot. This won't work
+            # with the joining logic, so change it to ''
+            nested_path = file_path.parent if file_path.parent == '.' else ''
+            # Join the target path, nested path, and file name
+            target_file = os.path.join(target_path, nested_path, file_name)
     # Create a blob client for the target blob
-    target_blob_client = blob_service_client.get_blob_client(target_container,
-                                                             target_file)
+    target_blob_client = blob_service_client.get_blob_client(target_container, target_file)
     # Copy the source file to the target file - allow up to 1000 seconds total
     target_blob_client.start_copy_from_url(blob_client.url)
     # Ensure that the copy is complete before proceeding

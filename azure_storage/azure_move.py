@@ -4,6 +4,7 @@ from azure_storage.methods import create_parent_parser, delete_container, delete
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
+import pathlib
 import azure
 import sys
 import os
@@ -12,39 +13,47 @@ import os
 class AzureContainerMove(object):
 
     def main(self):
-        # Ensure that the target container has a valid name
-        self.target_container = validate_container_name(container_name=self.target_container,
-                                                        object_type='target container')
-        # Ensure that the target container has a valid name
-        self.target_container = validate_container_name(container_name=self.target_container)
-        # Prepare all the necessary clients
-        self.blob_service_client, self.source_container_client, self.target_container_client = move_prep(
-            passphrase=self.passphrase,
-            account_name=self.account_name,
-            container_name=self.container_name,
-            target_container=self.target_container)
-        self.rename_container()
+        # Validate the container names, and prepare all the necessary clients
+        self.container_name, self.target_container, self.blob_service_client, self.source_container_client, \
+            self.target_container_client = move_prep(
+                passphrase=self.passphrase,
+                account_name=self.account_name,
+                container_name=self.container_name,
+                target_container=self.target_container)
+        # Rename (move) the container
+        self.move_container(source_container_client=self.source_container_client,
+                            blob_service_client=self.blob_service_client,
+                            container_name=self.container_name,
+                            target_container=self.target_container,
+                            path=self.path)
         # Delete the original container once the copy is complete
         delete_container(blob_service_client=self.blob_service_client,
                          container_name=self.container_name,
                          account_name=self.account_name)
 
-    def rename_container(self):
+    @staticmethod
+    def move_container(source_container_client, blob_service_client, container_name, target_container, path):
         """
-        Rename the container in Azure storage
+        Rename (move) the specified container in Azure storage
+        :param source_container_client: type azure.storage.blob.BlobServiceClient.ContainerClient for source container
+        :param blob_service_client: type: azure.storage.blob.BlobServiceClient
+        :param container_name: type str: Name of the container in which the folder is located
+        :param target_container: type str: Name of the container into which the folder is to be moved
+        :param path: type str: Path of folders in which the files are to be placed
         """
         # Create a generator containing all the blobs in the container
-        generator = self.source_container_client.list_blobs()
+        generator = source_container_client.list_blobs()
         try:
             for blob_file in generator:
                 # Copy the file to the new container
                 copy_blob(blob_file=blob_file,
-                          blob_service_client=self.blob_service_client,
-                          container_name=self.container_name,
-                          target_container=self.target_container,
-                          path=self.path)
+                          blob_service_client=blob_service_client,
+                          container_name=container_name,
+                          target_container=target_container,
+                          path=path,
+                          category='container')
         except azure.core.exceptions.ResourceNotFoundError:
-            logging.error(f' The specified container, {self.container_name}, does not exist.')
+            logging.error(f' The specified container, {container_name}, does not exist.')
 
     def __init__(self, container_name, account_name, passphrase, target_container, path):
         # Set the container name variable
@@ -63,29 +72,34 @@ class AzureContainerMove(object):
 class AzureMove(object):
 
     def main(self):
-        # Ensure that the target container has a valid name
-        self.target_container = validate_container_name(container_name=self.target_container,
-                                                        object_type='target container')
-        # Ensure that the supplied path is valid
-        if self.path:
-            self.path = validate_container_name(container_name=self.path,
-                                                object_type='target path')
-        # Prepare all the necessary clients
-        self.blob_service_client, self.source_container_client, self.target_container_client = move_prep(
-            passphrase=self.passphrase,
-            account_name=self.account_name,
-            container_name=self.container_name,
-            target_container=self.target_container)
+        # Validate the container names, and prepare all the necessary clients
+        self.container_name, self.target_container, self.blob_service_client, self.source_container_client, \
+            self.target_container_client = move_prep(
+                passphrase=self.passphrase,
+                account_name=self.account_name,
+                container_name=self.container_name,
+                target_container=self.target_container)
         # Run the proper method depending on whether a file or a folder is requested
         if self.category == 'file':
-            self.move_file()
+            self.move_file(source_container_client=self.source_container_client,
+                           object_name=self.object_name,
+                           blob_service_client=self.blob_service_client,
+                           container_name=self.container_name,
+                           target_container=self.target_container,
+                           path=self.path)
             delete_file(container_client=self.source_container_client,
                         object_name=self.object_name,
                         blob_service_client=self.blob_service_client,
                         container_name=self.container_name,
                         account_name=self.account_name)
         elif self.category == 'folder':
-            self.move_folder()
+            self.move_folder(source_container_client=self.source_container_client,
+                             object_name=self.object_name,
+                             blob_service_client=self.blob_service_client,
+                             container_name=self.container_name,
+                             target_container=self.target_container,
+                             path=self.path,
+                             category=self.category)
             delete_folder(container_client=self.source_container_client,
                           object_name=self.object_name,
                           blob_service_client=self.blob_service_client,
@@ -95,64 +109,89 @@ class AzureMove(object):
             logging.error(f'Something is wrong. There is no {self.category} option available')
             raise SystemExit
 
-    def move_file(self):
+    @staticmethod
+    def move_file(source_container_client, object_name, blob_service_client, container_name, target_container, path):
         """
         Move the specified file to the desired container in Azure storage
+        :param source_container_client: type azure.storage.blob.BlobServiceClient.ContainerClient for source container
+        :param object_name: type str: Name and path of folder to move in Azure storage
+        :param blob_service_client: type: azure.storage.blob.BlobServiceClient
+        :param container_name: type str: Name of the container in which the folder is located
+        :param target_container: type str: Name of the container into which the folder is to be moved
+        :param path: type str: Path of folders in which the files are to be placed
         """
         # Create a generator containing all the blobs in the container
-        generator = self.source_container_client.list_blobs()
+        generator = source_container_client.list_blobs()
         # Create a boolean to determine if the blob has been located
         present = False
         try:
             for blob_file in generator:
                 # Filter for the blob name
-                if blob_file.name == self.object_name:
+                if blob_file.name == object_name:
                     # Update the blob presence variable
                     present = True
                     # Copy the file to the new container
                     copy_blob(blob_file=blob_file,
-                              blob_service_client=self.blob_service_client,
-                              container_name=self.container_name,
-                              target_container=self.target_container,
-                              path=self.path)
+                              blob_service_client=blob_service_client,
+                              container_name=container_name,
+                              target_container=target_container,
+                              path=path)
         except azure.core.exceptions.ResourceNotFoundError:
-            logging.error(f' The specified container, {self.container_name}, does not exist.')
+            logging.error(f' The specified container, {container_name}, does not exist.')
             raise SystemExit
         # Send a warning to the user that the blob could not be found
         if not present:
-            logging.error(f'Could not locate the desired file {self.object_name}')
+            logging.error(f'Could not locate the desired file {object_name}')
             raise SystemExit
 
-    def move_folder(self):
+    @staticmethod
+    def move_folder(source_container_client, object_name, blob_service_client, container_name, target_container, path,
+                    category):
         """
-        Move the specified folder to the desired container in Azure storage
+        Move the specified folder (and its contents) to the desired container in Azure storage
+        :param source_container_client: type azure.storage.blob.BlobServiceClient.ContainerClient for source container
+        :param object_name: type str: Name and path of folder to move in Azure storage
+        :param blob_service_client: type: azure.storage.blob.BlobServiceClient
+        :param container_name: type str: Name of the container in which the folder is located
+        :param target_container: type str: Name of the container into which the folder is to be moved
+        :param path: type str: Path of folders in which the files are to be placed
+        :param category: type str: Category of object to be copied. Limited to file or folder
         """
         # Create a generator containing all the blobs in the container
-        generator = self.source_container_client.list_blobs()
+        generator = source_container_client.list_blobs()
         # Create a boolean to determine if the blob has been located
         present = False
         try:
             for blob_file in generator:
-                # Create the path of the file by adding the container name to the path of the file
-                blob_path = os.path.join(self.container_name, os.path.split(blob_file.name)[0])
-                # Ensure that the supplied folder path is present in the blob path
-                if os.path.normpath(self.object_name) in os.path.normpath(blob_path):
+                # Create the pathlib.Path objects for both the folder and the blob file
+                object_path = pathlib.Path(os.path.normpath(object_name))
+                blob_path = pathlib.Path(blob_file.name).parent
+                # If there is a common path between the folder and the blob file path, then there is a match
+                try:
+                    common_path = blob_path.relative_to(object_path)
+                    # Change the dot returned by an exact match to the directory with ''
+                    common_path = common_path if str(common_path) != '.' else ''
+                except ValueError:
+                    common_path = None
+                # Only copy the file if there is a common path between the object path and the blob path (they match)
+                if common_path is not None:
                     # Update the blob presence variable
                     present = True
                     # Copy the file to the new container
                     copy_blob(blob_file=blob_file,
-                              blob_service_client=self.blob_service_client,
-                              container_name=self.container_name,
-                              target_container=self.target_container,
-                              path=self.path,
-                              object_name=self.object_name,
-                              category=self.category)
+                              blob_service_client=blob_service_client,
+                              container_name=container_name,
+                              target_container=target_container,
+                              path=path,
+                              object_name=object_name,
+                              category=category,
+                              common_path=common_path)
         except azure.core.exceptions.ResourceNotFoundError:
-            logging.error(f' The specified container, {self.container_name}, does not exist.')
+            logging.error(f' The specified container, {container_name}, does not exist.')
             raise SystemExit
         # Send a warning to the user that the blob could not be found
         if not present:
-            logging.error(f'Could not locate the desired file {self.object_name}')
+            logging.error(f'Could not locate the desired file {object_name}')
             raise SystemExit
 
     def __init__(self, object_name, container_name, account_name, passphrase, target_container, path, category):
@@ -171,7 +210,7 @@ class AzureMove(object):
         self.target_container_client = None
 
 
-def container_rename(args):
+def container_move(args):
     """
     Run the AzureContainerMove method
     :param args: type ArgumentParser arguments
@@ -182,7 +221,7 @@ def container_rename(args):
                                        account_name=args.account_name,
                                        passphrase=args.passphrase,
                                        target_container=args.target_container,
-                                       path=args.path)
+                                       path=args.reset_path)
     del_container.main()
 
 
@@ -241,7 +280,7 @@ def cli():
                                                        formatter_class=RawTextHelpFormatter,
                                                        help='Rename a container in Azure storage')
 
-    container_rename_subparser.set_defaults(func=container_rename)
+    container_rename_subparser.set_defaults(func=container_move)
     # File move subparser
     file_move_subparser = subparsers.add_parser(parents=[parent_parser],
                                                 name='file',
