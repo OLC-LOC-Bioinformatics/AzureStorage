@@ -16,8 +16,6 @@ def setup():
             self.account_name = extract_account_name(passphrase=self.passphrase)
             self.container_name = '00000container'
             self.target_container = '000000container'
-            self.test_path = os.path.abspath(os.path.dirname(__file__))
-            self.file_path = os.path.join(self.test_path, 'files')
 
     return Variables()
 
@@ -53,7 +51,7 @@ def test_move_file(variables, file_name, path):
 @pytest.mark.parametrize('file_name,path',
                          [('file_7.txt', ''),
                           ('nonexistent/file_2.txt', 'nested_2'),
-                          ('nested/file_3.txt', 'nested_folder2')])
+                          ('nested/file_3.txt', 'nested_folder_2')])
 def test_move_file_invalid(variables, file_name, path):
     with pytest.raises(SystemExit):
         AzureMove.move_file(source_container_client=variables.source_container_client,
@@ -105,3 +103,51 @@ def test_move_container(variables):
     blobs = variables.target_container_client.list_blobs()
     assert os.path.join(path, 'file_2.txt') in [blob.name for blob in blobs]
 
+
+@patch('argparse.ArgumentParser.parse_args')
+def test_move_file_integration(mock_args, variables):
+    file_name = 'file_1.txt'
+    reset_path = 'file_integration'
+    mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                account_name=variables.account_name,
+                                                container_name=variables.container_name,
+                                                target_container=variables.target_container,
+                                                reset_path=reset_path,
+                                                verbosity='info',
+                                                file=file_name)
+    arguments = cli()
+    file_move(arguments)
+    blobs = variables.target_container_client.list_blobs()
+    assert os.path.join(reset_path, file_name) in [blob.name for blob in blobs]
+
+
+@patch('argparse.ArgumentParser.parse_args')
+def test_move_folder_integration(mock_args, variables):
+    folder_name = 'nested_folder_5'
+    reset_path = 'folder_integration'
+    mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                account_name=variables.account_name,
+                                                container_name=variables.container_name,
+                                                target_container=variables.target_container,
+                                                reset_path=reset_path,
+                                                verbosity='info',
+                                                folder=folder_name)
+    arguments = cli()
+    folder_move(arguments)
+    blobs = variables.target_container_client.list_blobs()
+    assert os.path.join(reset_path, 'nested_folder_test_1.txt') in [blob.name for blob in blobs]
+
+
+@patch('argparse.ArgumentParser.parse_args')
+def test_move_container_integration(mock_args, variables):
+    reset_path = 'container_integration'
+    mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                account_name=variables.account_name,
+                                                container_name=variables.container_name,
+                                                target_container=variables.target_container,
+                                                reset_path=reset_path,
+                                                verbosity='info')
+    arguments = cli()
+    container_move(arguments)
+    blobs = variables.target_container_client.list_blobs()
+    assert os.path.join(reset_path, 'nested_file_1.txt') in [blob.name for blob in blobs]

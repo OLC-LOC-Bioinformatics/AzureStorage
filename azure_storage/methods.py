@@ -309,7 +309,19 @@ def create_container(blob_service_client, container_name):
     :param container_name: type str: Name of the container of interest
     :return: container_client: type azure.storage.blob.BlobServiceClient.ContainerClient
     """
-    container_client = blob_service_client.create_container(container_name)
+    try:
+        container_client = blob_service_client.create_container(container_name)
+    except azure.core.exceptions.ResourceExistsError as e:
+        if 'The specified container already exists.' in str(e):
+            container_client = create_container_client(blob_service_client=blob_service_client,
+                                                       container_name=container_name)
+        elif 'The specified container is being deleted. Try operation later.' in str(e):
+            logging.error(f'Could not create the requested container {container_name}. As it has recently been '
+                          f'deleted, please try again in a few moments')
+            raise SystemExit
+        else:
+            logging.error(f'Could not create container {container_name}')
+            raise SystemExit
     return container_client
 
 
@@ -368,6 +380,30 @@ def create_blob_sas(blob_file, account_name, container_name, account_key, expiry
                                          blob_name=blob_file.name,
                                          sas_token=sas_token)
     return sas_urls
+
+
+def client_prep(container_name, passphrase, account_name):
+    """
+    Validate the container name, and prepare the necessary clients
+    :param container_name: type str: Name of the container of interest
+    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
+    :param account_name: type str: Name of the Azure storage account
+    :return: container_name: Validated container name
+    :return: connect_str: String of the connection string
+    :return: blob_service_client: azure.storage.blob.BlobServiceClient
+    :return: container_client: azure.storage.blob.BlobServiceClient.ContainerClient
+    """
+    # Validate the container name
+    container_name = validate_container_name(container_name=container_name)
+    # Extract the connection string from the system keyring
+    connect_str = extract_connection_string(passphrase=passphrase,
+                                            account_name=account_name)
+    # Create the blob service client using the connection string
+    blob_service_client = create_blob_service_client(connect_str=connect_str)
+    # Create the container client for the desired container with the blob service client
+    container_client = create_container_client(blob_service_client=blob_service_client,
+                                               container_name=container_name)
+    return container_name, connect_str, blob_service_client, container_client
 
 
 def sas_prep(container_name, passphrase, account_name):

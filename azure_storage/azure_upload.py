@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from azure_storage.methods import create_blob_client, create_container, create_container_client, \
+from azure_storage.methods import client_prep, create_blob_client, create_container, create_container_client, \
     create_blob_service_client, create_parent_parser, extract_connection_string, setup_arguments, \
     validate_container_name
 from argparse import ArgumentParser, RawTextHelpFormatter
@@ -13,12 +13,10 @@ import os
 class AzureUpload(object):
 
     def main(self):
-        self.container_name = validate_container_name(container_name=self.container_name)
-        self.connect_str = extract_connection_string(passphrase=self.passphrase,
-                                                     account_name=self.account_name)
-        self.blob_service_client = create_blob_service_client(connect_str=self.connect_str)
-        self.container_client = create_container_client(blob_service_client=self.blob_service_client,
-                                                        container_name=self.container_name)
+        self.container_name, self.connect_str, self.blob_service_client, self.container_client = \
+            client_prep(container_name=self.container_name,
+                        passphrase=self.passphrase,
+                        account_name=self.account_name)
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
         # Run the proper method depending on whether a file or a folder is requested

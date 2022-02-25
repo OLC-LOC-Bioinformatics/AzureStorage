@@ -13,7 +13,7 @@ def setup():
             self.account_name = extract_account_name(passphrase=self.passphrase)
             self.connection_string = extract_connection_string(passphrase=self.passphrase,
                                                                account_name=self.account_name)
-            self.container_name = '00000container'
+            self.container_name = '000000container'
             self.blob_service_client = create_blob_service_client(connect_str=self.connection_string)
             self.test_path = os.path.abspath(os.path.dirname(__file__))
             self.file_path = os.path.join(self.test_path, 'files')
