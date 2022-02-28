@@ -94,6 +94,80 @@ def test_download_file_integration_missing(mock_args, variables):
         file_download(arguments)
 
 
+@pytest.mark.parametrize('folder_name,check_file',
+                         [('container_integration/', 'file_2.txt'),
+                          ('nested_container/nested_folder/nested_folder_2', 'nested_folder_test_1.txt'),
+                          ('ABC/123/', 'nested_folder_test_1.txt')])
+def test_download_folder(variables, folder_name, check_file):
+    output_path = os.path.join(variables.output_path, 'folders')
+    os.makedirs(output_path, exist_ok=True)
+    AzureDownload.download_folder(container_client=variables.container_client,
+                                  blob_service_client=variables.blob_service_client,
+                                  container_name=variables.container_name,
+                                  object_name=folder_name,
+                                  output_path=output_path)
+    assert os.path.isfile(os.path.join(output_path, folder_name, os.path.basename(check_file)))
+
+
+@pytest.mark.parametrize('folder_name',
+                         ['container-integration/',
+                          'nested_container/nested_folder_1/nested_folder_2',
+                          'ABC/1234/'])
+def test_download_folder_invalid(variables, folder_name):
+    output_path = os.path.join(variables.output_path, 'folders')
+    with pytest.raises(SystemExit):
+        AzureDownload.download_folder(container_client=variables.container_client,
+                                      blob_service_client=variables.blob_service_client,
+                                      container_name=variables.container_name,
+                                      object_name=folder_name,
+                                      output_path=output_path)
+
+
+@patch('argparse.ArgumentParser.parse_args')
+def test_download_folder_integration(mock_args, variables):
+    output_path = os.path.join(variables.output_path, 'folder_integration')
+    folder_name = 'container_integration/nested_folder'
+    mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                account_name=variables.account_name,
+                                                container_name=variables.container_name,
+                                                output_path=output_path,
+                                                verbosity='info',
+                                                folder=folder_name)
+    arguments = cli()
+    folder_download(arguments)
+    assert os.path.isfile(os.path.join(output_path, folder_name, 'folder_test_1.txt'))
+
+
+@patch('argparse.ArgumentParser.parse_args')
+def test_download_folder_integration_missing(mock_args, variables):
+    output_path = os.path.join(variables.output_path, 'folder_integration')
+    folder_name = 'container_integration/nested_folder_3'
+    with pytest.raises(SystemExit):
+        mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                    account_name=variables.account_name,
+                                                    container_name=variables.container_name,
+                                                    output_path=output_path,
+                                                    verbosity='info',
+                                                    folder=folder_name)
+        arguments = cli()
+        folder_download(arguments)
+
+
+@patch('argparse.ArgumentParser.parse_args')
+def test_download_container_integration(mock_args, variables):
+    output_path = os.path.join(variables.output_path, 'container_integration')
+    os.makedirs(output_path, exist_ok=True)
+    mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                account_name=variables.account_name,
+                                                container_name=variables.container_name,
+                                                output_path=output_path,
+                                                verbosity='info')
+    arguments = cli()
+    container_download(arguments)
+    assert os.path.isfile(os.path.join(output_path, variables.container_name,
+                                       'container_integration/single_nested/triple_nested_file.txt'))
+
+
 def test_remove_downloads(variables):
     shutil.rmtree(variables.output_path)
     assert not os.path.isdir(variables.output_path)

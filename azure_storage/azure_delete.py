@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from azure_storage.methods import create_container_client, create_blob_service_client, create_parent_parser, \
-    delete_container, delete_file, delete_folder, extract_connection_string, setup_arguments, set_blob_retention_policy
+from azure_storage.methods import client_prep, create_parent_parser, delete_container, delete_file, \
+    delete_folder, setup_arguments, set_blob_retention_policy
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
@@ -11,9 +11,10 @@ import os
 class AzureContainerDelete(object):
 
     def main(self):
-        self.connect_str = extract_connection_string(passphrase=self.passphrase,
-                                                     account_name=self.account_name)
-        self.blob_service_client = create_blob_service_client(connect_str=self.connect_str)
+        self.container_name, self.connect_str, self.blob_service_client, container_client = \
+            client_prep(container_name=self.container_name,
+                        passphrase=self.passphrase,
+                        account_name=self.account_name)
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
         delete_container(blob_service_client=self.blob_service_client,
@@ -33,11 +34,10 @@ class AzureContainerDelete(object):
 class AzureDelete(object):
 
     def main(self):
-        self.connect_str = extract_connection_string(passphrase=self.passphrase,
-                                                     account_name=self.account_name)
-        self.blob_service_client = create_blob_service_client(connect_str=self.connect_str)
-        self.container_client = create_container_client(blob_service_client=self.blob_service_client,
-                                                        container_name=self.container_name)
+        self.container_name, self.connect_str, self.blob_service_client, self.container_client = \
+            client_prep(container_name=self.container_name,
+                        passphrase=self.passphrase,
+                        account_name=self.account_name)
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
         # Set the file retention policy
@@ -68,6 +68,13 @@ class AzureDelete(object):
         self.passphrase = passphrase
         self.account_name = account_name
         self.retention_time = retention_time
+        # Ensure that the retention time provided is valid
+        try:
+            assert 0 < self.retention_time < 366
+        except AssertionError:
+            logging.error(f'The provided retention time ({self.retention_time}) is invalid. '
+                          f'It must be between 1 and 365 days')
+            raise SystemExit
         self.category = category
         self.connect_str = str()
         self.blob_service_client = None
@@ -123,12 +130,12 @@ def cli():
     # Create the parental parser, and the subparser
     subparsers, parent_parser = create_parent_parser(parser=parser)
     # Container delete subparser
-    container_rename_subparser = subparsers.add_parser(parents=[parent_parser],
+    container_delete_subparser = subparsers.add_parser(parents=[parent_parser],
                                                        name='container',
                                                        description='Delete a container in Azure storage',
                                                        formatter_class=RawTextHelpFormatter,
                                                        help='Delete a container in Azure storage')
-    container_rename_subparser.set_defaults(func=container_delete)
+    container_delete_subparser.set_defaults(func=container_delete)
     # File delete subparser
     file_delete_subparser = subparsers.add_parser(parents=[parent_parser],
                                                   name='file',
@@ -143,7 +150,8 @@ def cli():
     file_delete_subparser.add_argument('-r', '--retention_time',
                                        type=int,
                                        default=8,
-                                       help='Retention time for deleted files. Default is 8 days')
+                                       help='Retention time for deleted files. Default is 8 days. Must be between '
+                                            '1 and 365')
     file_delete_subparser.set_defaults(func=file_delete)
     # Folder delete subparser
     folder_delete_subparser = subparsers.add_parser(parents=[parent_parser],

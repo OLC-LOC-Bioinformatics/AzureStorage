@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from azure_storage.methods import create_parent_parser, delete_container, delete_file, delete_folder, copy_blob, \
-     move_prep, setup_arguments, validate_container_name
+     move_prep, setup_arguments
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging

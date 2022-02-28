@@ -1,7 +1,5 @@
 #!/usr/bin/env python
-from azure_storage.methods import create_container_client, create_blob_service_client, create_blob_sas, \
-    create_parent_parser, extract_account_key, extract_connection_string, sas_prep, setup_arguments, \
-    write_sas, validate_container_name
+from azure_storage.methods import create_blob_sas, create_parent_parser, sas_prep, setup_arguments, write_sas
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging

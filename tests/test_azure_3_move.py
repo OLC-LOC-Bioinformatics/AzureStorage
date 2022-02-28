@@ -36,7 +36,7 @@ def test_move_prep(variables):
                           ('nested_folder/folder_test_1.txt', ''),
                           ('nested_folder/nested_folder_2/nested_folder_test_1.txt', 'ABC'),
                           ('nested_folder/nested_folder_2/nested_folder_test_1.txt', 'ABC/123'),
-                          ('nested/file_2.txt', 'nested_folder2')])
+                          ('nested/file_2.txt', 'nested_folder_2')])
 def test_move_file(variables, file_name, path):
     AzureMove.move_file(source_container_client=variables.source_container_client,
                         object_name=file_name,
