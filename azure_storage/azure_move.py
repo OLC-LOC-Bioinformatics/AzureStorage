@@ -282,9 +282,9 @@ def cli():
     subparsers, parent_parser = create_parent_parser(parser=parser)
     parent_parser.add_argument('-t', '--target_container',
                                required=True,
-                               help='The target container to which the file is to be moved (this can be the same as '
-                                    'the container_name if you want to move a file/folder within a container)'
-                                    'e.g. sequence_data')
+                               help='The target container to which the container/file/folder is to be moved '
+                                    '(this can be the same as the container_name if you want to move a file/folder'
+                                    ' within a container')
     parent_parser.add_argument('-r', '--reset_path',
                                type=str,
                                help='Set the path of the container/file/folder within a folder in the target container '
@@ -296,20 +296,19 @@ def cli():
                                choices=['Hot', 'Cool', 'Archive'],
                                help='Set the storage tier for the container/file/folder to be moved. '
                                     'Options are "Hot", "Cool", and "Archive". Default is Hot')
-    # Container rename subparser
-    container_rename_subparser = subparsers.add_parser(parents=[parent_parser],
-                                                       name='container',
-                                                       description='Rename a container in Azure storage',
-                                                       formatter_class=RawTextHelpFormatter,
-                                                       help='Rename a container in Azure storage')
-    container_rename_subparser.set_defaults(func=container_move)
+    # Container move subparser
+    container_move_subparser = subparsers.add_parser(parents=[parent_parser],
+                                                     name='container',
+                                                     description='Move a container in Azure storage',
+                                                     formatter_class=RawTextHelpFormatter,
+                                                     help='Move a container in Azure storage')
+    container_move_subparser.set_defaults(func=container_move)
     # File move subparser
     file_move_subparser = subparsers.add_parser(parents=[parent_parser],
                                                 name='file',
-                                                description='Move a file in Azure storage from one container to '
-                                                            'another',
+                                                description='Move a file within Azure storage',
                                                 formatter_class=RawTextHelpFormatter,
-                                                help='Move a file in Azure storage from one container to another')
+                                                help='Move a file within Azure storage')
     file_move_subparser.add_argument('-f', '--file',
                                      type=str,
                                      required=True,
@@ -319,10 +318,9 @@ def cli():
     # Folder move subparser
     folder_move_subparser = subparsers.add_parser(parents=[parent_parser],
                                                   name='folder',
-                                                  description='Move a folder in Azure storage from one container to '
-                                                              'another',
+                                                  description='Move a folder within Azure storage',
                                                   formatter_class=RawTextHelpFormatter,
-                                                  help='Move a folder in Azure storage from one container to another')
+                                                  help='Move a folder within Azure storage')
     folder_move_subparser.add_argument('-f', '--folder',
                                        type=str,
                                        required=True,

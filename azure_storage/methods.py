@@ -29,7 +29,10 @@ def create_parent_parser(parser, container=True):
                                    required=True,
                                    type=str,
                                    default=str(),
-                                   help='Name of the Azure storage container')
+                                   help='Name of the Azure storage container. Note that container names must be '
+                                        'lowercase, between 3 and 63 characters, start with a letter or number, and '
+                                        'can contain only letters, numbers, and the dash (-) character. Consecutive '
+                                        'dashes are not permitted.')
     parent_parser.add_argument('-a', '--account_name',
                                required=True,
                                type=str,
@@ -520,6 +523,7 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     :param blob_service_client: type: azure.storage.blob.BlobServiceClient
     :param target_container: type str: Name of the new container into which the file is to be copied
     :param path: type str: Path of folders in which the files are to be placed
+    :param storage_tier: type str: Storage tier to use for the copied file/folder
     :param object_name: type str: Name and path of file/folder to download from Azure storage
     :param category: type str: Category of object to be copied. Limited to file or folder
     :param common_path: type str: Calculated common path between the specified file/folder and the blob_file.name

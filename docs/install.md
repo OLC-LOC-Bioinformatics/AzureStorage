@@ -18,7 +18,7 @@ You can now install the AzureStorage package:
 
 `conda install -c olc-bioinformatics azure-storage`
 
-#### Credentials 
+### Credentials 
 
 You must enter your Azure storage connection string and account name into the system keyring before running any of the other scripts
 

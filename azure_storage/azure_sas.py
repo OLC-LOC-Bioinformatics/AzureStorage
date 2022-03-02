@@ -315,50 +315,52 @@ def folder_sas(args):
 
 
 def cli():
-    parser = ArgumentParser(description='Create shared access signatures (SAS) for containers/files/folders from Azure '
-                                        'storage. Note that each file in the container/folder has to be downloaded '
-                                        'separately, so if there are 1000 files in the container, 1000 SAS will be '
-                                        'provided')
+    parser = ArgumentParser(description='Create shared access signatures (SAS) URLs for containers/files/folders in '
+                                        'Azure storage. Note that each file in a container/folder has to be downloaded '
+                                        'separately, so if there are 1000 files in the container, 1000 SAS URLs will '
+                                        'be provided')
     # Create the parental parser, and the subparser
     subparsers, parent_parser = create_parent_parser(parser=parser)
     parent_parser.add_argument('-e', '--expiry',
                                default=10,
                                type=int,
-                               help='The number of days that the SAS will be valid. The minimum is 1, and the maximum '
-                                    'is 365. The default is 10.')
+                               help='The number of days that the SAS URL will be valid. The minimum is 1, and the '
+                                    'maximum is 365. The default is 10.')
     parent_parser.add_argument('-o', '--output_file',
                                default=os.path.join(os.getcwd(), 'sas.txt'),
-                               help='Name and path of file in which the SAS are to be saved. Default is $CWD/sas.txt')
+                               help='Name and path of file in which the SAS URLs are to be saved. '
+                                    'Default is $CWD/sas.txt')
     # Container SAS subparser
     container_subparser = subparsers.add_parser(parents=[parent_parser],
                                                 name='container',
-                                                description='Create SAS for all files in a container in Azure storage',
+                                                description='Create SAS URLs for all files in a container in Azure '
+                                                            'storage',
                                                 formatter_class=RawTextHelpFormatter,
-                                                help='Create SAS for all files in a container in Azure storage')
+                                                help='Create SAS URLs for all files in a container in Azure storage')
     container_subparser.set_defaults(func=container_sas)
     # File SAS subparser
     file_subparser = subparsers.add_parser(parents=[parent_parser],
                                            name='file',
-                                           description='Create a SAS for a file in Azure storage',
+                                           description='Create a SAS URL for a file in Azure storage',
                                            formatter_class=RawTextHelpFormatter,
-                                           help='Create a SAS for a file in Azure storage')
+                                           help='Create a SAS URL for a file in Azure storage')
     file_subparser.add_argument('-f', '--file',
                                 type=str,
                                 required=True,
-                                help='Path of file in Azure storage from which a SAS is to be created. Note that this '
-                                     'DOES NOT include the container name e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz')
+                                help='Path of file in Azure storage from which a SAS URL is to be created. '
+                                     'e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz')
     file_subparser.set_defaults(func=file_sas)
     # Folder SAS subparser
     folder_subparser = subparsers.add_parser(parents=[parent_parser],
                                              name='folder',
-                                             description='Create SAS for all files in a folder in Azure storage',
+                                             description='Create SAS URLs for all files in a folder in Azure storage',
                                              formatter_class=RawTextHelpFormatter,
-                                             help='Create SAS for all files in a folder in Azure storage')
+                                             help='Create SAS URLs for all files in a folder in Azure storage')
     folder_subparser.add_argument('-f', '--folder',
                                   type=str,
                                   required=True,
-                                  help='Name of the folder for which SAS are to be created for all files. Note that '
-                                       'this DOES NOT include the container name e.g. InterOp')
+                                  help='Name of the folder for which SAS URLs are to be created for all files. '
+                                       'e.g. InterOp')
     folder_subparser.set_defaults(func=folder_sas)
     # Set up the arguments, and run the appropriate subparser
     arguments = setup_arguments(parser=parser)
