@@ -123,7 +123,7 @@ class AzureDownload(object):
         for blob_file in generator:
             # Filter for the blob name
             if blob_file.name == object_name:
-                # Update the blob presence variable
+                # Update the file presence variable
                 present = True
                 # Create the blob client
                 blob_client = create_blob_client(blob_service_client=blob_service_client,
@@ -137,7 +137,7 @@ class AzureDownload(object):
                 with open(download_file, 'wb') as downloaded_file:
                     # Write the data from the blob client to the local file
                     downloaded_file.write(blob_client.download_blob().readall())
-        # Send an error to the user that the blob could not be found
+        # Send an error to the user that the file could not be found
         if not present:
             logging.error(f'Could not locate the desired file {object_name} in {container_name}')
             raise SystemExit
@@ -275,9 +275,8 @@ def cli():
     file_subparser.add_argument('-f', '--file',
                                 type=str,
                                 required=True,
-                                help='Path of blob file to download from Azure storage. Note that this includes'
-                                     'the container name '
-                                     'e.g. 220202-m05722/2022-SEQ-0001_S1_L001_R1_001.fastq.gz')
+                                help='Name of file to download from Azure storage.'
+                                     'e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz')
     file_subparser.set_defaults(func=file_download)
     # Folder downloading subparser
     folder_subparser = subparsers.add_parser(parents=[parent_parser],
@@ -288,8 +287,7 @@ def cli():
     folder_subparser.add_argument('-f', '--folder',
                                   type=str,
                                   required=True,
-                                  help='Name of the container and folder to download from Azure storage '
-                                       'e.g. sequencing-runs/220202-m05722/InterOp')
+                                  help='Name of the folder to download from Azure storage e.g. InterOp')
     folder_subparser.set_defaults(func=folder_download)
     # Set up the arguments, and run the appropriate subparser
     arguments = setup_arguments(parser=parser)

@@ -146,7 +146,7 @@ class AzureSAS(object):
     @staticmethod
     def file_sas(container_client, account_name, container_name, object_name, account_key, expiry, sas_urls):
         """
-        Create a SAS URL for the specified file from Azure storage
+        Create a SAS URL for the specified file in Azure storage
         :param container_client: type azure.storage.blob.BlobServiceClient.ContainerClient
         :param account_name: type str: Name of the Azure storage account
         :param container_name: type str: Name of the container of interest

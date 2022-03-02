@@ -511,8 +511,8 @@ def move_prep(passphrase, account_name, container_name, target_container):
     return container_name, target_container, blob_service_client, source_container_client, target_container_client
 
 
-def copy_blob(blob_file, blob_service_client, container_name, target_container, path, object_name=None, category=None,
-              common_path=None):
+def copy_blob(blob_file, blob_service_client, container_name, target_container, path, storage_tier,
+              object_name=None, category=None, common_path=None):
     """
     Copy a blob from one container to another
     :param blob_file: type iterable from azure.storage.blob.BlobServiceClient.ContainerClient.list_blobs
@@ -567,6 +567,8 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     target_blob_client = blob_service_client.get_blob_client(target_container, target_file)
     # Copy the source file to the target file - allow up to 1000 seconds total
     target_blob_client.start_copy_from_url(blob_client.url)
+    # Set the storage tier
+    target_blob_client.set_standard_blob_tier(standard_blob_tier=storage_tier)
     # Ensure that the copy is complete before proceeding
     for i in range(100):
         # Extract the properties of the target blob client

@@ -26,7 +26,8 @@ class AzureUpload(object):
                                  blob_service_client=self.blob_service_client,
                                  container_name=self.container_name,
                                  account_name=self.account_name,
-                                 path=self.path)
+                                 path=self.path,
+                                 storage_tier=self.storage_tier)
             except azure.core.exceptions.ResourceNotFoundError:
                 self.container_client = create_container(blob_service_client=self.blob_service_client,
                                                          container_name=self.container_name)
@@ -34,14 +35,16 @@ class AzureUpload(object):
                                  blob_service_client=self.blob_service_client,
                                  container_name=self.container_name,
                                  account_name=self.account_name,
-                                 path=self.path)
+                                 path=self.path,
+                                 storage_tier=self.storage_tier)
         elif self.category == 'folder':
             try:
                 self.upload_folder(object_name=self.object_name,
                                    blob_service_client=self.blob_service_client,
                                    container_name=self.container_name,
                                    account_name=self.account_name,
-                                   path=self.path)
+                                   path=self.path,
+                                   storage_tier=self.storage_tier)
             except azure.core.exceptions.ResourceNotFoundError:
                 self.container_client = create_container(blob_service_client=self.blob_service_client,
                                                          container_name=self.container_name)
@@ -49,13 +52,14 @@ class AzureUpload(object):
                                    blob_service_client=self.blob_service_client,
                                    container_name=self.container_name,
                                    account_name=self.account_name,
-                                   path=self.path)
+                                   path=self.path,
+                                   storage_tier=self.storage_tier)
         else:
             logging.error(f'Something is wrong. There is no {self.category} option available')
             raise SystemExit
 
     @staticmethod
-    def upload_file(object_name, blob_service_client, container_name, account_name, path):
+    def upload_file(object_name, blob_service_client, container_name, account_name, path, storage_tier):
         """
         Upload a single file to Azure storage
         :param object_name: type str: Name and path of file/folder to download from Azure storage
@@ -63,6 +67,7 @@ class AzureUpload(object):
         :param container_name: type str: Name of the container of interest
         :param account_name: type str: Name of the Azure storage account
         :param path: type str: Path of folders in which the files are to be placed
+        :param storage_tier: type str: Storage tier to use for the file
         """
         # Extract the name of the file from the provided name, as it may include the path
         file_name = os.path.basename(object_name)
@@ -78,6 +83,8 @@ class AzureUpload(object):
             with open(object_name, "rb") as data:
                 # Upload the file data to the blob
                 blob_client.upload_blob(data)
+                # Set the storage tier
+                blob_client.set_standard_blob_tier(standard_blob_tier=storage_tier)
         # If a file with that name already exists in that container, warn the user
         except azure.core.exceptions.ResourceExistsError:
             logging.warning(f'The file {file_name} already exists in container {container_name} in '
@@ -97,7 +104,7 @@ class AzureUpload(object):
             raise SystemExit
 
     @staticmethod
-    def upload_folder(object_name, blob_service_client, container_name, account_name, path):
+    def upload_folder(object_name, blob_service_client, container_name, account_name, path, storage_tier):
         """
         Upload all the files (and sub-folders as applicable) in the specified folder to Azure storage
         :param object_name: type str: Name and path of file/folder to download from Azure storage
@@ -105,6 +112,7 @@ class AzureUpload(object):
         :param container_name: type str: Name of the container of interest
         :param account_name: type str: Name of the Azure storage account
         :param path: type str: Path of folders in which the files are to be placed
+        :param storage_tier: type str: Storage tier to use for the folder
         """
         # Use os.walk to find all the files and folders in the supplied directory
         for root, dirs, files in os.walk(object_name):
@@ -148,6 +156,8 @@ class AzureUpload(object):
                     with open(os.path.join(local_file), "rb") as data:
                         # Upload the file to Azure storage
                         blob_client.upload_blob(data)
+                        # Set the storage tier
+                        blob_client.set_standard_blob_tier(standard_blob_tier=storage_tier)
                 # Print a warning if a file with that name already exists in the specified container
                 except azure.core.exceptions.ResourceExistsError:
                     logging.warning(f'The file {local_file} already exists in container {container_name} '
@@ -157,7 +167,7 @@ class AzureUpload(object):
                                   f'supplied name and path are correct.')
                     raise SystemExit
 
-    def __init__(self, object_name, container_name, account_name, passphrase, path, category):
+    def __init__(self, object_name, container_name, account_name, passphrase, path, storage_tier, category):
         # Set the name of the file/folder to upload
         self.object_name = object_name
         if category == 'file':
@@ -177,6 +187,7 @@ class AzureUpload(object):
         self.account_name = account_name
         self.container_name = container_name
         self.path = path
+        self.storage_tier = storage_tier
         self.category = category
         self.connect_str = str()
         self.blob_service_client = None
@@ -197,6 +208,7 @@ def file_upload(args):
                                 container_name=args.container_name,
                                 passphrase=args.passphrase,
                                 path=args.reset_path,
+                                storage_tier=args.storage_tier,
                                 category='file')
     file_uploader.main()
 
@@ -213,6 +225,7 @@ def folder_upload(args):
                                   container_name=args.container_name,
                                   passphrase=args.passphrase,
                                   path=args.reset_path,
+                                  storage_tier=args.storage_tier,
                                   category='folder')
     folder_uploader.main()
 
@@ -226,6 +239,12 @@ def cli():
                                help='Set the path of the file/folder within a folder in the target container '
                                     'e.g. sequence_data/220202-m05722. If you want to place it directly in the '
                                     'container without any nesting, use "" or \'\'')
+    parent_parser.add_argument('-s', '--storage_tier',
+                               type=str,
+                               default='Hot',
+                               choices=['Hot', 'Cool', 'Archive'],
+                               help='Set the storage tier for the file/folder to be uploaded. Options are "Hot", '
+                                    '"Cool", and "Archive". Default is Hot')
     # File upload subparser
     file_subparser = subparsers.add_parser(parents=[parent_parser],
                                            name='file',

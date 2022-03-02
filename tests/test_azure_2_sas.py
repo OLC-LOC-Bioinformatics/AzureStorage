@@ -189,7 +189,7 @@ def test_container_sas(variables):
                                                          account_key=variables.account_key,
                                                          expiry=1,
                                                          sas_urls=dict())
-    assert len(variables.sas_urls) == 7
+    assert len(variables.sas_urls) == 8
 
 
 @patch('argparse.ArgumentParser.parse_args')
@@ -204,7 +204,7 @@ def test_container_sas_integration(mock_args, variables):
     arguments = cli()
     container_sas(args=arguments)
     contents = read_contents(output_file=variables.output_file)
-    assert len(contents) == 7
+    assert len(contents) == 8
 
 
 def test_delete_output_file(variables):

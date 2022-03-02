@@ -10,6 +10,7 @@ setup(
             'AzureDelete = azure_storage.azure_delete:cli',
             'AzureUpload = azure_storage.azure_upload:cli',
             'AzureMove = azure_storage.azure_move:cli',
+            'AzureTier = azure_storage.azure_tier:cli',
             'AzureSAS = azure_storage.azure_sas:cli'
         ],
     },

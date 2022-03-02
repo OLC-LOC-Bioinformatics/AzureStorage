@@ -16,6 +16,7 @@ def setup():
             self.account_name = extract_account_name(passphrase=self.passphrase)
             self.container_name = '00000container'
             self.target_container = '000000container'
+            self.storage_tier = 'Hot'
 
     return Variables()
 
@@ -43,7 +44,8 @@ def test_move_file(variables, file_name, path):
                         blob_service_client=variables.blob_service_client,
                         container_name=variables.container_name,
                         target_container=variables.target_container,
-                        path=path)
+                        path=path,
+                        storage_tier=variables.storage_tier)
     blobs = variables.target_container_client.list_blobs()
     assert os.path.join(path, os.path.basename(file_name)) in [blob.name for blob in blobs]
 
@@ -59,7 +61,26 @@ def test_move_file_invalid(variables, file_name, path):
                             blob_service_client=variables.blob_service_client,
                             container_name=variables.container_name,
                             target_container=variables.target_container,
-                            path=path)
+                            path=path,
+                            storage_tier=variables.storage_tier)
+
+
+@pytest.mark.parametrize('file_name,path',
+                         [('nested_file_1.txt', ''),
+                          ('nested_folder/nested_file_2.txt', 'nested')])
+def test_move_file_cool(variables, file_name, path):
+    storage_tier = 'Cool'
+    AzureMove.move_file(source_container_client=variables.source_container_client,
+                        object_name=file_name,
+                        blob_service_client=variables.blob_service_client,
+                        container_name=variables.container_name,
+                        target_container=variables.target_container,
+                        path=path,
+                        storage_tier=storage_tier)
+    blobs = variables.target_container_client.list_blobs()
+    for blob in blobs:
+        if blob.name == os.path.join(path, file_name):
+            assert blob.blob_tier == storage_tier
 
 
 @pytest.mark.parametrize('folder_name,path,check_file',
@@ -73,9 +94,28 @@ def test_move_folder(variables, folder_name, path, check_file):
                           container_name=variables.container_name,
                           target_container=variables.target_container,
                           path=path,
+                          storage_tier=variables.storage_tier,
                           category='folder')
     blobs = variables.target_container_client.list_blobs()
     assert os.path.join(path, os.path.basename(check_file)) in [blob.name for blob in blobs]
+
+
+@pytest.mark.parametrize('folder_name,path,check_file',
+                         [('cool/nested_folder_2', '', 'nested_folder_test_1.txt'),
+                          ('cool_nested_folder_5', 'hot', 'nested_folder_test_1.txt')])
+def test_move_folder_cool(variables, folder_name, path, check_file):
+    AzureMove.move_folder(source_container_client=variables.source_container_client,
+                          object_name=folder_name,
+                          blob_service_client=variables.blob_service_client,
+                          container_name=variables.container_name,
+                          target_container=variables.target_container,
+                          path=path,
+                          storage_tier=variables.storage_tier,
+                          category='folder')
+    blobs = variables.target_container_client.list_blobs()
+    for blob in blobs:
+        if blob.name == os.path.join(path, check_file):
+            assert blob.blob_tier == variables.storage_tier
 
 
 @pytest.mark.parametrize('folder_name,path',
@@ -90,6 +130,7 @@ def test_move_folder_invalid(variables, folder_name, path):
                               container_name=variables.container_name,
                               target_container=variables.target_container,
                               path=path,
+                              storage_tier=variables.storage_tier,
                               category='folder')
 
 
@@ -99,7 +140,8 @@ def test_move_container(variables):
                                       blob_service_client=variables.blob_service_client,
                                       container_name=variables.container_name,
                                       target_container=variables.target_container,
-                                      path=path)
+                                      path=path,
+                                      storage_tier=variables.storage_tier)
     blobs = variables.target_container_client.list_blobs()
     assert os.path.join(path, 'file_2.txt') in [blob.name for blob in blobs]
 
@@ -114,11 +156,33 @@ def test_move_file_integration(mock_args, variables):
                                                 target_container=variables.target_container,
                                                 reset_path=reset_path,
                                                 verbosity='info',
-                                                file=file_name)
+                                                file=file_name,
+                                                storage_tier=variables.storage_tier)
     arguments = cli()
     file_move(arguments)
     blobs = variables.target_container_client.list_blobs()
     assert os.path.join(reset_path, file_name) in [blob.name for blob in blobs]
+
+
+@patch('argparse.ArgumentParser.parse_args')
+def test_move_file_integration_cool(mock_args, variables):
+    file_name = 'nested_file_1.txt'
+    reset_path = 'cool_file_integration'
+    storage_tier = 'Cool'
+    mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
+                                                account_name=variables.account_name,
+                                                container_name=variables.container_name,
+                                                target_container=variables.target_container,
+                                                reset_path=reset_path,
+                                                verbosity='info',
+                                                file=file_name,
+                                                storage_tier=storage_tier)
+    arguments = cli()
+    file_move(arguments)
+    blobs = variables.target_container_client.list_blobs()
+    for blob in blobs:
+        if blob.name == os.path.join(reset_path, file_name):
+            assert blob.blob_tier == storage_tier
 
 
 @patch('argparse.ArgumentParser.parse_args')
@@ -131,7 +195,8 @@ def test_move_folder_integration(mock_args, variables):
                                                 target_container=variables.target_container,
                                                 reset_path=reset_path,
                                                 verbosity='info',
-                                                folder=folder_name)
+                                                folder=folder_name,
+                                                storage_tier=variables.storage_tier)
     arguments = cli()
     folder_move(arguments)
     blobs = variables.target_container_client.list_blobs()
@@ -146,8 +211,9 @@ def test_move_container_integration(mock_args, variables):
                                                 container_name=variables.container_name,
                                                 target_container=variables.target_container,
                                                 reset_path=reset_path,
-                                                verbosity='info')
+                                                verbosity='info',
+                                                storage_tier=variables.storage_tier)
     arguments = cli()
     container_move(arguments)
     blobs = variables.target_container_client.list_blobs()
-    assert os.path.join(reset_path, 'nested_file_1.txt') in [blob.name for blob in blobs]
+    assert os.path.join(reset_path, 'double_nested_file_1.txt') in [blob.name for blob in blobs]

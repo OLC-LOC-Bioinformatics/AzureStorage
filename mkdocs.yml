@@ -1,0 +1,16 @@
+site_name: OLC Bioinformatics Azure Storage
+site_url:  https://OLC-LOC-Bioinformatics.github.io/AzureStorage/
+site_description: Tools for manipulating files in Azure storage, including upload, download, SAS URL creation, move, delete
+repo_url:  https://github.com/OLC-LOC-Bioinformatics/AzureStorage
+theme: flatly
+
+nav:
+  - Home: 'index.md'
+  - Installation: 'install.md'
+  - Credentials: 'credentials.md'
+  - Upload: 'upload.md'
+  - SAS URL: 'sas_url.md'
+  - Move: 'move.md'
+  - Download: 'download.md'
+  - Set Tier: 'tier.md'
+  - Delete: 'delete.md'
