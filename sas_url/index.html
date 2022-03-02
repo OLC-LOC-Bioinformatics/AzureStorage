@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         
-        <link rel="canonical" href="https://olc-loc-bioinformatics.github.io/AzureStorage/sas_url/">
+        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/sas_url/">
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>SAS URL - OLC Bioinformatics Azure Storage</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -55,6 +55,9 @@
                                 <a href="../download/" class="nav-link">Download</a>
                             </li>
                             <li class="navitem">
+                                <a href="../tier.md" class="nav-link">Set Tier</a>
+                            </li>
+                            <li class="navitem">
                                 <a href="../delete/" class="nav-link">Delete</a>
                             </li>
                         </ul>
@@ -95,12 +98,185 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="2"><a href="#azuresas" class="nav-link">AzureSAS</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-</div>
+<h2 id="azuresas">AzureSAS</h2>
+<p>Create shared access signatures (SAS) URLs for containers, files, folders in your Azure storage account.</p>
+<p>Note that each file in a container/folder has to be downloaded separately, so if there are 1000 files in the container, 1000 SAS URLs will be provided</p>
+<p>Choose either the <a href="#azuresas-container"><code>container</code></a>, <a href="#azuresas-file"><code>file</code></a>, or  <a href="#azuresas-folder"><code>folder</code></a> functionality</p>
+<h4 id="general-usage">General usage</h4>
+<pre><code>usage: AzureSAS [-h] {container,file,folder} ...
+
+Create shared access signatures (SAS) for containers/files/folders from Azure storage.
+Note that each file in the container/folder has to be downloaded separately, so if
+there are 1000 files in the container, 1000 SAS will be provided
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+Available functionality:
+  {container,file,folder}
+    container           Create SAS for all files in a container in Azure storage
+    file                Create a SAS for a file in Azure storage
+    folder              Create SAS for all files in a folder in Azure storage
+</code></pre>
+<h3 id="azuresas-container">AzureSAS container</h3>
+<p>Create SAS URLs for all files in a container in your Azure storage account</p>
+<h4 id="required-arguments">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+</ul>
+<h4 id="optional-arguments">Optional arguments:</h4>
+<ul>
+<li>output file: file in which the SAS URLs are to be written. Default is <code>sas.txt</code> in your current working directory</li>
+<li>expiry: the number of days the SAS URL with be valid. Minimum is 1, maximum is 365. Default is 10</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="example-commands">Example commands:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container, and <code>account_name</code> as the name of the storage account</p>
+<p>To create SAS URLs with default settings:</p>
+<p><code>Azure SAS container -a account_name -c container-name</code></p>
+<p>To create SAS URLs with an expiry of 15 days:</p>
+<p><code>Azure SAS container -a account_name -c container-name -e 15</code></p>
+<p>To create SAS URLs, and save them to the file <code>sas_urls.txt</code> in your current working directory:</p>
+<p><code>Azure SAS container -a account_name -c container-name -o sas_urls.txt</code></p>
+<p>To create SAS URLs, and save them to the file <code>sas_urls.txt</code> nested in folder <code>outputs</code> in your current working directory:</p>
+<p><code>Azure SAS container -a account_name -c container-name -o outputs/sas_urls.txt</code></p>
+<h4 id="usage">Usage</h4>
+<pre><code>usage: AzureSAS container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+                          [-v {debug,info,warning,error,critical}] [-e EXPIRY]
+                          [-o OUTPUT_FILE]
+
+Create SAS URLs for all files in a container in Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
+                        Set the logging level. Default is info.
+  -e EXPIRY, --expiry EXPIRY
+                        The number of days that the SAS URL will be valid. The minimum is 1, and the maximum is 365. The default is 10.
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Name and path of file in which the SAS URLs are to be saved. Default is $CWD/sas.txt
+
+</code></pre>
+<h3 id="azuresas-file">AzureSAS file</h3>
+<p>Create a SAS URL for a file in a container in your Azure storage account</p>
+<h4 id="required-arguments_1">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+<li>file name</li>
+</ul>
+<h4 id="optional-arguments_1">Optional arguments:</h4>
+<ul>
+<li>output file: file in which the SAS URLs are to be written. Default is <code>sas.txt</code> in your current working directory</li>
+<li>expiry: the number of days the SAS URL with be valid. Minimum is 1, maximum is 365. Default is 10</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="example-commands_1">Example commands:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container, and <code>account_name</code> as the name of the storage account</p>
+<p>To create a SAS URL for file <code>file_name.gz</code> with default settings:</p>
+<p><code>Azure SAS file -a account_name -c container-name -f file_name.gz</code></p>
+<p>To create a SAS URL for file <code>file_name.gz</code> nested in folder <code>outputs</code> with default settings:</p>
+<p><code>Azure SAS file -a account_name -c container-name -f outputs/file_name.gz</code></p>
+<p>To create a SAS URL for file <code>file_name.gz</code> with an expiry of 15 days:</p>
+<p><code>Azure SAS file -a account_name -c container-name f file_name.gz -e 15</code></p>
+<p>To create a SAS URL for file <code>file_name.gz</code>, and save it to the file <code>sas_urls.txt</code> in your current working directory:</p>
+<p><code>Azure SAS file -a account_name -c container-name -f file_name.gz -o sas_urls.txt</code></p>
+<p>To create a SAS URL for file <code>file_name.gz</code>, and save it to the file <code>sas_urls.txt</code> nested in folder <code>outputs</code> in your current working directory:</p>
+<p><code>Azure SAS file -a account_name -c container-name -f file_name.gz -o outputs/sas_urls.txt</code></p>
+<h4 id="usage_1">Usage</h4>
+<pre><code>usage: AzureSAS file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+                     [-v {debug,info,warning,error,critical}] [-e EXPIRY]
+                     [-o OUTPUT_FILE] -f FILE
+
+Create a SAS URL for a file in Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
+                        Set the logging level. Default is info.
+  -e EXPIRY, --expiry EXPIRY
+                        The number of days that the SAS URL will be valid. The minimum is 1, and the maximum is 365. The default is 10.
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Name and path of file in which the SAS URLs are to be saved. Default is $CWD/sas.txt
+  -f FILE, --file FILE  Path of file in Azure storage from which a SAS URL is to be created. e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz
+</code></pre>
+<h3 id="azuresas-folder">AzureSAS folder</h3>
+<p>Create SAS URLs for all files in a folder in your Azure storage account</p>
+<h4 id="required-arguments_2">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+<li>folder name</li>
+</ul>
+<h4 id="optional-arguments_2">Optional arguments:</h4>
+<ul>
+<li>output file: file in which the SAS URLs are to be written. Default is <code>sas.txt</code> in your current working directory</li>
+<li>expiry: the number of days the SAS URL with be valid. Minimum is 1, maximum is 365. Default is 10</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="example-commands_2">Example commands:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container, and <code>account_name</code> as the name of the storage account</p>
+<p>To create SAS URLs for all files in folder <code>folder_name</code> with default settings:</p>
+<p><code>Azure SAS folder -a account_name -c container-name -f folder_name</code></p>
+<p>To create SAS URLs for all files in folder <code>folder_name</code> nested in folder <code>outputs</code> with default settings:</p>
+<p><code>Azure SAS folder -a account_name -c container-name -f outputs/folder_name</code></p>
+<p>To create SAS URLs for all files in folder <code>folder_name</code> with an expiry of 15 days:</p>
+<p><code>Azure SAS folder -a account_name -c container-name f folder_name -e 15</code></p>
+<p>To create SAS URLs for all files in folder <code>folder_name</code>, and save them to the file <code>sas_urls.txt</code> in your current working directory:</p>
+<p><code>Azure SAS folder -a account_name -c container-name -f folder_name -o sas_urls.txt</code></p>
+<p>To create SAS URLs for all files in folder <code>folder_name</code>, and save them to the file <code>sas_urls.txt</code> nested in folder <code>outputs</code> in your current working directory:</p>
+<p><code>Azure SAS folder -a account_name -c container-name -f folder_name -o outputs/sas_urls.txt</code></p>
+<h4 id="usage_2">Usage</h4>
+<pre><code>usage: AzureSAS folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+                       [-v {debug,info,warning,error,critical}] [-e EXPIRY]
+                       [-o OUTPUT_FILE] -f FOLDER
+
+Create SAS URLs for all files in a folder in Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
+                        Set the logging level. Default is info.
+  -e EXPIRY, --expiry EXPIRY
+                        The number of days that the SAS URL will be valid. The minimum is 1, and the maximum is 365. The default is 10.
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Name and path of file in which the SAS URLs are to be saved. Default is $CWD/sas.txt
+  -f FOLDER, --folder FOLDER
+                        Name of the folder for which SAS URLs are to be created for all files. e.g. InterOp
+
+</code></pre></div>
             </div>
         </div>
 
