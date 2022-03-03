@@ -6,6 +6,7 @@ setup(
     entry_points={
         'console_scripts': [
             'AzureCredentials = azure_storage.azure_credentials:cli',
+            'AzureAutomate = azure_storage.azure_automate:cli',
             'AzureDownload = azure_storage.azure_download:cli',
             'AzureDelete = azure_storage.azure_delete:cli',
             'AzureUpload = azure_storage.azure_upload:cli',

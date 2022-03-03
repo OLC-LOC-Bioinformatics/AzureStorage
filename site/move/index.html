@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         
-        <link rel="canonical" href="https://olc-loc-bioinformatics.github.io/AzureStorage/move/">
+        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/move/">
         <link rel="shortcut icon" href="../img/favicon.ico">
         <title>Move - OLC Bioinformatics Azure Storage</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
@@ -55,6 +55,9 @@
                                 <a href="../download/" class="nav-link">Download</a>
                             </li>
                             <li class="navitem">
+                                <a href="../tier.md" class="nav-link">Set Tier</a>
+                            </li>
+                            <li class="navitem">
                                 <a href="../delete/" class="nav-link">Delete</a>
                             </li>
                         </ul>
@@ -95,12 +98,198 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="2"><a href="#azuremove" class="nav-link">AzureMove</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-</div>
+<h2 id="azuremove">AzureMove</h2>
+<p>Move containers, files, or folders within your Azure storage account.</p>
+<p>Choose either the <a href="#azuremove-container"><code>container</code></a>, <a href="#azuremove-file"><code>file</code></a>, or  <a href="#azuremove-folder"><code>folder</code></a> functionality</p>
+<h4 id="general-usage">General usage</h4>
+<pre><code>usage: AzureMove [-h] {container,file,folder} ...
+
+Move containers, files, or folders in Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+Available functionality:
+  {container,file,folder}
+    container           Move a container in Azure storage
+    file                Move a file within Azure storage 
+    folder              Move a folder within Azure storage
+
+</code></pre>
+<h3 id="azuremove-container">AzureMove container</h3>
+<p>Move a container within your Azure storage account</p>
+<h4 id="required-arguments">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+</ul>
+<h4 id="optional-arguments">Optional arguments:</h4>
+<ul>
+<li>target container: name of the container into which the container is to be moved</li>
+<li>path to store the container: nest the container within the target container</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+<li>storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot</li>
+</ul>
+<h4 id="example-commands">Example commands:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container, <code>target-container</code> as the name of the target container, and <code>account_name</code> as the name of the storage account</p>
+<p>To perform a basic move (this also renames a container):</p>
+<p><code>AzureMove container -a account_name -c container-name -t target-container</code></p>
+<p>To move a container, and set the storage tier to <code>Cool</code></p>
+<p><code>AzureMove container -a account_name -c container-name -t target-container -s Cool</code></p>
+<p>To move a container and nest it into folder <code>outputs</code>:</p>
+<p><code>AzureMove container -a account_name -c container-name -t target-container -r outputs</code></p>
+<h4 id="usage">Usage</h4>
+<pre><code>usage: AzureMove container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+                           [-v {debug,info,warning,error,critical}] -t
+                           TARGET_CONTAINER [-r RESET_PATH] [-s {Hot,Cool,Archive}]
+
+Move a container in Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
+                        Set the logging level. Default is info.
+  -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
+                        The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container)e.g. sequence_data
+  -r RESET_PATH, --reset_path RESET_PATH
+                        Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use &quot;&quot; or ''
+  -s {Hot,Cool,Archive}, --storage_tier {Hot,Cool,Archive}
+                        Set the storage tier for the container/file/folder to be moved. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;. Default is Hot
+
+</code></pre>
+<h3 id="azuremove-file">AzureMove file</h3>
+<p>Move a file within your Azure storage account</p>
+<h4 id="required-arguments_1">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+<li>file name</li>
+</ul>
+<h4 id="optional-arguments_1">Optional arguments:</h4>
+<ul>
+<li>target container: name of the container into which the container is to be moved</li>
+<li>path to store the container: nest the container within the target container</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+<li>storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot</li>
+</ul>
+<h4 id="example-commands_1">Example commands:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container, <code>target-container</code> as the name of the target container, and <code>account_name</code> as the name of the storage account</p>
+<p>To move the file <code>file_name.gz</code></p>
+<p><code>AzureMove file -a account_name -c container-name -t target-container -f file_name.gz</code></p>
+<p>To move the file <code>file_name.gz</code>, and set the storage tier to <code>Cool</code></p>
+<p><code>AzureMove file -a account_name -c container-name -t target-container -f file_name.gz -s Cool</code></p>
+<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code></p>
+<p><code>AzureMove file -a account_name -c container-name -t target-container -f outputs/file_name.gz</code></p>
+<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code> to the root of the source container</p>
+<p><code>AzureMove file -a account_name -c container-name -t container-name -f outputs/file_name.gz -r ""</code></p>
+<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code> to folder <code>results</code> in the source container</p>
+<p><code>AzureMove file -a account_name -c container-name -t container-name -f outputs/file_name.gz -r results</code></p>
+<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code> to the root of the target container</p>
+<p><code>AzureMove file -a account_name -c container-name -t target-container -f outputs/file_name.gz -r ""</code></p>
+<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code> to folder <code>results</code> in the target container</p>
+<p><code>AzureMove file -a account_name -c container-name -t target-container -f outputs/file_name.gz -r results</code></p>
+<h4 id="usage_1">Usage</h4>
+<pre><code>usage: AzureMove file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+                      [-v {debug,info,warning,error,critical}] -t TARGET_CONTAINER
+                      [-r RESET_PATH] [-s {Hot,Cool,Archive}] -f FILE
+
+Move a file within Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
+                        Set the logging level. Default is info.
+  -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
+                        The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container
+  -r RESET_PATH, --reset_path RESET_PATH
+                        Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use &quot;&quot; or ''
+  -s {Hot,Cool,Archive}, --storage_tier {Hot,Cool,Archive}
+                        Set the storage tier for the container/file/folder to be moved. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;. Default is Hot
+  -f FILE, --file FILE  Name of blob file to move in Azure storage. e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz
+
+</code></pre>
+<h3 id="azuremove-folder">AzureMove folder</h3>
+<p>Move a folder within your Azure storage account</p>
+<h4 id="required-arguments_2">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+<li>folder name</li>
+</ul>
+<h4 id="optional-arguments_2">Optional arguments:</h4>
+<ul>
+<li>target container: name of the container into which the container is to be moved</li>
+<li>path to store the container: nest the container within the target container</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+<li>storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot</li>
+</ul>
+<h4 id="example-commands_2">Example commands:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container, <code>target-container</code> as the name of the target container, and <code>account_name</code> as the name of the storage account</p>
+<p>To move the folder <code>folder_name</code></p>
+<p><code>AzureMove folder -a account_name -c container-name -t target-container -f folder_name</code></p>
+<p>To move the folder <code>folder_name</code>, and set the storage tier to <code>Cool</code></p>
+<p><code>AzureMove folder -a account_name -c container-name -t target-container -f folder_name -s Cool</code></p>
+<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code></p>
+<p><code>AzureMove folder -a account_name -c container-name -t target-container -f outputs/folder_name</code></p>
+<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code> to the root of the source container</p>
+<p><code>AzureMove folder -a account_name -c container-name -t container-name -f outputs/folder_name -r ""</code></p>
+<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code> to folder <code>results</code> in the source container</p>
+<p><code>AzureMove folder -a account_name -c container-name -t container-name -f outputs/folder_name -r results</code></p>
+<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code> to the root of the target container</p>
+<p><code>AzureMove folder -a account_name -c container-name -t target-container -f outputs/folder_name -r ""</code></p>
+<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code> to folder <code>results</code> in the target container</p>
+<p><code>AzureMove folder -a account_name -c container-name -t target-container -f outputs/folder_name -r results</code></p>
+<h4 id="usage_2">Usage</h4>
+<pre><code>usage: AzureMove folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+                        [-v {debug,info,warning,error,critical}] -t TARGET_CONTAINER
+                        [-r RESET_PATH] [-s {Hot,Cool,Archive}] -f FOLDER
+
+Move a folder within Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
+                        Set the logging level. Default is info.
+  -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
+                        The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container
+  -r RESET_PATH, --reset_path RESET_PATH
+                        Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use &quot;&quot; or ''
+  -s {Hot,Cool,Archive}, --storage_tier {Hot,Cool,Archive}
+                        Set the storage tier for the container/file/folder to be moved. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;. Default is Hot
+  -f FOLDER, --folder FOLDER
+                        Name of folder to move in Azure storage. e.g. InterOp
+</code></pre></div>
             </div>
         </div>
 

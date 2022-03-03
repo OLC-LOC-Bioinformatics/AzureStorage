@@ -258,7 +258,8 @@ def cli():
     subparsers, parent_parser = create_parent_parser(parser=parser)
     parent_parser.add_argument('-o', '--output_path',
                                default=os.getcwd(),
-                               help='Name and path of directory in which the outputs are to be saved.')
+                               help='Name and path of directory in which the outputs are to be saved. Default is '
+                                    'your $CWD')
     # Container downloading parser
     container_subparser = subparsers.add_parser(parents=[parent_parser],
                                                 name='container',
@@ -271,7 +272,7 @@ def cli():
                                            name='file',
                                            description='Download a file from Azure storage',
                                            formatter_class=RawTextHelpFormatter,
-                                           help='Download a blob from Azure storage')
+                                           help='Download a file from Azure storage')
     file_subparser.add_argument('-f', '--file',
                                 type=str,
                                 required=True,

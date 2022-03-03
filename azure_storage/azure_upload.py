@@ -21,39 +21,19 @@ class AzureUpload(object):
         # Run the proper method depending on whether a file or a folder is requested
         if self.category == 'file':
             # If the container doesn't exist, run the container creation method, and re-run the upload
-            try:
-                self.upload_file(object_name=self.object_name,
-                                 blob_service_client=self.blob_service_client,
-                                 container_name=self.container_name,
-                                 account_name=self.account_name,
-                                 path=self.path,
-                                 storage_tier=self.storage_tier)
-            except azure.core.exceptions.ResourceNotFoundError:
-                self.container_client = create_container(blob_service_client=self.blob_service_client,
-                                                         container_name=self.container_name)
-                self.upload_file(object_name=self.object_name,
-                                 blob_service_client=self.blob_service_client,
-                                 container_name=self.container_name,
-                                 account_name=self.account_name,
-                                 path=self.path,
-                                 storage_tier=self.storage_tier)
+            self.upload_file(object_name=self.object_name,
+                             blob_service_client=self.blob_service_client,
+                             container_name=self.container_name,
+                             account_name=self.account_name,
+                             path=self.path,
+                             storage_tier=self.storage_tier)
         elif self.category == 'folder':
-            try:
-                self.upload_folder(object_name=self.object_name,
-                                   blob_service_client=self.blob_service_client,
-                                   container_name=self.container_name,
-                                   account_name=self.account_name,
-                                   path=self.path,
-                                   storage_tier=self.storage_tier)
-            except azure.core.exceptions.ResourceNotFoundError:
-                self.container_client = create_container(blob_service_client=self.blob_service_client,
-                                                         container_name=self.container_name)
-                self.upload_folder(object_name=self.object_name,
-                                   blob_service_client=self.blob_service_client,
-                                   container_name=self.container_name,
-                                   account_name=self.account_name,
-                                   path=self.path,
-                                   storage_tier=self.storage_tier)
+            self.upload_folder(object_name=self.object_name,
+                               blob_service_client=self.blob_service_client,
+                               container_name=self.container_name,
+                               account_name=self.account_name,
+                               path=self.path,
+                               storage_tier=self.storage_tier)
         else:
             logging.error(f'Something is wrong. There is no {self.category} option available')
             raise SystemExit
@@ -91,13 +71,10 @@ class AzureUpload(object):
                             f'storage account {account_name}')
             raise SystemExit
         # Despite the attempt to correct the container name, it may still be invalid
-        except azure.core.exceptions.HttpResponseError:
-            logging.error(f'Container name, {container_name} is invalid. Container names must be between 3 and 63 '
-                          f'characters, start with a letter or number, and can contain only letters, numbers, and the '
-                          f'dash (-) character. Every dash (-) character must be immediately preceded and followed by '
-                          f'a letter or number; consecutive dashes are not permitted in container names. All letters '
-                          f'in a container name must be lowercase.')
-            raise SystemExit
+        except azure.core.exceptions.HttpResponseError as e:
+            if 'ContainerNotFound' in str(e):
+                logging.warning(f'Could not create container {container_name}')
+                raise SystemExit
         except FileNotFoundError:
             logging.error(f'Could not find the specified file {object_name} to upload. Please ensure that the '
                           f'supplied name and path are correct.')
@@ -238,7 +215,7 @@ def cli():
                                type=str,
                                help='Set the path of the file/folder within a folder in the target container '
                                     'e.g. sequence_data/220202-m05722. If you want to place it directly in the '
-                                    'container without any nesting, use "" or \'\'')
+                                    'container without any nesting, use or \'\'')
     parent_parser.add_argument('-s', '--storage_tier',
                                type=str,
                                default='Hot',

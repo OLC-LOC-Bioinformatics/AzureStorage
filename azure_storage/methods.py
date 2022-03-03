@@ -79,9 +79,21 @@ def setup_arguments(parser):
         # Set up logging
         setup_logging(arguments=arguments)
         arguments.func(arguments)
-    # If the 'func' attribute doesn't exist, display the basic help
+    # If the 'func' attribute doesn't exist, display the basic help for the appropriate subparser (if any)
     else:
-        parser.parse_args(['-h'])
+        try:
+            # Determine which subparser was called by extracting it from the arguments. Note that this requires the
+            # use of the desc keyword when creating subparsers
+            command = list(vars(arguments).keys())[0]
+            # If the extracted command exists, use the command-specific subparser help
+            if command:
+                parser.parse_args([command, '-h'])
+            # Otherwise, use the basic help
+            else:
+                parser.parse_args(['-h'])
+        # If the were no subparsers specified (the list of keys in the arguments is empty), use the basic help
+        except IndexError:
+            parser.parse_args(['-h'])
     return arguments
 
 
@@ -312,6 +324,8 @@ def create_container(blob_service_client, container_name):
     :param container_name: type str: Name of the container of interest
     :return: container_client: type azure.storage.blob.BlobServiceClient.ContainerClient
     """
+    # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
+    logging.getLogger().setLevel(logging.WARNING)
     try:
         container_client = blob_service_client.create_container(container_name)
     except azure.core.exceptions.ResourceExistsError as e:
@@ -338,6 +352,10 @@ def create_container_client(blob_service_client, container_name):
     # Create the container client from the blob service client with the get container client method
     # and the container name
     container_client = blob_service_client.get_container_client(container_name)
+    # Create the container if it does not exist
+    if not container_client.exists():
+        container_client = create_container(blob_service_client=blob_service_client,
+                                            container_name=container_name)
     return container_client
 
 

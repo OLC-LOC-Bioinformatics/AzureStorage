@@ -217,10 +217,10 @@ def cli():
     subparsers, parent_parser = create_parent_parser(parser=parser)
     parent_parser.add_argument('-s', '--storage_tier',
                                type=str,
-                               default='Hot',
+                               required=True,
                                choices=['Hot', 'Cool', 'Archive'],
-                               help='Set the storage tier for the container/file/folder. Options are "Hot", '
-                                    '"Cool", and "Archive". Default is Hot')
+                               help='Set the storage tier for a container/file/folder. Options are "Hot", '
+                                    '"Cool", and "Archive"')
     # Container tier setting parser
     container_subparser = subparsers.add_parser(parents=[parent_parser],
                                                 name='container',

@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="description" content="Tools for manipulating files in Azure storage, including upload, download, SAS URL creation, move, delete">
         
-        <link rel="canonical" href="https://olc-loc-bioinformatics.github.io/AzureStorage/">
+        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/">
         <link rel="shortcut icon" href="img/favicon.ico">
         <title>OLC Bioinformatics Azure Storage</title>
         <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -53,6 +53,9 @@
                             </li>
                             <li class="navitem">
                                 <a href="download/" class="nav-link">Download</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="tier.md" class="nav-link">Set Tier</a>
                             </li>
                             <li class="navitem">
                                 <a href="delete/" class="nav-link">Delete</a>
@@ -107,13 +110,14 @@
 
 <h2 id="olc-bioinformatics-azurestorage-tools">OLC Bioinformatics AzureStorage tools</h2>
 <p>This suite of tools (written in Python) allows you to manipulate containers/files/folders in your Azure storage account.</p>
-<p>There are six scripts in this package:</p>
+<p>There are seven scripts in this package:</p>
 <ol>
-<li><a href="credentials/"><code>AzureCredentials</code></a>: enter of modify your Azure connection string and account name into your system keyring, avoiding storing plain text passwords, environmental variables, and entering the connection string every time you run one of the scripts in the package</li>
+<li><a href="credentials/"><code>AzureCredentials</code></a>: enter, modify, or delete your Azure connection string and account name into your system keyring, avoiding storing plain text passwords, environmental variables, and entering the connection string every time you run one of the scripts in the package</li>
 <li><a href="upload/"><code>AzureUpload</code></a>: upload a file or folder to a container in your Azure storage account</li>
 <li><a href="sas_url/"><code>AzureSAS</code></a>: create SAS (shared access signature) URLs for a file, a folder, or an entire container in your Azure storage account.</li>
 <li><a href="move/"><code>AzureMove</code></a>: move a file, folder, or an entire container within your Azure storage account</li>
 <li><a href="download/"><code>AzureDownload</code></a>: download a file, folder, or an entire container from your Azure storage account</li>
+<li><a href="set_tier/"><code>AzureTier</code></a>: set the storage tier of a file, folder, or an entire container from your Azure storage account</li>
 <li><a href="delete/"><code>AzureDelete</code></a>: delete a file, folder, or an entire container from your Azure storage account</li>
 </ol>
 <h3 id="feedback">Feedback</h3>
@@ -198,5 +202,5 @@
 
 <!--
 MkDocs version : 1.2.3
-Build Date UTC : 2022-03-01 15:23:58.189845+00:00
+Build Date UTC : 2022-03-02 21:18:39.558886+00:00
 -->

@@ -6,9 +6,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         
-        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/install/">
+        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/set_tier/">
         <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Installation - OLC Bioinformatics Azure Storage</title>
+        <title>Set tier - OLC Bioinformatics Azure Storage</title>
         <link href="../css/bootstrap.min.css" rel="stylesheet">
         <link href="../css/font-awesome.min.css" rel="stylesheet">
         <link href="../css/base.css" rel="stylesheet">
@@ -36,8 +36,8 @@
                             <li class="navitem">
                                 <a href=".." class="nav-link">Home</a>
                             </li>
-                            <li class="navitem active">
-                                <a href="./" class="nav-link">Installation</a>
+                            <li class="navitem">
+                                <a href="../install/" class="nav-link">Installation</a>
                             </li>
                             <li class="navitem">
                                 <a href="../credentials/" class="nav-link">Credentials</a>
@@ -69,17 +69,7 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" href=".." class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" href="../credentials/" class="nav-link">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/install.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/set_tier.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -98,38 +88,12 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
-            
-            <li class="nav-item" data-level="2"><a href="#installation" class="nav-link">Installation</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h2 id="installation">Installation</h2>
-<p>AzureStorage is available as a conda package, so conda must be installed on your system.</p>
-<h3 id="conda">Conda</h3>
-<p>Skip this step if you have already installed conda</p>
-<pre><code>wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-bash miniconda.sh -b -p $HOME/miniconda
-conda update -q conda
-</code></pre>
-<h3 id="azurestorage">AzureStorage</h3>
-<p>You can now install the AzureStorage package:</p>
-<p><code>conda install -c olc-bioinformatics azure-storage</code></p>
-<h3 id="credentials">Credentials</h3>
-<p>You must enter your Azure storage connection string and account name into the system keyring before running any of the other scripts</p>
-<p><a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#:~:text=You%20can%20find%20your%20storage,primary%20and%20secondary%20access%20keys.">Find your connection string</a></p>
-<p><a href="https://www.zenko.io/blog/how-to-find-keys-and-account-info-for-aws-azure-and-google/#:~:text=Azure%20Account%20Name%C2%A0%3D%20the%20name%20of%20your%20Azure%20storage%20account%20located%20on%20the%20top%20of%20the%20Azure%20Portal%20(screenshot%20below%20%E2%80%93%20%E2%80%9Cscalitydemo%E2%80%9D%20is%20Azure%20Account%20Name).">Find your account key</a></p>
-<p>Once you know your account key and connection string, run:</p>
-<p><code>AzureCredentials store</code></p>
-<p>Your credentials will be securely stored in the system keyring</p>
-<h3 id="tests">Tests</h3>
-<p>The AzureStorage package comes with unit tests to ensure that the installation and provided credentials are valid</p>
-<p><code>python -m pytest tests/</code></p>
-<p>Ensure that all tests complete successfully before proceeding</p></div>
+</div>
             </div>
         </div>
 

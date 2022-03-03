@@ -289,7 +289,7 @@ def cli():
                                type=str,
                                help='Set the path of the container/file/folder within a folder in the target container '
                                     'e.g. sequence_data/220202-m05722. If you want to place it directly in the '
-                                    'container without any nesting, use "" or \'\'')
+                                    'container without any nesting, use or \'\'')
     parent_parser.add_argument('-s', '--storage_tier',
                                type=str,
                                default='Hot',
