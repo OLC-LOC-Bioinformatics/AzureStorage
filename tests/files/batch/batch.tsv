@@ -1,0 +1,54 @@
+upload	file	abc	files/file_1.txt	nested	
+upload	file	abc	files/file_1.txt	''	cool
+upload	file	abc	files/file_2.txt	nested	cool
+upload	file	abc	files/file_1.txt		
+upload	file	abc	files/file_2.txt	""	
+upload	folder	abc	files/folder	nested_folder	
+upload	folder	abc	files/folder_2	''	cool
+upload	folder	abc	files/folder_2/nested_folder_2	nested_folder_2	cool
+upload	folder	abc	files/folder_2/nested_folder_2	""		
+sas	container	abc		
+sas	container	abc	8	files/sas/sas_test.txt
+sas	container	abc		files/sas/sas_test_1.txt	
+sas	container	abc	4	
+sas	file	abc	file_1.txt		
+sas	file	abc	nested/file_1.txt	8	files/sas/sas_test.txt
+sas	file	abc	file_2.txt		files/sas/sas_test_1.txt
+sas	file	abc	nested/file_2.txt	4	
+sas	folder	abc	nested_folder_2		
+sas	folder	abc	nested/	8	sas_test.txt
+sas	folder	abc	nested_folder/nested		files/sas/sas_test_1.txt
+sas	folder	abc	files/folder_2/nested_folder_2	4	
+move	file	abc	123	folder_test_1.txt	move_files
+move	file	abc	abc	nested_folder_2/nested_folder_test_1.txt	''	cool
+move	file	abc	123	nested_folder/nested_file_1.txt	move_files	cool	
+move	folder	abc	123	nested/	move_folder
+move	folder	abc	abc	nested_folder_2/	renamed	cool
+move	folder	abc	123	files/folder_2	move_folder	cool	
+move	container	abc	123	nested_1	cool
+download	container	123	files/download
+download	container	123		
+download	file	123	folder_test_1.txt	files/download
+download	file	123	move_folder/file_1.txt	""
+download	file	123	move_folder/file_2.txt	files/download	
+download	folder	123	move_folder	files/download
+download	folder	123	move_folder	""
+download	folder	123	files/folder_2/nested_folder	files/download	
+tier	container	123	cool
+tier	container	123	hot
+tier	container	123	hot
+tier	container	123	cool
+tier	file	123	file_1.txt	hot
+tier	file	123	nested/file_1.txt	hot
+tier	file	123	move_folder/file_1.txt	hot
+tier	file	123	file_1.txt	cool
+tier	folder	123	nested_folder	hot
+tier	folder	123	nested_folder/nested	cool
+tier	folder	123	files/folder_2/nested_folder_2	hot
+delete	file	123	file_1.txt	
+delete	file	123	nested/file_1.txt	2
+delete	file	123	move_folder/file_1.txt	5
+delete	folder	123	files	
+delete	folder	123	nested/	2
+delete	folder	123	move_folder/	5
+delete	container	123

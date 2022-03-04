@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from azure_storage.methods import client_prep, create_blob_client, create_container, \
-    create_parent_parser, setup_arguments
+from azure_storage.methods import client_prep, create_blob_client, create_container, create_parent_parser, \
+    setup_arguments
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
@@ -220,6 +220,7 @@ def cli():
                                type=str,
                                default='Hot',
                                choices=['Hot', 'Cool', 'Archive'],
+                               metavar='STORAGE_TIER',
                                help='Set the storage tier for the file/folder to be uploaded. Options are "Hot", '
                                     '"Cool", and "Archive". Default is Hot')
     # File upload subparser

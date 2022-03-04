@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 from azure.storage.blob import BlobSasPermissions, BlobServiceClient, generate_blob_sas, RetentionPolicy
 from argparse import ArgumentParser
+import pandas as pd
+import numpy as np
 import coloredlogs
 import datetime
 import logging
@@ -44,8 +46,10 @@ def create_parent_parser(parser, container=True):
                                     'string to the system keyring. Default is "AzureStorage".')
     parent_parser.add_argument('-v', '--verbosity',
                                choices=['debug', 'info', 'warning', 'error', 'critical'],
+                               metavar='VERBOSITY',
                                default='info',
-                               help='Set the logging level. Default is info.')
+                               help='Set the logging level. Options are debug, info, warning, error, and critical. '
+                                    'Default is info.')
     return subparsers, parent_parser
 
 
@@ -698,3 +702,77 @@ def delete_folder(container_client, object_name, blob_service_client, container_
             f'in Azure storage account {account_name}. Please ensure that all arguments have been '
             f'entered correctly')
         raise SystemExit
+
+
+def arg_dict_cleanup(arg_dict):
+    """
+    Clean up the argument dictionary to be consistent with the format required for the AzureStorage classes
+    :param arg_dict: type dict: Dictionary of argument name: value e.g. storage tier: nan
+    :return: arg_dict: Cleaned argument dictionary
+    """
+    try:
+        # Double single quotes are not automatically changed into an empty string
+        arg_dict['reset_path'] = arg_dict['reset_path'] if arg_dict['reset_path'] != "''" else str()
+    except KeyError:
+        pass
+    # For optional argument, the nan value supplied for empty values will not work with downstream code; find and
+    # change them to the appropriate empty/default value
+    try:
+        arg_dict['reset_path'] = arg_dict['reset_path'] if str(arg_dict['reset_path']) != str(np.nan) else None
+    except KeyError:
+        pass
+    try:
+        arg_dict['storage_tier'] = arg_dict['storage_tier'] if str(arg_dict['storage_tier']) != str(np.nan) else 'Hot'
+    except KeyError:
+        pass
+    try:
+        arg_dict['output_file'] = arg_dict['output_file'] if str(arg_dict['output_file']) != str(np.nan) \
+            else os.path.join(os.getcwd(), 'sas_urls.txt')
+    except KeyError:
+        pass
+    try:
+        arg_dict['output_path'] = arg_dict['output_path'] if str(arg_dict['output_path']) != str(np.nan) \
+            else os.getcwd()
+    except KeyError:
+        pass
+    try:
+        arg_dict['expiry'] = arg_dict['expiry'] if str(arg_dict['expiry']) != str(np.nan) else 10
+    except KeyError:
+        pass
+    try:
+        arg_dict['retention_time'] = arg_dict['retention_time'] if str(arg_dict['retention_time']) != str(np.nan) else 8
+    except KeyError:
+        pass
+    # Reading in numerical container names e.g. 220202 returns an integer, so typecast it to string
+    try:
+        arg_dict['container'] = str(arg_dict['container'])
+    except KeyError:
+        pass
+    try:
+        arg_dict['target'] = str(arg_dict['target'])
+    except KeyError:
+        pass
+    return arg_dict
+
+
+def create_batch_dict(batch_file, headers):
+    """
+    Read in the supplied file of arguments with pandas. Create a dictionary of the arguments from a transposed dataframe
+    :param batch_file: type str: Name and path of file containing requested operations
+    :param headers: type list: Names of all the headers present in the file
+    :return:
+    """
+    # Ensure that the batch file exists
+    try:
+        assert os.path.isfile(batch_file)
+    except AssertionError:
+        logging.error(f'Could not locate the supplied batch file {batch_file}. Please ensure the you entered '
+                      f'the name and path correctly')
+    # Read in the batch file using pandas.read_csv. Use tabs as the separator, and provide the header names.
+    # Transpose the data, and convert the dataframe to a dictionary
+    batch_dict = pd.read_csv(
+        batch_file,
+        sep='\t',
+        names=headers
+    ).transpose().to_dict()
+    return batch_dict

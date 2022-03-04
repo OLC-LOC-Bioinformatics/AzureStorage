@@ -1,0 +1,3 @@
+abc	123	folder_test_1.txt	move_files
+abc	abc	nested_folder_2/nested_folder_test_1.txt	''	cool
+abc	123	nested_folder/nested_file_1.txt	move_files	cool	

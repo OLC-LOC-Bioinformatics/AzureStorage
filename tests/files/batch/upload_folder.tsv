@@ -1,0 +1,4 @@
+abc	files/folder	nested_folder	
+abc	files/folder_2	''	cool
+abc	files/folder_2/nested_folder_2	nested_folder_2	cool
+abc	files/folder_2/nested_folder_2	""		

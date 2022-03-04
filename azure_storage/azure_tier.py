@@ -219,6 +219,7 @@ def cli():
                                type=str,
                                required=True,
                                choices=['Hot', 'Cool', 'Archive'],
+                               metavar='STORAGE_TIER',
                                help='Set the storage tier for a container/file/folder. Options are "Hot", '
                                     '"Cool", and "Archive"')
     # Container tier setting parser

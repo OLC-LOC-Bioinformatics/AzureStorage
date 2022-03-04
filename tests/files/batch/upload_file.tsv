@@ -1,0 +1,5 @@
+abc	files/file_1.txt	nested	
+abc	files/file_1.txt	''	cool
+abc	files/file_2.txt	nested	cool
+abc	files/file_1.txt		
+abc	files/file_2.txt	""	

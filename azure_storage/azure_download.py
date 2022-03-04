@@ -65,13 +65,13 @@ class AzureContainerDownload(object):
             self.output_path = os.path.abspath(os.path.expanduser(os.path.join(output_path)))
         else:
             self.output_path = os.path.abspath(os.path.join(output_path))
+        # Create the output path
+        os.makedirs(self.output_path, exist_ok=True)
         try:
             assert os.path.isdir(self.output_path)
         except AssertionError:
             logging.error(f'Could not use the supplied output path: {self.output_path}')
             raise SystemExit
-        # Create the output path
-        os.makedirs(self.output_path, exist_ok=True)
         # Initialise necessary class variables
         self.passphrase = passphrase
         self.account_name = account_name

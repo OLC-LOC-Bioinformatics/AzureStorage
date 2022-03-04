@@ -203,7 +203,7 @@ class AzureMove(object):
             raise SystemExit
         # Send a warning to the user that the blob could not be found
         if not present:
-            logging.error(f'Could not locate the desired file {object_name}')
+            logging.error(f'Could not locate the desired folder {object_name}')
             raise SystemExit
 
     def __init__(self, object_name, container_name, account_name, passphrase, target_container, path,
@@ -231,13 +231,13 @@ def container_move(args):
     """
     logging.info(f'Renaming container {args.container_name} to {args.target_container} in Azure storage '
                  f'account {args.account_name}')
-    del_container = AzureContainerMove(container_name=args.container_name,
-                                       account_name=args.account_name,
-                                       passphrase=args.passphrase,
-                                       target_container=args.target_container,
-                                       path=args.reset_path,
-                                       storage_tier=args.storage_tier,)
-    del_container.main()
+    move_container = AzureContainerMove(container_name=args.container_name,
+                                        account_name=args.account_name,
+                                        passphrase=args.passphrase,
+                                        target_container=args.target_container,
+                                        path=args.reset_path,
+                                        storage_tier=args.storage_tier)
+    move_container.main()
 
 
 def file_move(args):
@@ -294,6 +294,7 @@ def cli():
                                type=str,
                                default='Hot',
                                choices=['Hot', 'Cool', 'Archive'],
+                               metavar='STORAGE_TIER',
                                help='Set the storage tier for the container/file/folder to be moved. '
                                     'Options are "Hot", "Cool", and "Archive". Default is Hot')
     # Container move subparser

@@ -1,117 +1,567 @@
 #!/usr/bin/env python
-from azure_storage.methods import create_parent_parser, sas_prep, setup_arguments
+from azure_storage.methods import arg_dict_cleanup, create_batch_dict, create_parent_parser, sas_prep, setup_arguments
 from azure_storage.azure_upload import AzureUpload
+from azure_storage.azure_sas import AzureContainerSAS, AzureSAS
+from azure_storage.azure_move import AzureContainerMove, AzureMove
+from azure_storage.azure_download import AzureContainerDownload, AzureDownload
+from azure_storage.azure_tier import AzureContainerTier, AzureTier
+from azure_storage.azure_delete import AzureContainerDelete, AzureDelete
 from argparse import ArgumentParser, RawTextHelpFormatter
-import pandas as pd
 import coloredlogs
 import logging
 import sys
 import os
 
 
-class AzureAutomate(object):
-
-    def main(self):
-        pass
-
-    def __init__(self):
-        pass
-
-
-def file_upload(args):
-    try:
-        assert os.path.isfile(args.batch_file)
-    except AssertionError:
-        logging.error(f'Could not locate the supplied batch file {args.batch_file}. Please ensure the you entered the '
-                      f'name and path correctly')
-    # Read in the batch file
-    batch_dict = pd.read_csv(
-        args.batch_file,
-        sep='\t',
-        names=['container', 'file', 'reset_path', 'storage_tier']
-    ).transpose().to_dict()
+def file_upload(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureUpload class for each file
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'file', 'reset_path', 'storage_tier'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, file: $FILE_NAME...}, 2: {container_name: ...}, ...}
     for key, arg_dict in batch_dict.items():
-        # Clean up the arguments, as some are optional
-        arg_dict['reset_path'] = arg_dict['reset_path'] if type(arg_dict['reset_path']) is not float else None
-        arg_dict['storage_tier'] = arg_dict['storage_tier'] if type(arg_dict['storage_tier']) is not float else 'Hot'
-        if arg_dict['reset_path'] == "''":
-            arg_dict['reset_path'] = str()
-        # Create the file_upload object
-        file_uploader = AzureUpload(object_name=arg_dict['file'],
-                                    account_name=args.account_name,
-                                    container_name=arg_dict['container'],
-                                    passphrase=args.passphrase,
-                                    path=arg_dict['reset_path'],
-                                    storage_tier=arg_dict['storage_tier'],
-                                    category='file')
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the upload_file object
+        upload_file = AzureUpload(
+            object_name=arg_dict['file'],
+            account_name=args.account_name,
+            container_name=arg_dict['container'],
+            passphrase=args.passphrase,
+            path=arg_dict['reset_path'],
+            storage_tier=arg_dict['storage_tier'],
+            category='file'
+        )
+        # Run the file upload
         try:
-            file_uploader.main()
+            upload_file.main()
+        # Don't crash on SystemExits
+        except SystemExit:
             pass
-        except SystemExit as e:
+
+
+def folder_upload(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureUpload class for each folder
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'folder', 'reset_path', 'storage_tier'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, file: $FOLDER_NAME...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the upload_folder object
+        upload_folder = AzureUpload(
+            object_name=arg_dict['folder'],
+            account_name=args.account_name,
+            container_name=arg_dict['container'],
+            passphrase=args.passphrase,
+            path=arg_dict['reset_path'],
+            storage_tier=arg_dict['storage_tier'],
+            category='folder'
+        )
+        # Run the folder upload
+        try:
+            upload_folder.main()
+        # Don't crash on SystemExits
+        except SystemExit:
             pass
 
 
-def folder_upload(args):
-    pass
+def container_sas(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureSAS class for each container
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'expiry', 'output_file'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, expiry: $EXPIRY...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the sas_container object
+        sas_container = AzureContainerSAS(
+            container_name=arg_dict['container'],
+            output_file=arg_dict['output_file'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            expiry=arg_dict['expiry'],
+            verbosity=args.verbosity
+        )
+        # Run the container SAS URL creation
+        try:
+            sas_container.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def container_sas(args):
-    pass
+def file_sas(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureSAS class for each file
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'file', 'expiry', 'output_file'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, file: $FILE...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the sas_file object
+        sas_file = AzureSAS(
+            object_name=arg_dict['file'],
+            container_name=arg_dict['container'],
+            output_file=arg_dict['output_file'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            expiry=arg_dict['expiry'],
+            verbosity=args.verbosity,
+            category='file',
+        )
+        # Run the container SAS URL creation
+        try:
+            sas_file.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def file_sas(args):
-    pass
+def folder_sas(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureSAS class for each file
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+        """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'folder', 'expiry', 'output_file'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, folder: $FOLDER...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the sas_file object
+        sas_folder = AzureSAS(
+            object_name=arg_dict['folder'],
+            container_name=arg_dict['container'],
+            output_file=arg_dict['output_file'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            expiry=arg_dict['expiry'],
+            verbosity=args.verbosity,
+            category='folder',
+        )
+        # Run the container SAS URL creation
+        try:
+            sas_folder.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def folder_sas(args):
-    pass
+def container_move(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureContainerMove class
+    for each container
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'target', 'reset_path', 'storage_tier'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the move_container object
+        move_container = AzureContainerMove(
+            container_name=arg_dict['container'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            target_container=arg_dict['target'],
+            path=arg_dict['reset_path'],
+            storage_tier=arg_dict['storage_tier']
+        )
+        # Run the container move
+        try:
+            move_container.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def container_move(args):
-    pass
+def file_move(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureMove class for each file
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'target', 'file', 'reset_path', 'storage_tier'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the move_file object
+        move_file = AzureMove(
+            object_name=arg_dict['file'],
+            container_name=arg_dict['container'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            target_container=arg_dict['target'],
+            path=arg_dict['reset_path'],
+            storage_tier=arg_dict['storage_tier'],
+            category='file'
+        )
+        # Run the file move
+        try:
+            move_file.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def file_move(args):
-    pass
+def folder_move(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureMove class for each folder
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+        """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'target', 'folder', 'reset_path', 'storage_tier'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the move_folder object
+        move_folder = AzureMove(
+            object_name=arg_dict['folder'],
+            container_name=arg_dict['container'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            target_container=arg_dict['target'],
+            path=arg_dict['reset_path'],
+            storage_tier=arg_dict['storage_tier'],
+            category='folder'
+        )
+        # Run the folder move
+        try:
+            move_folder.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def folder_move(args):
-    pass
+def container_download(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments, run the AzureContainerDownload class for each container
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'output_path'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, output_path: $OUTPUT_PATH...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the download_container object
+        download_container = AzureContainerDownload(
+            container_name=arg_dict['container'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            output_path=arg_dict['output_path']
+        )
+        # Run the container download
+        try:
+            download_container.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def container_download(args):
-    pass
+def file_download(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments, run the AzureDownload class for each file
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'file', 'output_path'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, file: $FILE...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the download_file object
+        download_file = AzureDownload(
+            container_name=arg_dict['container'],
+            object_name=arg_dict['file'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            output_path=arg_dict['output_path'],
+            category='file'
+        )
+        # Run the file download
+        try:
+            download_file.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def file_download(args):
-    pass
+def folder_download(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments, run the AzureDownload class for each folder
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'folder', 'output_path'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, folder: $FOLDER...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the download_folder object
+        download_folder = AzureDownload(
+            container_name=arg_dict['container'],
+            object_name=arg_dict['folder'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            output_path=arg_dict['output_path'],
+            category='folder'
+        )
+        # Run the folder download
+        try:
+            download_folder.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def folder_download(args):
-    pass
+def container_tier(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments, run the AzureContainerTier class for each container
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'storage_tier'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, storage_tier: $STORAGE_TIER ...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the tier_container object
+        tier_container = AzureContainerTier(
+            container_name=arg_dict['container'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            storage_tier=arg_dict['storage_tier']
+        )
+        # Run the container tier
+        try:
+            tier_container.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def container_tier(args):
-    pass
+def file_tier(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments, run the AzureTier class for each file
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'file', 'storage_tier'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, file: $FILE ...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the tier_file object
+        tier_file = AzureTier(
+            container_name=arg_dict['container'],
+            object_name=arg_dict['file'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            storage_tier=arg_dict['storage_tier'],
+            category='file'
+        )
+        # Run the file tier
+        try:
+            tier_file.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def file_tier(args):
-    pass
+def folder_tier(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments, run the AzureTier class for each folder
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'folder', 'storage_tier'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, folder: $FOLDER ...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the tier_folder object
+        tier_folder = AzureTier(
+            container_name=arg_dict['container'],
+            object_name=arg_dict['folder'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            storage_tier=arg_dict['storage_tier'],
+            category='folder'
+        )
+        # Run the folder tier
+        try:
+            tier_folder.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def folder_tier(args):
-    pass
+def container_delete(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments, run the AzureContainerDelete class for each container
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME}, 2: {container_name: $CONTAINER_NAME}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the delete_container object
+        delete_container = AzureContainerDelete(
+            container_name=arg_dict['container'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+        )
+        # Run the container delete
+        try:
+            delete_container.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def container_delete(args):
-    pass
+def file_delete(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments, run the AzureDelete class for each file
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'file', 'retention_time'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, file: $FILE ...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the delete_file object
+        delete_file = AzureDelete(
+            container_name=arg_dict['container'],
+            object_name=arg_dict['file'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            retention_time=arg_dict['retention_time'],
+            category='file'
+        )
+        # Run the file delete
+        try:
+            delete_file.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def file_delete(args):
-    pass
+def folder_delete(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments, run the AzureDelete class for each folder
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(batch_file=args.batch_file,
+                                       headers=['container', 'folder', 'retention_time'])
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, folder: $FOLDER ...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        # Create the delete_folder object
+        delete_folder = AzureDelete(
+            container_name=arg_dict['container'],
+            object_name=arg_dict['folder'],
+            account_name=args.account_name,
+            passphrase=args.passphrase,
+            retention_time=arg_dict['retention_time'],
+            category='folder'
+        )
+        # Run the folder delete
+        try:
+            delete_folder.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
 
 
-def folder_delete(args):
+def batch(args):
     pass
 
 
@@ -149,7 +599,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, file name, destination path (optional), storage tier (optional)'
     )
     upload_file_subparser.set_defaults(func=file_upload)
@@ -165,7 +615,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields (one entry per line): '
+        help='Tab-separated file with the following fields (one entry per line):\n '
              'container name, folder name, destination path (optional), storage tier (optional)'
     )
 
@@ -193,7 +643,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields: \n'
              'container name, expiry (optional), output file (optional)'
     )
     sas_url_container_subparser.set_defaults(func=container_sas)
@@ -209,7 +659,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, file name and path, expiry (optional), output file (optional)'
     )
     sas_url_file_subparser.set_defaults(func=file_sas)
@@ -225,7 +675,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, folder name and path, expiry (optional), output file (optional)'
     )
     sas_url_folder_subparser.set_defaults(func=folder_sas)
@@ -253,7 +703,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, target container, destination path (optional), storage tier (optional)'
     )
     move_container_subparser.set_defaults(func=container_move)
@@ -269,7 +719,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, target container, file name, destination path (optional), storage tier (optional)'
     )
     move_file_subparser.set_defaults(func=file_move)
@@ -285,7 +735,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, target container, folder name, destination path (optional), storage tier (optional)'
     )
     move_folder_subparser.set_defaults(func=folder_move)
@@ -313,7 +763,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, output path (optional)'
     )
     download_container_subparser.set_defaults(func=container_download)
@@ -329,7 +779,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, file name, output path (optional)'
     )
     download_file_subparser.set_defaults(func=file_download)
@@ -345,7 +795,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, folder name, output path (optional)'
     )
     download_folder_subparser.set_defaults(func=folder_download)
@@ -373,7 +823,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, storage tier'
     )
     tier_container_subparser.set_defaults(func=container_tier)
@@ -389,7 +839,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, file name, storage tier'
     )
     tier_file_subparser.set_defaults(func=file_tier)
@@ -405,7 +855,7 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
+        help='Tab-separated file with the following fields:\n '
              'container name, folder name, storage tier'
     )
     tier_folder_subparser.set_defaults(func=folder_tier)
@@ -433,8 +883,8 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
-             'container name'
+        help='Tab-separated file with the following fields:\n '
+             'container name, retention time (optional)'
     )
     delete_container_subparser.set_defaults(func=container_delete)
     # File delete subparser
@@ -449,8 +899,8 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
-             'container name, file name'
+        help='Tab-separated file with the following fields:\n '
+             'container name, file name, retention time (optional)'
     )
     delete_file_subparser.set_defaults(func=file_delete)
     # Folder delete subparser
@@ -465,16 +915,52 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields: '
-             'container name, folder name'
+        help='Tab-separated file with the following fields:\n '
+             'container name, folder name, retention time (optional)'
     )
     delete_folder_subparser.set_defaults(func=folder_delete)
+    # Batch subparser
+    batch_subparser = subparsers.add_parser(
+        parents=[parent_parser],
+        name='batch',
+        description='Perform multiple different operations in batch',
+        formatter_class=RawTextHelpFormatter,
+        help='Perform multiple different operations in batch'
+    )
+    batch_subparser.add_argument(
+        '-b', '--batch_file',
+        required=True,
+        type=str,
+        help='Tab-separated file in the following format:\n'
+             'command, sub-command, arguments\n\n'
+             'Below is the complete list of functionalities:\n'
+             'upload, file, container name, file name, destination path (optional), storage tier (optional)\n'
+             'upload, folder, container name, folder name, destination path (optional), storage tier (optional)\n'
+             'sas, container, container name, expiry (optional), output file (optional)\n'
+             'sas, file, container name, file name and path, expiry (optional), output file (optional)\n'
+             'sas, folder, container name, folder name and path, expiry (optional), output file (optional)\n'
+             'move, container, container name, target container, destination path (optional), storage tier (optional)\n'
+             'move, file, container name, target container, file name, destination path (optional), '
+             'storage tier (optional)\n'
+             'move, folder, container name, target container, folder name, destination path (optional), '
+             'storage tier (optional)\n'
+             'download, container, container name, output path (optional)\n'
+             'download, file, container name, file name, output path (optional)\n'
+             'download, folder, container name, folder name, output path (optional)\n'
+             'tier, container, container name, storage tier\n'
+             'tier, file, container name, file name, storage tier\n'
+             'tier, folder, container name, folder name, storage tier\n'
+             'delete, container, container name\n'
+             'delete, file, container name, file name, retention time (optional)\n'
+             'delete, folder, container name, folder name, retention time (optional)'
+    )
+    batch_subparser.set_defaults(func=batch)
     # Set up the arguments, and run the appropriate subparser
     arguments = setup_arguments(parser=parser)
     # Return to the requested logging level, as it has been increased to WARNING to suppress the log being filled with
     # information from azure.core.pipeline.policies.http_logging_policy
     coloredlogs.install(level=arguments.verbosity.upper())
-    logging.info('Upload complete')
+    logging.info('Operations complete')
     # Prevent the arguments being printed to the console (they are returned in order for the tests to work)
     sys.stderr = open(os.devnull, 'w')
     return arguments

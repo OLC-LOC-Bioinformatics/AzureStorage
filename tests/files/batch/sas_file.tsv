@@ -1,0 +1,4 @@
+abc	file_1.txt		
+abc	nested/file_1.txt	8	files/sas/sas_test.txt
+abc	file_2.txt		files/sas/sas_test_1.txt
+abc	nested/file_2.txt	4	
