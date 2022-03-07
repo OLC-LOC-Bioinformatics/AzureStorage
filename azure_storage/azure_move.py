@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-from azure_storage.methods import create_parent_parser, delete_container, delete_file, delete_folder, copy_blob, \
-     move_prep, setup_arguments
+from azure_storage.methods import copy_blob, create_parent_parser, delete_container, delete_file, delete_folder,  \
+     extract_common_path, move_prep, setup_arguments
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
@@ -174,16 +174,9 @@ class AzureMove(object):
         present = False
         try:
             for blob_file in generator:
-                # Create the pathlib.Path objects for both the folder and the blob file
-                object_path = pathlib.Path(os.path.normpath(object_name))
-                blob_path = pathlib.Path(blob_file.name).parent
-                # If there is a common path between the folder and the blob file path, then there is a match
-                try:
-                    common_path = blob_path.relative_to(object_path)
-                    # Change the dot returned by an exact match to the directory with ''
-                    common_path = common_path if str(common_path) != '.' else ''
-                except ValueError:
-                    common_path = None
+                # Extract the common path between the current file and the requested folder
+                common_path = extract_common_path(object_name=object_name,
+                                                  blob_file=blob_file)
                 # Only copy the file if there is a common path between the object path and the blob path (they match)
                 if common_path is not None:
                     # Update the blob presence variable

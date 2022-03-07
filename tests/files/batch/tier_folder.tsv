@@ -1,3 +1,4 @@
-123	nested_folder	hot
-123	nested_folder/nested	cool
-123	files/folder_2/nested_folder_2	hot
+00container	move_files	hot
+00container	move_folder/nested_folder_2	cool
+00container	nested_1/renamed/	cool
+00container	nested_1/renamed/nested/double_nested	hot

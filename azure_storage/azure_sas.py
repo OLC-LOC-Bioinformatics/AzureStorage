@@ -76,6 +76,8 @@ class AzureContainerSAS(object):
             self.output_file = os.path.abspath(os.path.join(output_file))
         # Ensure that the output file can be used
         if not os.path.isfile(self.output_file):
+            # Create the parental directory for the output file as required
+            os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
             try:
                 open(self.output_file, 'a').close()
             except FileNotFoundError:
@@ -229,6 +231,8 @@ class AzureSAS(object):
             self.output_file = os.path.abspath(os.path.join(output_file))
         # Ensure that the output file can be used
         if not os.path.isfile(self.output_file):
+            # Create the parental directory for the output file as required
+            os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
             try:
                 open(self.output_file, 'a').close()
             except FileNotFoundError:

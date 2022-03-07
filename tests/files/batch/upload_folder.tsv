@@ -1,4 +1,4 @@
-abc	files/folder	nested_folder	
-abc	files/folder_2	''	cool
-abc	files/folder_2/nested_folder_2	nested_folder_2	cool
-abc	files/folder_2/nested_folder_2	""		
+0container	files/folder	nested_folder	
+0container	files/folder_2	''	cool
+0container	files/folder_2/nested_folder_2	nested_folder	cool
+0container	files/folder_2/nested_folder_2	""		

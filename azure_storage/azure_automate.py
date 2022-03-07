@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-from azure_storage.methods import arg_dict_cleanup, create_batch_dict, create_parent_parser, sas_prep, setup_arguments
+from azure_storage.methods import arg_dict_cleanup, create_batch_dict, create_parent_parser, parse_batch_file, \
+    sas_prep, setup_arguments
 from azure_storage.azure_upload import AzureUpload
 from azure_storage.azure_sas import AzureContainerSAS, AzureSAS
 from azure_storage.azure_move import AzureContainerMove, AzureMove
@@ -562,7 +563,59 @@ def folder_delete(args, batch_dict=None):
 
 
 def batch(args):
-    pass
+    """
+    Read in the batch file, and run the appropriate function for each requested command and subcommand combination
+    :param args: type ArgumentParser arguments
+    """
+    # Ensure that the batch file exists
+    try:
+        assert os.path.isfile(args.batch_file)
+    except AssertionError:
+        logging.error(f'Could not locate the supplied batch file {args.batch_file}. Please ensure the you entered '
+                      f'the name and path correctly')
+    # Create a dictionary of all the functions with the corresponding command and subcommands as keys
+    function_dict = {
+        'upload': {
+            'file': file_upload,
+            'folder': folder_upload
+        },
+        'sas': {
+            'container': container_sas,
+            'file': file_sas,
+            'folder': folder_sas
+        },
+        'move': {
+            'container': container_move,
+            'file': file_move,
+            'folder': folder_move
+        },
+        'download': {
+            'container': container_download,
+            'file': file_download,
+            'folder': folder_download
+        },
+        'tier': {
+            'container': container_tier,
+            'file': file_tier,
+            'folder': folder_tier
+        },
+        'delete': {
+            'container': container_delete,
+            'file': file_delete,
+            'folder': folder_delete
+        }
+    }
+    # Read in the batch file
+    with open(args.batch_file, 'r') as batch_doc:
+        for line in batch_doc:
+            # Ignore commented lines
+            if not line.startswith('#'):
+                # Convert the line to a dictionary with appropriate header: value pairs. Extract the command, and
+                # subcommand
+                command, subcommand, batch_dict = parse_batch_file(line=line)
+                print(batch_dict)
+                # Run the appropriate function for the supplied command, subcommand combination
+                function_dict[command][subcommand](args, batch_dict=batch_dict)
 
 
 def cli():

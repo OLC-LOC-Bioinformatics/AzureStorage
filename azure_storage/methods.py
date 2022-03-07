@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from azure.storage.blob import BlobSasPermissions, BlobServiceClient, generate_blob_sas, RetentionPolicy
 from argparse import ArgumentParser
+from io import StringIO
 import pandas as pd
 import numpy as np
 import coloredlogs
@@ -627,6 +628,26 @@ def delete_container(blob_service_client, container_name, account_name):
         raise SystemExit
 
 
+def extract_common_path(object_name, blob_file):
+    """
+    Extract the common path (if any) between a file in Azure storage, and a user-supplied folder name
+    :param object_name: type str: Name and path of file/folder to download from Azure storage
+    :param blob_file: type iterable from azure.storage.blob.BlobServiceClient.ContainerClient.list_blobs
+    :return: common_path: The calculated common path between the folder and the file in blob storage (can be None)
+    """
+    # Create the pathlib.Path objects for both the folder and the blob file
+    object_path = pathlib.Path(os.path.normpath(object_name))
+    blob_path = pathlib.Path(blob_file.name).parent
+    # If there is a common path between the folder and the blob file path, then there is a match
+    try:
+        common_path = blob_path.relative_to(object_path)
+        # Change the dot returned by an exact match to the directory with ''
+        common_path = common_path if str(common_path) != '.' else ''
+    except ValueError:
+        common_path = None
+    return common_path
+
+
 def delete_file(container_client, object_name, blob_service_client, container_name, account_name):
     """
     Delete a file from Azure storage
@@ -678,10 +699,10 @@ def delete_folder(container_client, object_name, blob_service_client, container_
     present = False
     try:
         for blob_file in generator:
-            # Create the path of the file by extracting the path of the file
-            blob_path = os.path.join(os.path.split(blob_file.name)[0])
-            # Ensure that the supplied folder path is present in the blob path
-            if os.path.normpath(object_name) in os.path.normpath(blob_path):
+            common_path = extract_common_path(object_name=object_name,
+                                              blob_file=blob_file)
+            # Only copy the file if there is a common path between the object path and the blob path (they match)
+            if common_path is not None:
                 # Update the folder presence boolean
                 present = True
                 # Create the blob client
@@ -695,7 +716,7 @@ def delete_folder(container_client, object_name, blob_service_client, container_
                       f'in Azure storage account {account_name}. Please ensure that all arguments have been '
                       f'entered correctly')
         raise SystemExit
-    # Send a warning to the user that the blob could not be found
+    # Log an error that the folder could not be found
     if not present:
         logging.error(
             f'There was an error deleting folder {object_name} in container {container_name}, '
@@ -760,7 +781,7 @@ def create_batch_dict(batch_file, headers):
     Read in the supplied file of arguments with pandas. Create a dictionary of the arguments from a transposed dataframe
     :param batch_file: type str: Name and path of file containing requested operations
     :param headers: type list: Names of all the headers present in the file
-    :return:
+    :return: Pandas dataframe.transpose().to_dict() of header: value extracted from the desired operation
     """
     # Ensure that the batch file exists
     try:
@@ -776,3 +797,73 @@ def create_batch_dict(batch_file, headers):
         names=headers
     ).transpose().to_dict()
     return batch_dict
+
+
+def parse_batch_file(line):
+    """
+    Extract the requested command and subcommand from a line from an AzureAutomate batch file. Create a dictionary with
+    the appropriate header:value for that command and subcommand combination
+    :param line: type str: Individual line of text from batch file detailing requested operations. Format is:
+    command;subcommand;operation-specific arguments
+    :return: command: type str: Desired command to run e.g. upload, sas, move, download, tier, delete
+    :return: subcommand: Subcommand for operation e.g. container, file, folder
+    :return: batch_dict: Pandas dataframe.transpose().to_dict() of header: value extracted from the desired operation
+    """
+    # Create a dictionary of the appropriate headers for each command and subcommand combination
+    header_dict = {
+        'upload': {
+            'file': ['command', 'subcommand', 'container', 'file', 'reset_path', 'storage_tier'],
+            'folder': ['command', 'subcommand', 'container', 'folder', 'reset_path', 'storage_tier']
+        },
+        'sas': {
+            'container': ['command', 'subcommand', 'container', 'expiry', 'output_file'],
+            'file': ['command', 'subcommand', 'container', 'file', 'expiry', 'output_file'],
+            'folder': ['command', 'subcommand', 'container', 'folder', 'expiry', 'output_file']
+        },
+        'move': {
+            'container': ['command', 'subcommand', 'container', 'target', 'reset_path', 'storage_tier'],
+            'file': ['command', 'subcommand', 'container', 'target', 'file', 'reset_path', 'storage_tier'],
+            'folder': ['command', 'subcommand', 'container', 'target', 'folder', 'reset_path', 'storage_tier']
+        },
+        'download': {
+            'container': ['command', 'subcommand', 'container', 'output_path'],
+            'file': ['command', 'subcommand', 'container', 'file', 'output_path'],
+            'folder': ['command', 'subcommand', 'container', 'folder', 'output_path']
+        },
+        'tier': {
+            'container': ['command', 'subcommand', 'container', 'storage_tier'],
+            'file': ['command', 'subcommand', 'container', 'file', 'storage_tier'],
+            'folder': ['command', 'subcommand', 'container', 'folder', 'storage_tier']
+        },
+        'delete': {
+            'container': ['command', 'subcommand', 'container'],
+            'file': ['command', 'subcommand', 'container', 'file', 'retention_time'],
+            'folder': ['command', 'subcommand', 'container', 'folder', 'retention_time']
+        }
+    }
+    # Extract the command and subcommand from the line. They will be the first two entries
+    try:
+        command = line.split('\t')[0]
+        subcommand = line.split('\t')[1]
+    except IndexError:
+        logging.error(f'Could not extract the desired command and subcommand from your file. Please review the '
+                      f'following line {line}')
+        raise SystemExit
+    # Use the extracted command and subcommand to determine the appropriate headers
+    try:
+        headers = header_dict[command][subcommand]
+    except KeyError:
+        logging.error(f'Could not find the requested command {command} and subcommand {subcommand} in the list of '
+                      f'commands. Please ensure that you created your batch file correctly')
+        raise SystemExit
+    # Use StringIO to convert the string into a format that can be read by pandas.read_csv
+    input_string = StringIO(line.rstrip())
+    # Read in the line using pandas.read_csv. Use tabs as the separator, and provide the header names.
+    # Transpose the data, and convert the dataframe to a dictionary
+    batch_dict = pd.read_csv(
+        input_string,
+        sep='\t',
+        names=headers
+    ).transpose().to_dict()
+    # Return the command, subcommand, and parsed dictionary
+    return command, subcommand, batch_dict
