@@ -4,26 +4,26 @@
         <meta charset="utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Tools for manipulating files in Azure storage, including upload, download, SAS URL creation, move, delete">
         
-        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/">
-        <link rel="shortcut icon" href="img/favicon.ico">
-        <title>OLC Bioinformatics Azure Storage</title>
-        <link href="css/bootstrap.min.css" rel="stylesheet">
-        <link href="css/font-awesome.min.css" rel="stylesheet">
-        <link href="css/base.css" rel="stylesheet">
+        
+        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/automate/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Automate - OLC Bioinformatics Azure Storage</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/docco.min.css">
 
-        <script src="js/jquery-1.10.2.min.js" defer></script>
-        <script src="js/bootstrap.min.js" defer></script>
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
         <script>hljs.initHighlightingOnLoad();</script> 
     </head>
 
-    <body class="homepage">
+    <body>
         <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
             <div class="container">
-                <a class="navbar-brand" href=".">OLC Bioinformatics Azure Storage</a>
+                <a class="navbar-brand" href="..">OLC Bioinformatics Azure Storage</a>
                 <!-- Expander button -->
                 <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
                     <span class="navbar-toggler-icon"></span>
@@ -33,35 +33,35 @@
                 <div id="navbar-collapse" class="navbar-collapse collapse">
                         <!-- Main navigation -->
                         <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../install/" class="nav-link">Installation</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../credentials/" class="nav-link">Credentials</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../upload/" class="nav-link">Upload</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../sas_url/" class="nav-link">SAS URL</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../move/" class="nav-link">Move</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../download/" class="nav-link">Download</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../set_tier/" class="nav-link">Set Tier</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../delete/" class="nav-link">Delete</a>
+                            </li>
                             <li class="navitem active">
-                                <a href="." class="nav-link">Home</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="install/" class="nav-link">Installation</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="credentials/" class="nav-link">Credentials</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="upload/" class="nav-link">Upload</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="sas_url/" class="nav-link">SAS URL</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="move/" class="nav-link">Move</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="download/" class="nav-link">Download</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="set_tier/" class="nav-link">Set Tier</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="delete/" class="nav-link">Delete</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="automate/" class="nav-link">Automate</a>
+                                <a href="./" class="nav-link">Automate</a>
                             </li>
                         </ul>
 
@@ -72,17 +72,17 @@
                             </a>
                         </li>
                             <li class="nav-item">
-                                <a rel="prev" class="nav-link disabled">
+                                <a rel="prev" href="../delete/" class="nav-link">
                                     <i class="fa fa-arrow-left"></i> Previous
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="install/" class="nav-link">
+                                <a rel="next" class="nav-link disabled">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/index.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                                <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/automate.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
                     </ul>
                 </div>
@@ -101,31 +101,12 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
-            
-            <li class="nav-item" data-level="2"><a href="#olc-bioinformatics-azurestorage-tools" class="nav-link">OLC Bioinformatics AzureStorage tools</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-<h2 id="olc-bioinformatics-azurestorage-tools">OLC Bioinformatics AzureStorage tools</h2>
-<p>This suite of tools (written in Python) allows you to manipulate containers/files/folders in your Azure storage account.</p>
-<p>There are eight scripts in this package:</p>
-<ol>
-<li><a href="credentials/"><code>AzureCredentials</code></a>: enter, modify, or delete your Azure connection string and account name into your system keyring, avoiding storing plain text passwords, environmental variables, and entering the connection string every time you run one of the scripts in the package</li>
-<li><a href="upload/"><code>AzureUpload</code></a>: upload a file or folder to a container in your Azure storage account</li>
-<li><a href="sas_url/"><code>AzureSAS</code></a>: create SAS (shared access signature) URLs for a file, a folder, or an entire container in your Azure storage account.</li>
-<li><a href="move/"><code>AzureMove</code></a>: move a file, folder, or an entire container within your Azure storage account</li>
-<li><a href="download/"><code>AzureDownload</code></a>: download a file, folder, or an entire container from your Azure storage account</li>
-<li><a href="set_tier/"><code>AzureTier</code></a>: set the storage tier of a file, folder, or an entire container from your Azure storage account</li>
-<li><a href="delete/"><code>AzureDelete</code></a>: delete a file, folder, or an entire container from your Azure storage account</li>
-<li><a href="automate/"><code>AzureAutomate</code></a>: run upload, sas, move, download, set_tier, and/or delete in batch</li>
-</ol>
-<h3 id="feedback">Feedback</h3>
-<p>If you encounter any issues installing or running AzureStorage, have feature requests, or need assistance, please <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/issues/new/choose">open an issue on Github</a>, or email me at <code>adam.koziol@inspection.gc.ca</code>  </p></div>
+</div>
             </div>
         </div>
 
@@ -134,11 +115,11 @@
             <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
         </footer>
         <script>
-            var base_url = ".",
+            var base_url = "..",
                 shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
         </script>
-        <script src="js/base.js" defer></script>
-        <script src="search/main.js" defer></script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
 
         <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -203,8 +184,3 @@
 
     </body>
 </html>
-
-<!--
-MkDocs version : 1.2.3
-Build Date UTC : 2022-03-07 20:47:38.790666+00:00
--->

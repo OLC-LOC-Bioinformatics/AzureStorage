@@ -12,5 +12,6 @@ nav:
   - SAS URL: 'sas_url.md'
   - Move: 'move.md'
   - Download: 'download.md'
-  - Set Tier: 'tier.md'
+  - Set Tier: 'set_tier.md'
   - Delete: 'delete.md'
+  - Automate: 'automate.md'
