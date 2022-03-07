@@ -55,10 +55,13 @@
                                 <a href="./" class="nav-link">Download</a>
                             </li>
                             <li class="navitem">
-                                <a href="../tier.md" class="nav-link">Set Tier</a>
+                                <a href="../set_tier/" class="nav-link">Set Tier</a>
                             </li>
                             <li class="navitem">
                                 <a href="../delete/" class="nav-link">Delete</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../automate/" class="nav-link">Automate</a>
                             </li>
                         </ul>
 
@@ -74,7 +77,7 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a rel="next" href="../delete/" class="nav-link">
+                                <a rel="next" href="../set_tier/" class="nav-link">
                                     Next <i class="fa fa-arrow-right"></i>
                                 </a>
                             </li>
@@ -98,12 +101,159 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="2"><a href="#azuredownload" class="nav-link">AzureDownload</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-</div>
+<h2 id="azuredownload">AzureDownload</h2>
+<p>Download containers, files, or folder from your Azure storage account</p>
+<p>Choose either the <a href="#azuredownload-container"><code>container</code></a>, <a href="#azuredownload-file"><code>file</code></a>, or  <a href="#azuredownload-folder"><code>folder</code></a> functionality</p>
+<h4 id="general-usage">General usage</h4>
+<pre><code>usage: AzureDownload [-h] {container,file,folder} ...
+
+Download containers/files/folders from Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+Available functionality:
+  {container,file,folder}
+    container           Download a container from Azure storage
+    file                Download a file from Azure storage
+    folder              Download a folder from Azure storage
+</code></pre>
+<h3 id="azuredownload-container">AzureDownload container</h3>
+<p>Download a container from your Azure storage account</p>
+<h4 id="required-arguments">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+</ul>
+<h4 id="optional-arguments">Optional arguments:</h4>
+<ul>
+<li>output path: local path where container is to be saved. Default is your current working directory</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="example-commands">Example commands:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container and <code>account_name</code> as the name of the storage account</p>
+<p>To perform a basic container download (download to your current working directory)</p>
+<p><code>AzureDownload container -a account name -c container-name</code></p>
+<p>To download a container to the folder <code>outputs</code> in your current working directory</p>
+<p><code>AzureDownload container -a account name -c container-name -o outputs</code></p>
+<p>To download a container to the folder <code>/home/users/outputs</code> </p>
+<p><code>AzureDownload container -a account name -c container-name -o /home/users/outputs</code></p>
+<h4 id="usage">Usage</h4>
+<pre><code>usage: AzureDownload container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_PATH]
+
+Download a container from Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
+  -o OUTPUT_PATH, --output_path OUTPUT_PATH
+                        Name and path of directory in which the outputs are to be saved. Default is your $CWD
+</code></pre>
+<h3 id="azuredownload-file">AzureDownload file</h3>
+<p>Download a file from your Azure storage account</p>
+<h4 id="required-arguments_1">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+<li>file name</li>
+</ul>
+<h4 id="optional-arguments_1">Optional arguments:</h4>
+<ul>
+<li>output path: local path where container is to be saved. Default is your current working directory</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="example-commands_1">Example commands:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container and <code>account_name</code> as the name of the storage account</p>
+<p>To download the file <code>file_name.gz</code> to your current working directory</p>
+<p><code>AzureDownload file -a account name -c container-name -f file_name.gz</code></p>
+<p>To download the file <code>file_name.gz</code> nested in the <code>outputs</code> folder to your current working directory</p>
+<p><code>AzureDownload file -a account name -c container-name -f outputs/file_name.gz</code></p>
+<p>To download the file <code>file_name.gz</code> nested in the <code>outputs</code> folder to the folder <code>files</code> in your current working directory</p>
+<p><code>AzureDownload file -a account name -c container-name -f outputs/file_name.gz -o files</code></p>
+<p>To download the file <code>file_name.gz</code> to the folder <code>/home/users/outputs</code> </p>
+<p><code>AzureDownload file -a account name -c container-name -f file_name.gz -o /home/users/outputs</code></p>
+<h4 id="usage_1">Usage</h4>
+<pre><code>usage: AzureDownload file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_PATH] -f FILE
+
+Download a file from Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
+  -o OUTPUT_PATH, --output_path OUTPUT_PATH
+                        Name and path of directory in which the outputs are to be saved. Default is your $CWD
+  -f FILE, --file FILE  Name of file to download from Azure storage.e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz
+</code></pre>
+<h3 id="azuredownload-folder">AzureDownload folder</h3>
+<p>Download a folder from your Azure storage account</p>
+<h4 id="required-arguments_2">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+<li>folder name</li>
+</ul>
+<h4 id="optional-arguments_2">Optional arguments:</h4>
+<ul>
+<li>output path: local path where container is to be saved. Default is your current working directory</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="example-commands_2">Example commands:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container and <code>account_name</code> as the name of the storage account</p>
+<p>To download the folder <code>folder_name</code> to your current working directory</p>
+<p><code>AzureDownload folder -a account name -c container-name -f folder_name</code></p>
+<p>To download the folder <code>folder_name</code> nested in the <code>outputs</code> folder to your current working directory</p>
+<p><code>AzureDownload folder -a account name -c container-name -f outputs/folder_name</code></p>
+<p>To download the folder <code>folder_name</code> nested in the <code>outputs</code> folder to the folder <code>folders</code> in your current working directory</p>
+<p><code>AzureDownload folder -a account name -c container-name -f outputs/folder_name -o folders</code></p>
+<p>To download the folder <code>folder_name</code> to the folder <code>/home/users/outputs</code> </p>
+<p><code>AzureDownload folder -a account name -c container-name -f folder_name -o /home/users/outputs</code></p>
+<h4 id="usage_2">Usage</h4>
+<pre><code>usage: AzureDownload folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_PATH] -f FOLDER
+
+Download a folder from Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
+  -o OUTPUT_PATH, --output_path OUTPUT_PATH
+                        Name and path of directory in which the outputs are to be saved. Default is your $CWD
+  -f FOLDER, --folder FOLDER
+                        Name of the folder to download from Azure storage e.g. InterOp
+</code></pre></div>
             </div>
         </div>
 
