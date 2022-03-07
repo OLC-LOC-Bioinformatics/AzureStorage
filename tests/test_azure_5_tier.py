@@ -212,7 +212,7 @@ def test_container_tier_integration_cool(mock_args, variables):
     container_tier(arguments)
     blobs = variables.container_client.list_blobs()
     for blob in blobs:
-        if blob.name == os.path.join('container_integration/nested_folder_test_1.txt'):
+        if blob.name == os.path.join('container_integration', 'nested_folder_test_1.txt'):
             assert blob.blob_tier == variables.storage_tier
 
 
@@ -228,7 +228,7 @@ def test_container_tier_integration_hot(mock_args, variables):
     container_tier(arguments)
     blobs = variables.container_client.list_blobs()
     for blob in blobs:
-        if blob.name == os.path.join('container_integration/nested_folder_test_1.txt'):
+        if blob.name == os.path.join('container_integration', 'nested_folder_test_1.txt'):
             assert blob.blob_tier == storage_tier
 
 

@@ -1,5 +1,5 @@
-0container	files/file_1.txt	nested	
-0container	files/file_1.txt	''	cool
-0container	files/file_2.txt	nested	cool
-0container	files/file_1.txt	upload		
-0container	files/file_2.txt	""	
+0container	tests/files/file_1.txt	nested	
+0container	tests/files/file_1.txt	''	cool
+0container	tests/files/file_2.txt	nested	cool
+0container	tests/files/file_1.txt	upload		
+0container	tests/files/file_2.txt	""	

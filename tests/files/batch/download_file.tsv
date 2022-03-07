@@ -1,3 +1,3 @@
-00container	nested_1/renamed/nested/double_nested/triple_nested_file.txt	files/download
+00container	nested_1/renamed/nested/double_nested/triple_nested_file.txt	tests/files/download
 00container	move_folder/file_1.txt	""
-00container	move_folder/file_2.txt	files/download	
+00container	move_folder/file_2.txt	tests/files/download	

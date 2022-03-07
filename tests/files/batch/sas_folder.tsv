@@ -1,4 +1,4 @@
 0container	nested_folder_2		
 0container	nested/	8	sas_test.txt
-0container	nested_folder/nested		files/sas/sas_test_1.txt
+0container	nested_folder/nested		tests/files/sas/sas_test_1.txt
 0container	folder_2/nested_folder_2	4	

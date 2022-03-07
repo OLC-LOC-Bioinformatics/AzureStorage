@@ -1,4 +1,4 @@
 0container	file_1.txt		
-0container	nested/file_1.txt	8	files/sas/sas_test.txt
-0container	file_2.txt		files/sas/sas_test_1.txt
+0container	nested/file_1.txt	8	tests/files/sas/sas_test.txt
+0container	file_2.txt		tests/files/sas/sas_test_1.txt
 0container	nested/file_2.txt	4	

@@ -613,7 +613,6 @@ def batch(args):
                 # Convert the line to a dictionary with appropriate header: value pairs. Extract the command, and
                 # subcommand
                 command, subcommand, batch_dict = parse_batch_file(line=line)
-                print(batch_dict)
                 # Run the appropriate function for the supplied command, subcommand combination
                 function_dict[command][subcommand](args, batch_dict=batch_dict)
 
