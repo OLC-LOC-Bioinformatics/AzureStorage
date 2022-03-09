@@ -61,9 +61,7 @@ To create SAS URLs, and save them to the file `sas_urls.txt` nested in folder `o
 
 #### Usage
 ```
-usage: AzureSAS container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
-                          [-v {debug,info,warning,error,critical}] [-e EXPIRY]
-                          [-o OUTPUT_FILE]
+usage: AzureSAS container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE]
 
 Create SAS URLs for all files in a container in Azure storage
 
@@ -75,13 +73,12 @@ optional arguments:
                         Name of the Azure storage account
   -p PASSPHRASE, --passphrase PASSPHRASE
                         The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
-  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
-                        Set the logging level. Default is info.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -e EXPIRY, --expiry EXPIRY
                         The number of days that the SAS URL will be valid. The minimum is 1, and the maximum is 365. The default is 10.
   -o OUTPUT_FILE, --output_file OUTPUT_FILE
                         Name and path of file in which the SAS URLs are to be saved. Default is $CWD/sas.txt
-
 ```
 
 ### AzureSAS file
@@ -126,9 +123,7 @@ To create a SAS URL for file `file_name.gz`, and save it to the file `sas_urls.t
 #### Usage
 
 ```
-usage: AzureSAS file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
-                     [-v {debug,info,warning,error,critical}] [-e EXPIRY]
-                     [-o OUTPUT_FILE] -f FILE
+usage: AzureSAS file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE] -f FILE
 
 Create a SAS URL for a file in Azure storage
 
@@ -140,8 +135,8 @@ optional arguments:
                         Name of the Azure storage account
   -p PASSPHRASE, --passphrase PASSPHRASE
                         The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
-  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
-                        Set the logging level. Default is info.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -e EXPIRY, --expiry EXPIRY
                         The number of days that the SAS URL will be valid. The minimum is 1, and the maximum is 365. The default is 10.
   -o OUTPUT_FILE, --output_file OUTPUT_FILE
@@ -192,9 +187,7 @@ To create SAS URLs for all files in folder `folder_name`, and save them to the f
 #### Usage
 
 ```
-usage: AzureSAS folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
-                       [-v {debug,info,warning,error,critical}] [-e EXPIRY]
-                       [-o OUTPUT_FILE] -f FOLDER
+usage: AzureSAS folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE] -f FOLDER
 
 Create SAS URLs for all files in a folder in Azure storage
 
@@ -206,13 +199,12 @@ optional arguments:
                         Name of the Azure storage account
   -p PASSPHRASE, --passphrase PASSPHRASE
                         The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
-  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
-                        Set the logging level. Default is info.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -e EXPIRY, --expiry EXPIRY
                         The number of days that the SAS URL will be valid. The minimum is 1, and the maximum is 365. The default is 10.
   -o OUTPUT_FILE, --output_file OUTPUT_FILE
                         Name and path of file in which the SAS URLs are to be saved. Default is $CWD/sas.txt
   -f FOLDER, --folder FOLDER
                         Name of the folder for which SAS URLs are to be created for all files. e.g. InterOp
-
 ```

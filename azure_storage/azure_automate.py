@@ -935,8 +935,8 @@ def cli():
         '-b', '--batch_file',
         required=True,
         type=str,
-        help='Tab-separated file with the following fields:\n '
-             'container name, retention time (optional)'
+        help='File with the following field:\n '
+             'container name'
     )
     delete_container_subparser.set_defaults(func=container_delete)
     # File delete subparser

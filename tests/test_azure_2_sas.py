@@ -88,9 +88,7 @@ def test_sas_urls_output_contents(variables):
                          [('sas_urls.txt', 0),
                           ('sas_urls.txt', 500),
                           ('', 1),
-                          ('folder/', 1),
-                          ('protected_folder/sas_urls.txt', 1),
-                          ('protected_folder/nested_folder/sas_urls.txt', 1)])
+                          ('folder/', 1)])
 @patch('argparse.ArgumentParser.parse_args')
 def test_file_sas_integration_invalid(mock_args, output_file, expiry, variables):
     file_name = 'file_1.txt'

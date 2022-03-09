@@ -1,6 +1,6 @@
 ## AzureDownload
 
-Download containers, files, or folder from your Azure storage account
+Download containers, files, or folders from your Azure storage account
 
 Choose either the [`container`](#azuredownload-container), [`file`](#azuredownload-file), or  [`folder`](#azuredownload-folder) functionality
 

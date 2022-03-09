@@ -166,7 +166,5 @@ def test_delete_container_integration(mock_args, variables):
                                                 verbosity='info')
     arguments = cli()
     container_delete(arguments)
-    test_client_prep(variables)
-    with pytest.raises(azure.core.exceptions.ResourceNotFoundError):
-        blobs = variables.container_client.list_blobs()
-        assert not [blob.name for blob in blobs]
+    with pytest.raises(azure.core.exceptions.ResourceExistsError):
+        variables.blob_service_client.create_container(variables.container_name)

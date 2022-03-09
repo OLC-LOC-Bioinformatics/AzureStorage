@@ -57,9 +57,8 @@ To move a container and nest it into folder `outputs`:
 #### Usage
 
 ```
-usage: AzureMove container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
-                           [-v {debug,info,warning,error,critical}] -t
-                           TARGET_CONTAINER [-r RESET_PATH] [-s {Hot,Cool,Archive}]
+usage: AzureMove container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
+                           [-s STORAGE_TIER]
 
 Move a container in Azure storage
 
@@ -71,15 +70,14 @@ optional arguments:
                         Name of the Azure storage account
   -p PASSPHRASE, --passphrase PASSPHRASE
                         The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
-  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
-                        Set the logging level. Default is info.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
-                        The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container)e.g. sequence_data
+                        The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container
   -r RESET_PATH, --reset_path RESET_PATH
-                        Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use "" or ''
-  -s {Hot,Cool,Archive}, --storage_tier {Hot,Cool,Archive}
+                        Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use or ''
+  -s STORAGE_TIER, --storage_tier STORAGE_TIER
                         Set the storage tier for the container/file/folder to be moved. Options are "Hot", "Cool", and "Archive". Default is Hot
-
 ```
 
 ### AzureMove file
@@ -133,9 +131,8 @@ To move the file `file_name.gz` nested in folder `outputs` to folder `results` i
 #### Usage
 
 ```
-usage: AzureMove file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
-                      [-v {debug,info,warning,error,critical}] -t TARGET_CONTAINER
-                      [-r RESET_PATH] [-s {Hot,Cool,Archive}] -f FILE
+usage: AzureMove file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
+                      [-s STORAGE_TIER] -f FILE
 
 Move a file within Azure storage
 
@@ -147,16 +144,15 @@ optional arguments:
                         Name of the Azure storage account
   -p PASSPHRASE, --passphrase PASSPHRASE
                         The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
-  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
-                        Set the logging level. Default is info.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
                         The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container
   -r RESET_PATH, --reset_path RESET_PATH
-                        Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use "" or ''
-  -s {Hot,Cool,Archive}, --storage_tier {Hot,Cool,Archive}
+                        Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use or ''
+  -s STORAGE_TIER, --storage_tier STORAGE_TIER
                         Set the storage tier for the container/file/folder to be moved. Options are "Hot", "Cool", and "Archive". Default is Hot
   -f FILE, --file FILE  Name of blob file to move in Azure storage. e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz
-
 ```
 
 ### AzureMove folder
@@ -210,9 +206,8 @@ To move the folder `folder_name` nested in folder `outputs` to folder `results` 
 #### Usage
 
 ```
-usage: AzureMove folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
-                        [-v {debug,info,warning,error,critical}] -t TARGET_CONTAINER
-                        [-r RESET_PATH] [-s {Hot,Cool,Archive}] -f FOLDER
+usage: AzureMove folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
+                        [-s STORAGE_TIER] -f FOLDER
 
 Move a folder within Azure storage
 
@@ -224,13 +219,13 @@ optional arguments:
                         Name of the Azure storage account
   -p PASSPHRASE, --passphrase PASSPHRASE
                         The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
-  -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
-                        Set the logging level. Default is info.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
                         The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container
   -r RESET_PATH, --reset_path RESET_PATH
-                        Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use "" or ''
-  -s {Hot,Cool,Archive}, --storage_tier {Hot,Cool,Archive}
+                        Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use or ''
+  -s STORAGE_TIER, --storage_tier STORAGE_TIER
                         Set the storage tier for the container/file/folder to be moved. Options are "Hot", "Cool", and "Archive". Default is Hot
   -f FOLDER, --folder FOLDER
                         Name of folder to move in Azure storage. e.g. InterOp
