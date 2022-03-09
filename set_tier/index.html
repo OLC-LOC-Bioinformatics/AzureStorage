@@ -101,12 +101,146 @@
     
     <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
         <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="2"><a href="#azuretier" class="nav-link">AzureTier</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
         </ul>
     </div>
 </div></div>
                     <div class="col-md-9" role="main">
 
-</div>
+<h2 id="azuretier">AzureTier</h2>
+<p>Set the storage tier (<code>Hot</code>, <code>Cool</code>, or <code>Archive</code>) for containers, files, or folders in your Azure storage account</p>
+<p>Choose either the <a href="#azuretier-container"><code>container</code></a>, <a href="#azuretier-file"><code>file</code></a>, or  <a href="#azuretier-folder"><code>folder</code></a> functionality</p>
+<h4 id="general-usage">General usage</h4>
+<pre><code>usage: AzureTier [-h] {container,file,folder} ...
+
+Set the storage tier of containers/files/folders in Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+
+Available functionality:
+  {container,file,folder}
+    container           Change the storage tier of a container in Azure storage
+    file                Change the storage tier of a file in Azure storage
+    folder              Change the storage tier of a folder in Azure storage
+</code></pre>
+<h3 id="azuretier-container">AzureTier container</h3>
+<p>Set the storage tier of a container in your Azure storage account</p>
+<h4 id="required-arguments">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+<li>storage tier</li>
+</ul>
+<h4 id="optional-arguments">Optional arguments:</h4>
+<ul>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="example-command">Example command:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container and <code>account_name</code> as the name of the storage account</p>
+<p>To change the storage tier of a container to <code>Cool</code></p>
+<p><code>AzureTier -a account_name -c container-name -s Cool</code></p>
+<h4 id="usage">Usage</h4>
+<pre><code>usage: AzureTier container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME
+                           [-p PASSPHRASE] [-v VERBOSITY] -s STORAGE_TIER
+
+Change the storage tier of a container in Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
+  -s STORAGE_TIER, --storage_tier STORAGE_TIER
+                        Set the storage tier for a container/file/folder. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;
+</code></pre>
+<h3 id="azuretier-file">AzureTier file</h3>
+<p>Set the storage tier of a file in your Azure storage account</p>
+<h4 id="required-arguments_1">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+<li>file name</li>
+<li>storage tier</li>
+</ul>
+<h4 id="optional-arguments_1">Optional arguments:</h4>
+<ul>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="example-command_1">Example command:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container and <code>account_name</code> as the name of the storage account</p>
+<p>To change the storage tier of the file <code>file_name.gz</code> to <code>Archive</code></p>
+<p><code>AzureTier -a account_name -c container-name -f file_name.gz -s Archive</code></p>
+<h4 id="usage_1">Usage</h4>
+<pre><code>usage: AzureTier file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+                      [-v VERBOSITY] -s STORAGE_TIER -f FILE
+
+Change the storage tier of a file in Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
+  -s STORAGE_TIER, --storage_tier STORAGE_TIER
+                        Set the storage tier for a container/file/folder. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;
+  -f FILE, --file FILE  Name of file in Azure storage that will have its storage tier sete.g. 220202-m05722/2022-SEQ-0001_S1_L001_R1_001.fastq.gz
+</code></pre>
+<h3 id="azuretier-folder">AzureTier folder</h3>
+<p>Set the storage tier of a folder in your Azure storage account</p>
+<h4 id="required-arguments_2">Required arguments:</h4>
+<ul>
+<li>container name</li>
+<li>account name</li>
+<li>folder name</li>
+<li>storage tier</li>
+</ul>
+<h4 id="optional-arguments_2">Optional arguments:</h4>
+<ul>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="example-command_2">Example command:</h4>
+<p>These commands will use <code>container-name</code> as the name of the container and <code>account_name</code> as the name of the storage account</p>
+<p>To change the storage tier of the folder <code>results/folder_name</code> to <code>Hot</code></p>
+<p><code>AzureTier -a account_name -c container-name -f results/folder_name -s Hot</code></p>
+<h4 id="usage_2">Usage</h4>
+<pre><code>usage: AzureTier folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+                        [-v VERBOSITY] -s STORAGE_TIER -f FOLDER
+
+Change the storage tier of a folder in Azure storage
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONTAINER_NAME, --container_name CONTAINER_NAME
+                        Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
+  -s STORAGE_TIER, --storage_tier STORAGE_TIER
+                        Set the storage tier for a container/file/folder. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;
+  -f FOLDER, --folder FOLDER
+                        Name of the folder in Azure storage that will have its storage tier set e.g. InterOp
+</code></pre></div>
             </div>
         </div>
 
