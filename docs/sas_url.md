@@ -45,19 +45,19 @@ These commands will use `container-name` as the name of the container, and `acco
 
 To create SAS URLs with default settings:
 
-`Azure SAS container -a account_name -c container-name`
+`AzureSAS container -a account_name -c container-name`
 
 To create SAS URLs with an expiry of 15 days:
 
-`Azure SAS container -a account_name -c container-name -e 15`
+`AzureSAS container -a account_name -c container-name -e 15`
 
 To create SAS URLs, and save them to the file `sas_urls.txt` in your current working directory:
 
-`Azure SAS container -a account_name -c container-name -o sas_urls.txt`
+`AzureSAS container -a account_name -c container-name -o sas_urls.txt`
 
 To create SAS URLs, and save them to the file `sas_urls.txt` nested in folder `outputs` in your current working directory:
 
-`Azure SAS container -a account_name -c container-name -o outputs/sas_urls.txt`
+`AzureSAS container -a account_name -c container-name -o outputs/sas_urls.txt`
 
 #### Usage
 ```
@@ -102,23 +102,23 @@ These commands will use `container-name` as the name of the container, and `acco
 
 To create a SAS URL for file `file_name.gz` with default settings:
 
-`Azure SAS file -a account_name -c container-name -f file_name.gz`
+`AzureSAS file -a account_name -c container-name -f file_name.gz`
 
 To create a SAS URL for file `file_name.gz` nested in folder `outputs` with default settings:
 
-`Azure SAS file -a account_name -c container-name -f outputs/file_name.gz`
+`AzureSAS file -a account_name -c container-name -f outputs/file_name.gz`
 
 To create a SAS URL for file `file_name.gz` with an expiry of 15 days:
 
-`Azure SAS file -a account_name -c container-name f file_name.gz -e 15`
+`AzureSAS file -a account_name -c container-name f file_name.gz -e 15`
 
 To create a SAS URL for file `file_name.gz`, and save it to the file `sas_urls.txt` in your current working directory:
 
-`Azure SAS file -a account_name -c container-name -f file_name.gz -o sas_urls.txt`
+`AzureSAS file -a account_name -c container-name -f file_name.gz -o sas_urls.txt`
 
 To create a SAS URL for file `file_name.gz`, and save it to the file `sas_urls.txt` nested in folder `outputs` in your current working directory:
 
-`Azure SAS file -a account_name -c container-name -f file_name.gz -o outputs/sas_urls.txt`
+`AzureSAS file -a account_name -c container-name -f file_name.gz -o outputs/sas_urls.txt`
 
 #### Usage
 
@@ -165,23 +165,23 @@ These commands will use `container-name` as the name of the container, and `acco
 
 To create SAS URLs for all files in folder `folder_name` with default settings:
 
-`Azure SAS folder -a account_name -c container-name -f folder_name`
+`AzureSAS folder -a account_name -c container-name -f folder_name`
 
 To create SAS URLs for all files in folder `folder_name` nested in folder `outputs` with default settings:
 
-`Azure SAS folder -a account_name -c container-name -f outputs/folder_name`
+`AzureSAS folder -a account_name -c container-name -f outputs/folder_name`
 
 To create SAS URLs for all files in folder `folder_name` with an expiry of 15 days:
 
-`Azure SAS folder -a account_name -c container-name f folder_name -e 15`
+`AzureSAS folder -a account_name -c container-name f folder_name -e 15`
 
 To create SAS URLs for all files in folder `folder_name`, and save them to the file `sas_urls.txt` in your current working directory:
 
-`Azure SAS folder -a account_name -c container-name -f folder_name -o sas_urls.txt`
+`AzureSAS folder -a account_name -c container-name -f folder_name -o sas_urls.txt`
 
 To create SAS URLs for all files in folder `folder_name`, and save them to the file `sas_urls.txt` nested in folder `outputs` in your current working directory:
 
-`Azure SAS folder -a account_name -c container-name -f folder_name -o outputs/sas_urls.txt`
+`AzureSAS folder -a account_name -c container-name -f folder_name -o outputs/sas_urls.txt`
 
 
 #### Usage
