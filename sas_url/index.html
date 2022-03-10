@@ -148,13 +148,13 @@ Available functionality:
 <h4 id="example-commands">Example commands:</h4>
 <p>These commands will use <code>container-name</code> as the name of the container, and <code>account_name</code> as the name of the storage account</p>
 <p>To create SAS URLs with default settings:</p>
-<p><code>Azure SAS container -a account_name -c container-name</code></p>
+<p><code>AzureSAS container -a account_name -c container-name</code></p>
 <p>To create SAS URLs with an expiry of 15 days:</p>
-<p><code>Azure SAS container -a account_name -c container-name -e 15</code></p>
+<p><code>AzureSAS container -a account_name -c container-name -e 15</code></p>
 <p>To create SAS URLs, and save them to the file <code>sas_urls.txt</code> in your current working directory:</p>
-<p><code>Azure SAS container -a account_name -c container-name -o sas_urls.txt</code></p>
+<p><code>AzureSAS container -a account_name -c container-name -o sas_urls.txt</code></p>
 <p>To create SAS URLs, and save them to the file <code>sas_urls.txt</code> nested in folder <code>outputs</code> in your current working directory:</p>
-<p><code>Azure SAS container -a account_name -c container-name -o outputs/sas_urls.txt</code></p>
+<p><code>AzureSAS container -a account_name -c container-name -o outputs/sas_urls.txt</code></p>
 <h4 id="usage">Usage</h4>
 <pre><code>usage: AzureSAS container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE]
 
@@ -193,15 +193,15 @@ optional arguments:
 <h4 id="example-commands_1">Example commands:</h4>
 <p>These commands will use <code>container-name</code> as the name of the container, and <code>account_name</code> as the name of the storage account</p>
 <p>To create a SAS URL for file <code>file_name.gz</code> with default settings:</p>
-<p><code>Azure SAS file -a account_name -c container-name -f file_name.gz</code></p>
+<p><code>AzureSAS file -a account_name -c container-name -f file_name.gz</code></p>
 <p>To create a SAS URL for file <code>file_name.gz</code> nested in folder <code>outputs</code> with default settings:</p>
-<p><code>Azure SAS file -a account_name -c container-name -f outputs/file_name.gz</code></p>
+<p><code>AzureSAS file -a account_name -c container-name -f outputs/file_name.gz</code></p>
 <p>To create a SAS URL for file <code>file_name.gz</code> with an expiry of 15 days:</p>
-<p><code>Azure SAS file -a account_name -c container-name f file_name.gz -e 15</code></p>
+<p><code>AzureSAS file -a account_name -c container-name f file_name.gz -e 15</code></p>
 <p>To create a SAS URL for file <code>file_name.gz</code>, and save it to the file <code>sas_urls.txt</code> in your current working directory:</p>
-<p><code>Azure SAS file -a account_name -c container-name -f file_name.gz -o sas_urls.txt</code></p>
+<p><code>AzureSAS file -a account_name -c container-name -f file_name.gz -o sas_urls.txt</code></p>
 <p>To create a SAS URL for file <code>file_name.gz</code>, and save it to the file <code>sas_urls.txt</code> nested in folder <code>outputs</code> in your current working directory:</p>
-<p><code>Azure SAS file -a account_name -c container-name -f file_name.gz -o outputs/sas_urls.txt</code></p>
+<p><code>AzureSAS file -a account_name -c container-name -f file_name.gz -o outputs/sas_urls.txt</code></p>
 <h4 id="usage_1">Usage</h4>
 <pre><code>usage: AzureSAS file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE] -f FILE
 
@@ -241,15 +241,15 @@ optional arguments:
 <h4 id="example-commands_2">Example commands:</h4>
 <p>These commands will use <code>container-name</code> as the name of the container, and <code>account_name</code> as the name of the storage account</p>
 <p>To create SAS URLs for all files in folder <code>folder_name</code> with default settings:</p>
-<p><code>Azure SAS folder -a account_name -c container-name -f folder_name</code></p>
+<p><code>AzureSAS folder -a account_name -c container-name -f folder_name</code></p>
 <p>To create SAS URLs for all files in folder <code>folder_name</code> nested in folder <code>outputs</code> with default settings:</p>
-<p><code>Azure SAS folder -a account_name -c container-name -f outputs/folder_name</code></p>
+<p><code>AzureSAS folder -a account_name -c container-name -f outputs/folder_name</code></p>
 <p>To create SAS URLs for all files in folder <code>folder_name</code> with an expiry of 15 days:</p>
-<p><code>Azure SAS folder -a account_name -c container-name f folder_name -e 15</code></p>
+<p><code>AzureSAS folder -a account_name -c container-name f folder_name -e 15</code></p>
 <p>To create SAS URLs for all files in folder <code>folder_name</code>, and save them to the file <code>sas_urls.txt</code> in your current working directory:</p>
-<p><code>Azure SAS folder -a account_name -c container-name -f folder_name -o sas_urls.txt</code></p>
+<p><code>AzureSAS folder -a account_name -c container-name -f folder_name -o sas_urls.txt</code></p>
 <p>To create SAS URLs for all files in folder <code>folder_name</code>, and save them to the file <code>sas_urls.txt</code> nested in folder <code>outputs</code> in your current working directory:</p>
-<p><code>Azure SAS folder -a account_name -c container-name -f folder_name -o outputs/sas_urls.txt</code></p>
+<p><code>AzureSAS folder -a account_name -c container-name -f folder_name -o outputs/sas_urls.txt</code></p>
 <h4 id="usage_2">Usage</h4>
 <pre><code>usage: AzureSAS folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE] -f FOLDER
 
