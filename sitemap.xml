@@ -2,52 +2,57 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/automate/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/credentials/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/delete/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/download/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/install/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/list/</loc>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/move/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/sas_url/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/set_tier/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://OLC-LOC-Bioinformatics.github.io/AzureStorage/upload/</loc>
-         <lastmod>2022-03-10</lastmod>
+         <lastmod>2022-03-16</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
