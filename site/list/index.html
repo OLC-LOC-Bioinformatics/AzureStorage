@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/list/">
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>List - OLC Bioinformatics Azure Storage</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/docco.min.css">
+
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">OLC Bioinformatics Azure Storage</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../install/" class="nav-link">Installation</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../credentials/" class="nav-link">Credentials</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../upload/" class="nav-link">Upload</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../sas_url/" class="nav-link">SAS URL</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../move/" class="nav-link">Move</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../download/" class="nav-link">Download</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../set_tier/" class="nav-link">Set Tier</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../delete/" class="nav-link">Delete</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../automate/" class="nav-link">Automate</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/list.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="2"><a href="#azurelist" class="nav-link">AzureList</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h2 id="azurelist">AzureList</h2>
+<p>List and optionally filter containers and/or files in your Azure storage account</p>
+<p>Choose either the <a href="#azurelist-container"><code>container</code></a>, or the <a href="#azurelist-search"><code>search</code></a> functionality</p>
+<p>This script allows you to filter using regular expressions, so make sure you <a href="https://docs.python.org/3/howto/regex.html">know what you're doing</a>, <a href="https://docs.python.org/3/howto/regex.html">check out a tutorial</a>, <a href="https://www.dataquest.io/blog/regex-cheatsheet/">look at a cheatsheet</a>, and/or <a href="https://pythex.org/">test your expressions</a></p>
+<p><strong>Important:</strong> since the regular expressions are being entered on the command line, you will need to escape certain characters e.g. ! should be !</p>
+<h4 id="general-usage">General Usage</h4>
+<pre><code>usage: AzureList [-h] {container,search} ...
+
+Explore your Azure storage account
+
+optional arguments:
+  -h, --help          show this help message and exit
+
+Available functionality:
+  {container,search}
+    container         Filter and list containers in your Azure storage account
+    search            Search files in a container (or containers) in Azure storage
+</code></pre>
+<h3 id="azurelist-container">AzureList container</h3>
+<p>List and optionally filter containers in your Azure storage account</p>
+<h4 id="azurelist-container-required-arguments">AzureList container required arguments</h4>
+<ul>
+<li>account name</li>
+</ul>
+<h4 id="azurelist-container-optional-arguments">AzureList container optional arguments</h4>
+<ul>
+<li>expression: expression to use to filter the containers. Regular expressions are supported. Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \!</li>
+<li>output_file: name and path of file in which the outputs are to be saved.</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="azurelist-container-example-commands">AzureList container example commands</h4>
+<p>These commands will use <code>account_name</code> as the name of the storage account</p>
+<p>To list all containers in your Azure storage account</p>
+<p><code>AzureList container -a account_name</code></p>
+<p>To confirm the container <code>191216-dar</code> is present in your account</p>
+<p><code>AzureList container -a account_name 191216-dar</code></p>
+<p>To filter the list of containers to those starting with <code>19</code></p>
+<p><code>AzureList container -a account_name 19*</code></p>
+<p>To filter the list of container to those starting with <code>19</code> and four additional digits followed by a dash</p>
+<p><code>AzureList container -a account_name 19d{4}-*</code></p>
+<p>To filter the list of containers to those starting with six digits, a dash, and three digits</p>
+<p><code>AzureList container -a account_name \\d{6}-\\D{3}</code></p>
+<p>To filter the list of containers to those ending with <code>outputs</code></p>
+<p><code>AzureList container -a account_name *outputs\$</code></p>
+<p>To filter the list of containers to those that start with <code>19</code> and four additional digits, followed by a dash, three letters, and does not contain the word <code>outputs</code></p>
+<p><code>AzureList container -a account_name 1912\\d{2}-\\D{3}\(\?\!*output\)</code></p>
+<h4 id="azurelist-container-usage">AzureList container usage</h4>
+<pre><code>usage: AzureList container [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_FILE]
+                           [expression]
+
+Filter and list containers in your Azure storage account
+
+positional arguments:
+  expression            Expression to search. This command supports regular expressions. e.g. 1912* will return all containers starting with 1912, including 191216-dar Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \!
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Optionally provide the name and path of file in which the outputs are to be saved.
+</code></pre>
+<h3 id="azurelist-search">AzureList search</h3>
+<p>Filter files in a container (or containers) in Azure storage</p>
+<h4 id="azurelist-search-required-arguments">AzureList search required arguments</h4>
+<ul>
+<li>account name</li>
+</ul>
+<h4 id="azurelist-search-optional-arguments">AzureList search optional arguments</h4>
+<ul>
+<li>container_name: name of the Azure storage container. Regular expressions are supported. Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \!</li>
+<li>expression: expression to use to filter the containers. Regular expressions are supported. Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \!</li>
+<li>output_file: name and path of file in which the outputs are to be saved.</li>
+<li>passphrase used to store your connection string in the system keyring (default is AzureStorage)</li>
+<li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
+</ul>
+<h4 id="azurelist-search-example-commands">AzureList search example commands</h4>
+<p>These commands will use <code>account_name</code> as the name of the storage account. Note that all the regex examples used in <a href="#azurelist-container-example-commands"><code>AzureList container</code></a> can be used here</p>
+<p>To list all files in all containers in your storage account</p>
+<p><code>AzureList search -a account_name</code></p>
+<p>To list all files in all containers ending with <code>.gz</code></p>
+<p><code>AzureList search -a account_name *.gz</code></p>
+<p>To list all files in the container <code>container-name</code></p>
+<p><code>AzureList search -a account_name -c container_name</code></p>
+<p>To list all files in the container <code>container-name</code> starting with <code>reports</code></p>
+<p><code>AzureList search -a account_name -c container_name reports*</code></p>
+<p>To list all files in the container <code>container-name</code> ending with <code>.gz</code></p>
+<p><code>AzureList search -a account_name -c container-name *.gz</code></p>
+<p>To list all files in the container <code>container-name</code> that contain <code>.gz</code> </p>
+<p><code>AzureList search -a account_name -c container-name *.gz*</code></p>
+<p>To list all files in the container <code>container-name</code> that contain <code>.gz</code> (but not at the end)</p>
+<p><code>AzureList search -a account_name -c container-name *.gz.+</code></p>
+<h4 id="azurelist-search-usage">AzureList search usage</h4>
+<pre><code>usage: AzureList search [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_FILE]
+                        [-c [CONTAINER_NAME]]
+                        [expression]
+
+Filter files in a container (or containers) in Azure storage
+
+positional arguments:
+  expression            Expression to search. This command supports regular expressions. e.g. 1912* will return all containers starting with 1912, including 191216-dar Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \!
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
+                        Name of the Azure storage account
+  -p PASSPHRASE, --passphrase PASSPHRASE
+                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is &quot;AzureStorage&quot;.
+  -v VERBOSITY, --verbosity VERBOSITY
+                        Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
+  -o OUTPUT_FILE, --output_file OUTPUT_FILE
+                        Optionally provide the name and path of file in which the outputs are to be saved.
+  -c [CONTAINER_NAME], --container_name [CONTAINER_NAME]
+                        Name of the Azure storage container. This command supports regular expressions e.g. 1912* will return all containers starting with 1912.Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \! You can make your queries as complex as you wish: 1912\d{2}-\D{3}\(\?\!*output\) will only return containers that start with 1912, and have two additional digits. If the word output is present, any matches are ignored. There also have to be exactly three letters following a dash and the first six numbers e.g. 191216-dar and 191227-dar will be returned but not 191216-dar-outputs 191202-test, 191216dar, 1912162-dar, 191203-m05722, 191114-gta, or 200105-dar (and many others)
+</code></pre></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>

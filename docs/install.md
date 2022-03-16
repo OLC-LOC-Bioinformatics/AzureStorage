@@ -34,10 +34,15 @@ Your credentials will be securely stored in the system keyring
 
 ### Tests
 
-The AzureStorage package comes with unit tests to ensure that the installation and provided credentials are valid
+If you encounter issues with the AzureStorage package, tests are available to ensure that the installation was successful and your credentials are valid.
+
+You will need to clone this repository and run the tests with pytest
+
+
+`git clone https://github.com/OLC-LOC-Bioinformatics/AzureStorage.git`
+
+`cd AzureStorage`
 
 `python -m pytest tests/`
-
-Ensure that all tests complete successfully before proceeding
 
 

@@ -17,7 +17,14 @@ You must enter your Azure storage connection string and account name into the sy
 
 ### Tests
 
-The AzureStorage package comes with unit tests to ensure that the installation and provided credentials are valid
+If you encounter issues with the AzureStorage package, tests are available to ensure that the installation was successful and your credentials are valid.
+
+You will need to clone this repository and run the tests with pytest:
+
+
+`git clone https://github.com/OLC-LOC-Bioinformatics/AzureStorage.git`
+
+`cd AzureStorage`
 
 `python -m pytest tests/`
 
@@ -33,6 +40,7 @@ Ensure that all tests complete successfully before proceeding
 6. [`AzureTier`](https://olc-loc-bioinformatics.github.io/AzureStorage/set_tier/): set the storage tier of a file, folder, or an entire container from your Azure storage account
 7. [`AzureDelete`](https://olc-loc-bioinformatics.github.io/AzureStorage/delete/): delete a file, folder, or an entire container from your Azure storage account
 8. [`AzureAutomate`](https://olc-loc-bioinformatics.github.io/AzureStorage/automate/): run upload, sas, move, download, set_tier, and/or delete in batch
+9. [`AzureList`](https://olc-loc-bioinformatics.github.io/AzureStorage/list/): List and optionally filter containers and/or files in your Azure storage account
 
 ## License
 
