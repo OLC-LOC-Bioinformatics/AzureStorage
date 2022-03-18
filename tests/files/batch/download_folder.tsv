@@ -1,3 +1,4 @@
 00container	move_folder	tests/files/download
 00container	move_folder	""
 00container	nested_1/renamed/nested	tests/files/download	
+00container	invalid_folder

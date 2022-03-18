@@ -4,6 +4,7 @@ from azure_storage.azure_download import AzureContainerDownload, AzureDownload, 
     file_download, folder_download
 from unittest.mock import patch
 import argparse
+import pathlib
 import pytest
 import shutil
 import azure
@@ -64,6 +65,27 @@ def test_download_file_invalid(variables, file_name):
                                     output_path=output_path)
 
 
+def test_download_file_invalid_category(variables):
+    with pytest.raises(SystemExit):
+        file_downloader = AzureDownload(object_name='file_1.txt',
+                                        container_name='000000000container',
+                                        output_path=variables.output_path,
+                                        account_name=variables.account_name,
+                                        passphrase=variables.passphrase,
+                                        category='file')
+        file_downloader.main()
+
+
+def test_download_file_invalid_container(variables):
+    with pytest.raises(SystemExit):
+        file_downloader = AzureDownload(object_name='file_1.txt',
+                                        container_name=variables.container_name,
+                                        output_path=variables.output_path,
+                                        account_name=variables.account_name,
+                                        passphrase=variables.passphrase,
+                                        category='container')
+        file_downloader.main()
+
 @patch('argparse.ArgumentParser.parse_args')
 def test_download_file_integration(mock_args, variables):
     output_path = os.path.join(variables.output_path, 'files_integration')
@@ -107,6 +129,70 @@ def test_download_folder(variables, folder_name, check_file):
                                   object_name=folder_name,
                                   output_path=output_path)
     assert os.path.isfile(os.path.join(output_path, folder_name, os.path.basename(check_file)))
+
+
+def test_download_folder_tilde(variables):
+    path_obj = pathlib.Path(variables.output_path)
+    path = f'~{os.sep}{path_obj.relative_to(pathlib.Path.home())}'
+    folder_downloader = AzureDownload(object_name='container_integration/',
+                                      container_name=variables.container_name,
+                                      output_path=path,
+                                      account_name=variables.account_name,
+                                      passphrase=variables.passphrase,
+                                      category='folder')
+    folder_downloader.main()
+
+
+def test_download_folder_invalid_path(variables):
+    with pytest.raises(SystemExit):
+        path = '/invalid'
+        folder_downloader = AzureDownload(object_name='container_integration/',
+                                          container_name=variables.container_name,
+                                          output_path=path,
+                                          account_name=variables.account_name,
+                                          passphrase=variables.passphrase,
+                                          category='folder')
+        folder_downloader.main()
+
+
+def test_download_folder_invalid_container(variables):
+    with pytest.raises(SystemExit):
+        folder_downloader = AzureDownload(object_name='container_integration/',
+                                          container_name='000000000container',
+                                          output_path=variables.output_path,
+                                          account_name=variables.account_name,
+                                          passphrase=variables.passphrase,
+                                          category='folder')
+        folder_downloader.main()
+
+
+def test_download_container_tilde(variables):
+    path_obj = pathlib.Path(variables.output_path)
+    path = f'~{os.sep}{path_obj.relative_to(pathlib.Path.home())}'
+    container_downloader = AzureContainerDownload(container_name=variables.container_name,
+                                                  output_path=path,
+                                                  account_name=variables.account_name,
+                                                  passphrase=variables.passphrase)
+    container_downloader.main()
+
+
+def test_download_container_invalid_path(variables):
+    with pytest.raises(SystemExit):
+        path = '/invalid'
+        container_downloader = AzureContainerDownload(container_name=variables.container_name,
+                                                      output_path=path,
+                                                      account_name=variables.account_name,
+                                                      passphrase=variables.passphrase)
+        container_downloader.main()
+
+
+def test_download_container_invalid(variables):
+    with pytest.raises(SystemExit):
+        container_downloader = AzureContainerDownload(container_name='000000000container',
+                                                      output_path=variables.output_path,
+                                                      account_name=variables.account_name,
+                                                      passphrase=variables.passphrase)
+        container_downloader.main()
 
 
 @pytest.mark.parametrize('folder_name',

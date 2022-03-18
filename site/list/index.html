@@ -63,6 +63,9 @@
                             <li class="navitem">
                                 <a href="../automate/" class="nav-link">Automate</a>
                             </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">List</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -71,6 +74,16 @@
                                 <i class="fa fa-search"></i> Search
                             </a>
                         </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../automate/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" class="nav-link disabled">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
                             <li class="nav-item">
                                 <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/list.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
                             </li>
@@ -187,17 +200,17 @@ optional arguments:
 <p>To list all files in all containers in your storage account</p>
 <p><code>AzureList search -a account_name</code></p>
 <p>To list all files in all containers ending with <code>.gz</code></p>
-<p><code>AzureList search -a account_name *.gz</code></p>
+<p><code>AzureList search -a account_name \*.gz</code></p>
 <p>To list all files in the container <code>container-name</code></p>
 <p><code>AzureList search -a account_name -c container_name</code></p>
 <p>To list all files in the container <code>container-name</code> starting with <code>reports</code></p>
 <p><code>AzureList search -a account_name -c container_name reports*</code></p>
 <p>To list all files in the container <code>container-name</code> ending with <code>.gz</code></p>
-<p><code>AzureList search -a account_name -c container-name *.gz</code></p>
+<p><code>AzureList search -a account_name -c container-name \*.gz</code></p>
 <p>To list all files in the container <code>container-name</code> that contain <code>.gz</code> </p>
-<p><code>AzureList search -a account_name -c container-name *.gz*</code></p>
+<p><code>AzureList search -a account_name -c container-name \*.gz*</code></p>
 <p>To list all files in the container <code>container-name</code> that contain <code>.gz</code> (but not at the end)</p>
-<p><code>AzureList search -a account_name -c container-name *.gz.+</code></p>
+<p><code>AzureList search -a account_name -c container-name \*.gz.+</code></p>
 <h4 id="azurelist-search-usage">AzureList search usage</h4>
 <pre><code>usage: AzureList search [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_FILE]
                         [-c [CONTAINER_NAME]]

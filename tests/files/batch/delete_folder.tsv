@@ -1,3 +1,4 @@
 00container	nested_1/renamed/nested/double_nested	
 00container	move_files	2
 00container	move_folder/	5
+00container	invalid_folder	5

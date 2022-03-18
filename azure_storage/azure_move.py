@@ -4,8 +4,6 @@ from azure_storage.methods import copy_blob, create_parent_parser, delete_contai
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging
-import pathlib
-import azure
 import sys
 import os
 
@@ -46,18 +44,15 @@ class AzureContainerMove(object):
         """
         # Create a generator containing all the blobs in the container
         generator = source_container_client.list_blobs()
-        try:
-            for blob_file in generator:
-                # Copy the file to the new container
-                copy_blob(blob_file=blob_file,
-                          blob_service_client=blob_service_client,
-                          container_name=container_name,
-                          target_container=target_container,
-                          path=path,
-                          storage_tier=storage_tier,
-                          category='container')
-        except azure.core.exceptions.ResourceNotFoundError:
-            logging.error(f' The specified container, {container_name}, does not exist.')
+        for blob_file in generator:
+            # Copy the file to the new container
+            copy_blob(blob_file=blob_file,
+                      blob_service_client=blob_service_client,
+                      container_name=container_name,
+                      target_container=target_container,
+                      path=path,
+                      storage_tier=storage_tier,
+                      category='container')
 
     def __init__(self, container_name, account_name, passphrase, target_container, path, storage_tier):
         # Set the container name variable
@@ -96,8 +91,7 @@ class AzureMove(object):
             delete_file(container_client=self.source_container_client,
                         object_name=self.object_name,
                         blob_service_client=self.blob_service_client,
-                        container_name=self.container_name,
-                        account_name=self.account_name)
+                        container_name=self.container_name)
         elif self.category == 'folder':
             self.move_folder(source_container_client=self.source_container_client,
                              object_name=self.object_name,
@@ -133,22 +127,18 @@ class AzureMove(object):
         generator = source_container_client.list_blobs()
         # Create a boolean to determine if the blob has been located
         present = False
-        try:
-            for blob_file in generator:
-                # Filter for the blob name
-                if blob_file.name == object_name:
-                    # Update the blob presence variable
-                    present = True
-                    # Copy the file to the new container
-                    copy_blob(blob_file=blob_file,
-                              blob_service_client=blob_service_client,
-                              container_name=container_name,
-                              target_container=target_container,
-                              path=path,
-                              storage_tier=storage_tier)
-        except azure.core.exceptions.ResourceNotFoundError:
-            logging.error(f' The specified container, {container_name}, does not exist.')
-            raise SystemExit
+        for blob_file in generator:
+            # Filter for the blob name
+            if blob_file.name == object_name:
+                # Update the blob presence variable
+                present = True
+                # Copy the file to the new container
+                copy_blob(blob_file=blob_file,
+                          blob_service_client=blob_service_client,
+                          container_name=container_name,
+                          target_container=target_container,
+                          path=path,
+                          storage_tier=storage_tier)
         # Send a warning to the user that the blob could not be found
         if not present:
             logging.error(f'Could not locate the desired file {object_name}')
@@ -172,28 +162,24 @@ class AzureMove(object):
         generator = source_container_client.list_blobs()
         # Create a boolean to determine if the blob has been located
         present = False
-        try:
-            for blob_file in generator:
-                # Extract the common path between the current file and the requested folder
-                common_path = extract_common_path(object_name=object_name,
-                                                  blob_file=blob_file)
-                # Only copy the file if there is a common path between the object path and the blob path (they match)
-                if common_path is not None:
-                    # Update the blob presence variable
-                    present = True
-                    # Copy the file to the new container
-                    copy_blob(blob_file=blob_file,
-                              blob_service_client=blob_service_client,
-                              container_name=container_name,
-                              target_container=target_container,
-                              path=path,
-                              object_name=object_name,
-                              category=category,
-                              common_path=common_path,
-                              storage_tier=storage_tier)
-        except azure.core.exceptions.ResourceNotFoundError:
-            logging.error(f' The specified container, {container_name}, does not exist.')
-            raise SystemExit
+        for blob_file in generator:
+            # Extract the common path between the current file and the requested folder
+            common_path = extract_common_path(object_name=object_name,
+                                              blob_file=blob_file)
+            # Only copy the file if there is a common path between the object path and the blob path (they match)
+            if common_path is not None:
+                # Update the blob presence variable
+                present = True
+                # Copy the file to the new container
+                copy_blob(blob_file=blob_file,
+                          blob_service_client=blob_service_client,
+                          container_name=container_name,
+                          target_container=target_container,
+                          path=path,
+                          object_name=object_name,
+                          category=category,
+                          common_path=common_path,
+                          storage_tier=storage_tier)
         # Send a warning to the user that the blob could not be found
         if not present:
             logging.error(f'Could not locate the desired folder {object_name}')

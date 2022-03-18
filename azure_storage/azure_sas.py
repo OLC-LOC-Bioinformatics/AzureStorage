@@ -19,7 +19,8 @@ class AzureContainerSAS(object):
             self.blob_service_client, \
             self.container_client = sas_prep(container_name=self.container_name,
                                              passphrase=self.passphrase,
-                                             account_name=self.account_name)
+                                             account_name=self.account_name,
+                                             create=False)
         # Create the SAS URLs for the files in the container
         self.sas_urls = self.container_sas(container_client=self.container_client,
                                            account_name=self.account_name,
@@ -76,19 +77,19 @@ class AzureContainerSAS(object):
             self.output_file = os.path.abspath(os.path.join(output_file))
         # Ensure that the output file can be used
         if not os.path.isfile(self.output_file):
-            # Create the parental directory for the output file as required
-            os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
             try:
-                open(self.output_file, 'a').close()
-            except FileNotFoundError:
-                logging.error(f'Cannot create the output file: {self.output_file}')
-                raise SystemExit
+                # Create the parental directory for the output file as required
+                os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
             except PermissionError:
                 logging.error(f'Insufficient permissions to create output file {self.output_file}')
                 raise SystemExit
+            try:
+                open(self.output_file, 'w').close()
             except IsADirectoryError:
                 logging.error(f'A directory or an empty file name was provided for the output file {self.output_file}')
                 raise SystemExit
+        else:
+            open(self.output_file, 'w').close()
         # Ensure that the expiry provided is valid
         try:
             assert 0 < expiry < 366
@@ -118,7 +119,8 @@ class AzureSAS(object):
             self.blob_service_client, \
             self.container_client = sas_prep(container_name=self.container_name,
                                              passphrase=self.passphrase,
-                                             account_name=self.account_name)
+                                             account_name=self.account_name,
+                                             create=False)
         # Run the proper method depending on whether a file or a folder is requested
         if self.category == 'file':
             self.sas_urls = self.file_sas(container_client=self.container_client,
@@ -231,25 +233,25 @@ class AzureSAS(object):
             self.output_file = os.path.abspath(os.path.join(output_file))
         # Ensure that the output file can be used
         if not os.path.isfile(self.output_file):
-            # Create the parental directory for the output file as required
-            os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
             try:
-                open(self.output_file, 'a').close()
-            except FileNotFoundError:
-                logging.error(f'Cannot create the output file: {self.output_file}')
-                raise SystemExit
+                # Create the parental directory for the output file as required
+                os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
             except PermissionError:
                 logging.error(f'Insufficient permissions to create output file {self.output_file}')
                 raise SystemExit
+            try:
+                open(self.output_file, 'w').close()
             except IsADirectoryError:
                 logging.error(f'A directory or an empty file name was provided for the output file {self.output_file}')
                 raise SystemExit
+        else:
+            open(self.output_file, 'w').close()
         # Ensure that the expiry provided is valid
         try:
             assert 0 < expiry < 366
         except AssertionError:
             logging.error(f'The provided expiry ({expiry}) is invalid. It must be between 1 and 365')
-            quit()
+            raise SystemExit
         self.expiry = expiry
         self.verbosity = verbosity
         self.category = category

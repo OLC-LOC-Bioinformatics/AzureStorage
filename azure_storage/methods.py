@@ -10,6 +10,7 @@ import logging
 import getpass
 import keyring
 import pathlib
+import pandas
 import azure
 import time
 import os
@@ -246,19 +247,6 @@ def delete_keyring_credentials(passphrase, account_name=None):
     return account_name
 
 
-def extract_container_name(object_name):
-    """
-    Extract the name of the container in which the blob is to be downloaded
-    :param object_name: type str: Name and path of file/folder to download from Azure storage
-    :return: container_name: String of the container name extracted from the object name
-    """
-    # Split the container name from the file name (and possibly path). Use the first entry.
-    # For a blob: 220202-m05722/2022-SEQ-0001_S1_L001_R1_001.fastq.gz yields 220202-m05722
-    # For a folder: 220202-m05722/InterOp yields 220202-m05722
-    container_name = object_name.split('/')[0]
-    return container_name
-
-
 def validate_container_name(container_name, object_type='container'):
     """
     Use a regex to check if the supplied name follows the guidelines for Azure nomenclature. If it doesn't, attempt to
@@ -347,18 +335,19 @@ def create_container(blob_service_client, container_name):
     return container_client
 
 
-def create_container_client(blob_service_client, container_name):
+def create_container_client(blob_service_client, container_name, create=True):
     """
     Create a container-specific client from the blob service client
     :param blob_service_client: type: azure.storage.blob.BlobServiceClient
     :param container_name: type str: Name of the container of interest
+    :param create: type bool: Boolean whether to create a container if it doesn't exist
     :return: container_client: type azure.storage.blob.BlobServiceClient.ContainerClient
     """
     # Create the container client from the blob service client with the get container client method
     # and the container name
     container_client = blob_service_client.get_container_client(container_name)
     # Create the container if it does not exist
-    if not container_client.exists():
+    if not container_client.exists() and create:
         container_client = create_container(blob_service_client=blob_service_client,
                                             container_name=container_name)
     return container_client
@@ -408,12 +397,13 @@ def create_blob_sas(blob_file, account_name, container_name, account_key, expiry
     return sas_urls
 
 
-def client_prep(container_name, passphrase, account_name):
+def client_prep(container_name, passphrase, account_name, create=True):
     """
     Validate the container name, and prepare the necessary clients
     :param container_name: type str: Name of the container of interest
     :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
     :param account_name: type str: Name of the Azure storage account
+    :param create: type bool: Boolean whether to create a container if it doesn't exist
     :return: container_name: Validated container name
     :return: connect_str: String of the connection string
     :return: blob_service_client: azure.storage.blob.BlobServiceClient
@@ -428,17 +418,19 @@ def client_prep(container_name, passphrase, account_name):
     blob_service_client = create_blob_service_client(connect_str=connect_str)
     # Create the container client for the desired container with the blob service client
     container_client = create_container_client(blob_service_client=blob_service_client,
-                                               container_name=container_name)
+                                               container_name=container_name,
+                                               create=create)
     return container_name, connect_str, blob_service_client, container_client
 
 
-def sas_prep(container_name, passphrase, account_name):
+def sas_prep(container_name, passphrase, account_name, create=True):
     """
     Validate container names, extract connection strings, and account keys, and create necessary clients for
     SAS URL creation
     :param container_name: type str: Name of the container of interest
     :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
     :param account_name: type str: Name of the Azure storage account
+    :param create: type bool: Boolean whether to create a container if it doesn't exist
     :return: container_name: Validated container name
     :return: connect_str: Connection string for Azure storage
     :return: account_key: Account key for Azure storage
@@ -456,7 +448,8 @@ def sas_prep(container_name, passphrase, account_name):
     blob_service_client = create_blob_service_client(connect_str=connect_str)
     # Create the container client from the blob service client
     container_client = create_container_client(blob_service_client=blob_service_client,
-                                               container_name=container_name)
+                                               container_name=container_name,
+                                               create=create)
     return container_name, connect_str, account_key, blob_service_client, container_client
 
 
@@ -528,12 +521,8 @@ def move_prep(passphrase, account_name, container_name, target_container):
                                                       container_name=container_name)
     # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
     logging.getLogger().setLevel(logging.WARNING)
-    try:
-        target_container_client = create_container(blob_service_client=blob_service_client,
-                                                   container_name=target_container)
-    except azure.core.exceptions.ResourceExistsError:
-        target_container_client = create_container_client(blob_service_client=blob_service_client,
-                                                          container_name=target_container)
+    target_container_client = create_container(blob_service_client=blob_service_client,
+                                               container_name=target_container)
     return container_name, target_container, blob_service_client, source_container_client, target_container_client
 
 
@@ -558,28 +547,17 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     # Extract the folder structure of the blob e.g. 220202-m05722/InterOp
     folder_structure = list(os.path.split(os.path.dirname(blob_file.name)))
     # Add the nested folder to the path as requested
-    if path is None:
-        # Determine the path to output the file. Join the name of the container and the joined (splatted)
-        # folder structure. Logic: https://stackoverflow.com/a/14826889
-        target_path = os.path.join(os.path.join(*folder_structure))
-    else:
-        target_path = os.path.join(path, os.path.join(*folder_structure))
+    target_path = os.path.join(path, os.path.join(*folder_structure))
     # Set the name of file by removing any path information
     file_name = os.path.basename(blob_file.name)
     # Finally, set the name and the path of the output file
     if category is None:
-        try:
-            target_file = os.path.join(path, file_name)
-        except TypeError:
-            target_file = file_name
+        target_file = os.path.join(path, file_name)
     # If a folder is being moved, join the path, the common path between the blob file and the supplied folder name
     # with the file name
     else:
         if object_name is not None:
-            try:
-                target_file = os.path.join(path, common_path, os.path.basename(blob_file.name))
-            except TypeError:
-                target_file = os.path.join(common_path, os.path.basename(blob_file.name))
+            target_file = os.path.join(path, common_path, os.path.basename(blob_file.name))
         # If a container is being moved, join the target path and the name of the directory of the blob_file to the
         # file name
         else:
@@ -615,11 +593,6 @@ def delete_container(blob_service_client, container_name, account_name):
     :param container_name: type str: Name of the container of interest
     :param account_name: type str: Name of the Azure storage account
     """
-    test_containers = blob_service_client.list_containers(name_starts_with=container_name)
-    if not test_containers:
-        logging.error(f'Could not locate container {container_name} in {account_name}. Please ensure that you '
-                      f'correctly entered all the information.')
-        raise SystemExit
     # Delete container if it exists
     try:
         blob_service_client.delete_container(container_name)
@@ -648,36 +621,29 @@ def extract_common_path(object_name, blob_file):
     return common_path
 
 
-def delete_file(container_client, object_name, blob_service_client, container_name, account_name):
+def delete_file(container_client, object_name, blob_service_client, container_name):
     """
     Delete a file from Azure storage
     :param container_client: type azure.storage.blob.BlobServiceClient.ContainerClient
     :param object_name: type str: Name and path of file/folder to download from Azure storage
     :param blob_service_client: type: azure.storage.blob.BlobServiceClient
     :param container_name: type str: Name of the container of interest
-    :param account_name: type str: Name of the Azure storage account
     """
     # Create a generator containing all the blobs in the container
     generator = container_client.list_blobs()
     # Create a boolean to determine if the blob has been located
     present = False
-    try:
-        for blob_file in generator:
-            # Filter for the blob name
-            if os.path.join(blob_file.name) == object_name:
-                # Update the blob presence variable
-                present = True
-                # Create the blob client
-                blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                                 container_name=container_name,
-                                                 blob_file=blob_file)
-                # Soft delete the blob
-                blob_client.delete_blob()
-    except azure.core.exceptions.HttpResponseError:
-        logging.error(f'There was an error deleting file {object_name} in container {container_name} '
-                      f'in Azure storage account {account_name}. Please ensure that all arguments have been '
-                      f'entered correctly')
-        raise SystemExit
+    for blob_file in generator:
+        # Filter for the blob name
+        if os.path.join(blob_file.name) == object_name:
+            # Update the blob presence variable
+            present = True
+            # Create the blob client
+            blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                             container_name=container_name,
+                                             blob_file=blob_file)
+            # Soft delete the blob
+            blob_client.delete_blob()
     # Send a warning to the user that the blob could not be found
     if not present:
         logging.error(f'Could not locate the desired file {object_name}')
@@ -697,25 +663,19 @@ def delete_folder(container_client, object_name, blob_service_client, container_
     generator = container_client.list_blobs()
     # Create a boolean to determine if the blob has been located
     present = False
-    try:
-        for blob_file in generator:
-            common_path = extract_common_path(object_name=object_name,
-                                              blob_file=blob_file)
-            # Only copy the file if there is a common path between the object path and the blob path (they match)
-            if common_path is not None:
-                # Update the folder presence boolean
-                present = True
-                # Create the blob client
-                blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                                 container_name=container_name,
-                                                 blob_file=blob_file)
-                # Soft delete the blob
-                blob_client.delete_blob()
-    except azure.core.exceptions.HttpResponseError:
-        logging.error(f'There was an error deleting folder {object_name} in container {container_name} '
-                      f'in Azure storage account {account_name}. Please ensure that all arguments have been '
-                      f'entered correctly')
-        raise SystemExit
+    for blob_file in generator:
+        common_path = extract_common_path(object_name=object_name,
+                                          blob_file=blob_file)
+        # Only copy the file if there is a common path between the object path and the blob path (they match)
+        if common_path is not None:
+            # Update the folder presence boolean
+            present = True
+            # Create the blob client
+            blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                             container_name=container_name,
+                                             blob_file=blob_file)
+            # Soft delete the blob
+            blob_client.delete_blob()
     # Log an error that the folder could not be found
     if not present:
         logging.error(
@@ -765,10 +725,7 @@ def arg_dict_cleanup(arg_dict):
     except KeyError:
         pass
     # Reading in numerical container names e.g. 220202 returns an integer, so typecast it to string
-    try:
-        arg_dict['container'] = str(arg_dict['container'])
-    except KeyError:
-        pass
+    arg_dict['container'] = str(arg_dict['container'])
     try:
         arg_dict['target'] = str(arg_dict['target'])
     except KeyError:
@@ -789,6 +746,7 @@ def create_batch_dict(batch_file, headers):
     except AssertionError:
         logging.error(f'Could not locate the supplied batch file {batch_file}. Please ensure the you entered '
                       f'the name and path correctly')
+        raise SystemExit
     # Read in the batch file using pandas.read_csv. Use tabs as the separator, and provide the header names.
     # Transpose the data, and convert the dataframe to a dictionary
     batch_dict = pd.read_csv(
@@ -860,10 +818,13 @@ def parse_batch_file(line):
     input_string = StringIO(line.rstrip())
     # Read in the line using pandas.read_csv. Use tabs as the separator, and provide the header names.
     # Transpose the data, and convert the dataframe to a dictionary
-    batch_dict = pd.read_csv(
-        input_string,
-        sep='\t',
-        names=headers
-    ).transpose().to_dict()
+    try:
+        batch_dict = pd.read_csv(
+            input_string,
+            sep='\t',
+            names=headers
+        ).transpose().to_dict()
+    except pandas.errors.ParserError:
+        raise SystemExit
     # Return the command, subcommand, and parsed dictionary
     return command, subcommand, batch_dict

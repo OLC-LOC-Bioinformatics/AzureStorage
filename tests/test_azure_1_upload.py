@@ -116,6 +116,21 @@ def test_upload_file(variables, file_name, path):
     assert os.path.join(path, os.path.basename(file_name)) in [blob.name for blob in blobs]
 
 
+@pytest.mark.parametrize('file_name,path',
+                         [('file_1.txt', ''),
+                          ('file_2.txt', 'nested'),
+                          ('folder/nested_file_1.txt', ''),
+                          ('folder/nested_file_2.txt', 'nested_folder')])
+def test_upload_file_exists(variables, file_name, path):
+    with pytest.raises(SystemExit):
+        AzureUpload.upload_file(object_name=os.path.join(variables.file_path, file_name),
+                                blob_service_client=variables.blob_service_client,
+                                container_name=variables.container_name,
+                                account_name=variables.account_name,
+                                path=path,
+                                storage_tier=variables.storage_tier)
+
+
 def test_upload_file_nonexistent(variables):
     with pytest.raises(SystemExit):
         AzureUpload.upload_file(object_name=os.path.join(variables.file_path, 'file_3.txt'),
@@ -126,8 +141,22 @@ def test_upload_file_nonexistent(variables):
                                 storage_tier=variables.storage_tier)
 
 
+def test_upload_file_none_path(variables):
+    file_name = os.path.join(variables.file_path, 'folder/nested_file_2.txt')
+    AzureUpload.upload_file(object_name=file_name,
+                            blob_service_client=variables.blob_service_client,
+                            container_name=variables.container_name,
+                            account_name=variables.account_name,
+                            path=None,
+                            storage_tier=variables.storage_tier)
+    blobs = variables.container_client.list_blobs()
+    assert os.path.basename(file_name) in [blob.name for blob in blobs]
+
+
 @pytest.mark.parametrize('file_name,path',
                          [('file_1.txt', 'cool'),
+                          ('file_1', ''),
+                          ('file_1.gz', ''),
                           ('file_2.txt', 'cool/nested'),
                           ('folder/nested/double_nested_file_1.txt', ''),
                           ('folder/nested/double_nested/triple_nested_file.txt', 'cool/nested')])
@@ -143,6 +172,18 @@ def test_upload_file_cool(variables, file_name, path):
     for blob in blobs:
         if blob.name == os.path.join(path, file_name):
             assert blob.blob_tier == storage_tier
+
+
+def test_upload_file_invalid_category(variables):
+    with pytest.raises(SystemExit):
+        file_uploader = AzureUpload(object_name=os.path.join(variables.file_path, 'file_1.txt'),
+                                    account_name=variables.account_name,
+                                    container_name=variables.container_name,
+                                    passphrase=variables.passphrase,
+                                    path='cool',
+                                    storage_tier=variables.storage_tier,
+                                    category='container')
+        file_uploader.main()
 
 
 @patch('argparse.ArgumentParser.parse_args')
@@ -210,6 +251,20 @@ def test_upload_folder_cool(variables, folder_name, path, check_file):
     for blob in blobs:
         if blob.name == os.path.join(path, check_file):
             assert blob.blob_tier == storage_tier
+
+
+@pytest.mark.parametrize('folder_name,check_file',
+                         [('folder_2/nested_folder_2', 'nested_folder_test_1.txt'),
+                          ('folder_2/nested_folder_2', 'nested_folder_test_1.txt')])
+def test_upload_folder_none_path(variables, folder_name, check_file):
+    AzureUpload.upload_folder(object_name=os.path.join(variables.file_path, folder_name),
+                              blob_service_client=variables.blob_service_client,
+                              container_name=variables.container_name,
+                              account_name=variables.account_name,
+                              path=None,
+                              storage_tier=variables.storage_tier)
+    blobs = variables.container_client.list_blobs()
+    assert check_file in [blob.name for blob in blobs]
 
 
 @patch('argparse.ArgumentParser.parse_args')

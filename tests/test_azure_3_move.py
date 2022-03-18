@@ -21,18 +21,29 @@ def setup():
     return Variables()
 
 
-def test_move_prep(variables):
+def run_move_prep(variables):
     variables.container_name, variables.target_container, variables.blob_service_client, \
         variables.source_container_client, variables.target_container_client = move_prep(
             passphrase=variables.passphrase,
             account_name=variables.account_name,
             container_name=variables.container_name,
             target_container=variables.target_container)
+
+
+def test_move_prep(variables):
+    run_move_prep(variables=variables)
     assert type(variables.source_container_client) is azure.storage.blob._container_client.ContainerClient
+
+
+def test_move_prep_target_exists(variables):
+    run_move_prep(variables=variables)
+    assert type(variables.target_container_client) is azure.storage.blob._container_client.ContainerClient
 
 
 @pytest.mark.parametrize('file_name,path',
                          [('file_1.txt', ''),
+                          ('file_1', ''),
+                          ('file_1.gz', ''),
                           ('file_2.txt', 'nested'),
                           ('nested_folder/folder_test_1.txt', ''),
                           ('nested_folder/nested_folder_2/nested_folder_test_1.txt', 'ABC'),
@@ -132,6 +143,19 @@ def test_move_folder_invalid(variables, folder_name, path):
                               path=path,
                               storage_tier=variables.storage_tier,
                               category='folder')
+
+
+def test_move_folder_invalid_category(variables):
+    with pytest.raises(SystemExit):
+        move_folder = AzureMove(object_name='cool/nested_folder_2',
+                                container_name=variables.container_name,
+                                account_name=variables.account_name,
+                                passphrase=variables.passphrase,
+                                target_container=variables.target_container,
+                                path=None,
+                                storage_tier=variables.storage_tier,
+                                category='container')
+        move_folder.main()
 
 
 def test_move_container(variables):

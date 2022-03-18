@@ -26,7 +26,7 @@ You will need to clone this repository and run the tests with pytest:
 
 `cd AzureStorage`
 
-`python -m pytest tests/`
+`python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec`
 
 Ensure that all tests complete successfully before proceeding
 

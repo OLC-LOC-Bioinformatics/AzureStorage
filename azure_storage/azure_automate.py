@@ -29,18 +29,19 @@ def file_upload(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the upload_file object
-        upload_file = AzureUpload(
-            object_name=arg_dict['file'],
-            account_name=args.account_name,
-            container_name=arg_dict['container'],
-            passphrase=args.passphrase,
-            path=arg_dict['reset_path'],
-            storage_tier=arg_dict['storage_tier'],
-            category='file'
-        )
         # Run the file upload
         try:
+            # Create the upload_file object
+            upload_file = AzureUpload(
+                object_name=arg_dict['file'],
+                account_name=args.account_name,
+                container_name=arg_dict['container'],
+                passphrase=args.passphrase,
+                path=arg_dict['reset_path'],
+                storage_tier=arg_dict['storage_tier'],
+                category='file'
+            )
+            # Run the file upload
             upload_file.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -62,18 +63,18 @@ def folder_upload(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the upload_folder object
-        upload_folder = AzureUpload(
-            object_name=arg_dict['folder'],
-            account_name=args.account_name,
-            container_name=arg_dict['container'],
-            passphrase=args.passphrase,
-            path=arg_dict['reset_path'],
-            storage_tier=arg_dict['storage_tier'],
-            category='folder'
-        )
-        # Run the folder upload
         try:
+            # Create the upload_folder object
+            upload_folder = AzureUpload(
+                object_name=arg_dict['folder'],
+                account_name=args.account_name,
+                container_name=arg_dict['container'],
+                passphrase=args.passphrase,
+                path=arg_dict['reset_path'],
+                storage_tier=arg_dict['storage_tier'],
+                category='folder'
+            )
+            # Run the folder upload
             upload_folder.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -95,17 +96,17 @@ def container_sas(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the sas_container object
-        sas_container = AzureContainerSAS(
-            container_name=arg_dict['container'],
-            output_file=arg_dict['output_file'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            expiry=arg_dict['expiry'],
-            verbosity=args.verbosity
-        )
-        # Run the container SAS URL creation
         try:
+            # Create the sas_container object
+            sas_container = AzureContainerSAS(
+                container_name=arg_dict['container'],
+                output_file=arg_dict['output_file'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                expiry=arg_dict['expiry'],
+                verbosity=args.verbosity
+            )
+            # Run the container SAS URL creation
             sas_container.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -127,19 +128,19 @@ def file_sas(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the sas_file object
-        sas_file = AzureSAS(
-            object_name=arg_dict['file'],
-            container_name=arg_dict['container'],
-            output_file=arg_dict['output_file'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            expiry=arg_dict['expiry'],
-            verbosity=args.verbosity,
-            category='file',
-        )
-        # Run the container SAS URL creation
         try:
+            # Create the sas_file object
+            sas_file = AzureSAS(
+                object_name=arg_dict['file'],
+                container_name=arg_dict['container'],
+                output_file=arg_dict['output_file'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                expiry=arg_dict['expiry'],
+                verbosity=args.verbosity,
+                category='file',
+            )
+            # Run the container SAS URL creation
             sas_file.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -161,19 +162,19 @@ def folder_sas(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the sas_file object
-        sas_folder = AzureSAS(
-            object_name=arg_dict['folder'],
-            container_name=arg_dict['container'],
-            output_file=arg_dict['output_file'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            expiry=arg_dict['expiry'],
-            verbosity=args.verbosity,
-            category='folder',
-        )
-        # Run the container SAS URL creation
         try:
+            # Create the sas_file object
+            sas_folder = AzureSAS(
+                object_name=arg_dict['folder'],
+                container_name=arg_dict['container'],
+                output_file=arg_dict['output_file'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                expiry=arg_dict['expiry'],
+                verbosity=args.verbosity,
+                category='folder',
+            )
+            # Run the container SAS URL creation
             sas_folder.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -196,17 +197,17 @@ def container_move(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the move_container object
-        move_container = AzureContainerMove(
-            container_name=arg_dict['container'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            target_container=arg_dict['target'],
-            path=arg_dict['reset_path'],
-            storage_tier=arg_dict['storage_tier']
-        )
-        # Run the container move
         try:
+            # Create the move_container object
+            move_container = AzureContainerMove(
+                container_name=arg_dict['container'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                target_container=arg_dict['target'],
+                path=arg_dict['reset_path'],
+                storage_tier=arg_dict['storage_tier']
+            )
+            # Run the container move
             move_container.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -228,19 +229,19 @@ def file_move(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the move_file object
-        move_file = AzureMove(
-            object_name=arg_dict['file'],
-            container_name=arg_dict['container'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            target_container=arg_dict['target'],
-            path=arg_dict['reset_path'],
-            storage_tier=arg_dict['storage_tier'],
-            category='file'
-        )
-        # Run the file move
         try:
+            # Create the move_file object
+            move_file = AzureMove(
+                object_name=arg_dict['file'],
+                container_name=arg_dict['container'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                target_container=arg_dict['target'],
+                path=arg_dict['reset_path'],
+                storage_tier=arg_dict['storage_tier'],
+                category='file'
+            )
+            # Run the file move
             move_file.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -262,19 +263,19 @@ def folder_move(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the move_folder object
-        move_folder = AzureMove(
-            object_name=arg_dict['folder'],
-            container_name=arg_dict['container'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            target_container=arg_dict['target'],
-            path=arg_dict['reset_path'],
-            storage_tier=arg_dict['storage_tier'],
-            category='folder'
-        )
-        # Run the folder move
         try:
+            # Create the move_folder object
+            move_folder = AzureMove(
+                object_name=arg_dict['folder'],
+                container_name=arg_dict['container'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                target_container=arg_dict['target'],
+                path=arg_dict['reset_path'],
+                storage_tier=arg_dict['storage_tier'],
+                category='folder'
+            )
+            # Run the folder move
             move_folder.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -296,15 +297,15 @@ def container_download(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the download_container object
-        download_container = AzureContainerDownload(
-            container_name=arg_dict['container'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            output_path=arg_dict['output_path']
-        )
-        # Run the container download
         try:
+            # Create the download_container object
+            download_container = AzureContainerDownload(
+                container_name=arg_dict['container'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                output_path=arg_dict['output_path']
+            )
+            # Run the container download
             download_container.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -326,17 +327,17 @@ def file_download(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the download_file object
-        download_file = AzureDownload(
-            container_name=arg_dict['container'],
-            object_name=arg_dict['file'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            output_path=arg_dict['output_path'],
-            category='file'
-        )
-        # Run the file download
         try:
+            # Create the download_file object
+            download_file = AzureDownload(
+                container_name=arg_dict['container'],
+                object_name=arg_dict['file'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                output_path=arg_dict['output_path'],
+                category='file'
+            )
+            # Run the file download
             download_file.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -358,17 +359,17 @@ def folder_download(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the download_folder object
-        download_folder = AzureDownload(
-            container_name=arg_dict['container'],
-            object_name=arg_dict['folder'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            output_path=arg_dict['output_path'],
-            category='folder'
-        )
-        # Run the folder download
         try:
+            # Create the download_folder object
+            download_folder = AzureDownload(
+                container_name=arg_dict['container'],
+                object_name=arg_dict['folder'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                output_path=arg_dict['output_path'],
+                category='folder'
+            )
+            # Run the folder download
             download_folder.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -390,15 +391,15 @@ def container_tier(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the tier_container object
-        tier_container = AzureContainerTier(
-            container_name=arg_dict['container'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            storage_tier=arg_dict['storage_tier']
-        )
-        # Run the container tier
         try:
+            # Create the tier_container object
+            tier_container = AzureContainerTier(
+                container_name=arg_dict['container'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                storage_tier=arg_dict['storage_tier']
+            )
+            # Run the container tier
             tier_container.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -420,17 +421,17 @@ def file_tier(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the tier_file object
-        tier_file = AzureTier(
-            container_name=arg_dict['container'],
-            object_name=arg_dict['file'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            storage_tier=arg_dict['storage_tier'],
-            category='file'
-        )
-        # Run the file tier
         try:
+            # Create the tier_file object
+            tier_file = AzureTier(
+                container_name=arg_dict['container'],
+                object_name=arg_dict['file'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                storage_tier=arg_dict['storage_tier'],
+                category='file'
+            )
+            # Run the file tier
             tier_file.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -452,17 +453,17 @@ def folder_tier(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the tier_folder object
-        tier_folder = AzureTier(
-            container_name=arg_dict['container'],
-            object_name=arg_dict['folder'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            storage_tier=arg_dict['storage_tier'],
-            category='folder'
-        )
-        # Run the folder tier
         try:
+            # Create the tier_folder object
+            tier_folder = AzureTier(
+                container_name=arg_dict['container'],
+                object_name=arg_dict['folder'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                storage_tier=arg_dict['storage_tier'],
+                category='folder'
+            )
+            # Run the folder tier
             tier_folder.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -484,14 +485,14 @@ def container_delete(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the delete_container object
-        delete_container = AzureContainerDelete(
-            container_name=arg_dict['container'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-        )
-        # Run the container delete
         try:
+            # Create the delete_container object
+            delete_container = AzureContainerDelete(
+                container_name=arg_dict['container'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+            )
+            # Run the container delete
             delete_container.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -513,17 +514,17 @@ def file_delete(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the delete_file object
-        delete_file = AzureDelete(
-            container_name=arg_dict['container'],
-            object_name=arg_dict['file'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            retention_time=arg_dict['retention_time'],
-            category='file'
-        )
-        # Run the file delete
         try:
+            # Create the delete_file object
+            delete_file = AzureDelete(
+                container_name=arg_dict['container'],
+                object_name=arg_dict['file'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                retention_time=arg_dict['retention_time'],
+                category='file'
+            )
+            # Run the file delete
             delete_file.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -545,17 +546,17 @@ def folder_delete(args, batch_dict=None):
     for key, arg_dict in batch_dict.items():
         # Clean up the arguments, as some are optional, or not interpreted correctly
         arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
-        # Create the delete_folder object
-        delete_folder = AzureDelete(
-            container_name=arg_dict['container'],
-            object_name=arg_dict['folder'],
-            account_name=args.account_name,
-            passphrase=args.passphrase,
-            retention_time=arg_dict['retention_time'],
-            category='folder'
-        )
-        # Run the folder delete
         try:
+            # Create the delete_folder object
+            delete_folder = AzureDelete(
+                container_name=arg_dict['container'],
+                object_name=arg_dict['folder'],
+                account_name=args.account_name,
+                passphrase=args.passphrase,
+                retention_time=arg_dict['retention_time'],
+                category='folder'
+            )
+            # Run the folder delete
             delete_folder.main()
         # Don't crash on SystemExits
         except SystemExit:
@@ -573,6 +574,7 @@ def batch(args):
     except AssertionError:
         logging.error(f'Could not locate the supplied batch file {args.batch_file}. Please ensure the you entered '
                       f'the name and path correctly')
+        raise SystemExit
     # Create a dictionary of all the functions with the corresponding command and subcommands as keys
     function_dict = {
         'upload': {

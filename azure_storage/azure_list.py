@@ -54,7 +54,6 @@ class AzureContainerList(object):
                     # It seemed unintuitive to force the user to use .* rather than just * for simple queries.
                     # If .* was provided, don't add the '.' by using a negative lookbehind assertion
                     regex_expression = re.sub(r'(?<!\.)\*', '.*', expression)
-                    # print(container.name, expression, regex_expression)
                     # Use re.fullmatch to determine if the expression matches the container name
                     if re.fullmatch(rf'{regex_expression}$', container.name):
                         # Update the match boolean and append the container to the list of matches
@@ -90,23 +89,20 @@ class AzureContainerList(object):
                 self.output_file = os.path.abspath(os.path.expanduser(os.path.join(output_file)))
             else:
                 self.output_file = os.path.abspath(os.path.join(output_file))
-            if not os.path.isfile(self.output_file):
-                # Create the parental directory for the output file as required
-                os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
-                try:
-                    open(self.output_file, 'w').close()
-                except FileNotFoundError:
-                    logging.error(f'Cannot create the output file: {self.output_file}')
-                    raise SystemExit
-                except PermissionError:
-                    logging.error(f'Insufficient permissions to create output file {self.output_file}')
-                    raise SystemExit
-                except IsADirectoryError:
-                    logging.error(f'A directory or an empty file name was provided for the output file '
-                                  f'{self.output_file}')
-                    raise SystemExit
-            else:
-                open(self.output_file, 'w').close()
+                # Ensure that the output file can be used
+                if not os.path.isfile(self.output_file):
+                    try:
+                        # Create the parental directory for the output file as required
+                        os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
+                    except PermissionError:
+                        logging.error(f'Insufficient permissions to create output file {self.output_file}')
+                        raise SystemExit
+                    try:
+                        open(self.output_file, 'w').close()
+                    except IsADirectoryError:
+                        logging.error(
+                            f'A directory or an empty file name was provided for the output file {self.output_file}')
+                        raise SystemExit
         else:
             self.output_file = str()
         self.connect_str = str()
@@ -130,7 +126,7 @@ class AzureList(object):
             # List all the files that match the expression
             self.list_files(container_client=container_client,
                             expression=self.expression,
-                            output_file=str(),
+                            output_file=self.output_file,
                             container_name=self.container_name)
         # If the container name wasn't provided, or looks like a regular expression, use the AzureContainerList class
         # to find containers that match the provided expression
@@ -184,13 +180,39 @@ class AzureList(object):
                 # Check whether the expression contains non-alphanumeric characters. If it does, treat it as a
                 # regular expression. Ignore dashes as a non-alphanumeric character.
                 if re.match(r'.*\W', expression.replace('-', '_')):
-                    # Use re.sub to convert * to .* to be consistent with regex rules
-                    regex_expression = re.sub(r'(?<!\.)\*', '.*', expression)
+                    # If the expression is targeted to nested files/folders, split the expression into its
+                    # path components e.g. reports/outputs/output.tsv contains three components
+                    expression_obj = pathlib.Path(os.path.normpath(expression))
+                    expression_components = list(expression_obj.parts)
+                    # The number of matches required is the number of path components
+                    # e.g. reports/outputs/output.tsv requires three matches
+                    matches_required = len(expression_components)
+                    # Initialise a dictionary to track matches to each of the components
+                    component_matches = dict()
                     # Search through all the path components of the file name
-                    for component in components:
-                        # If the component matches, set the match boolean to True
-                        if re.fullmatch(rf'{regex_expression}$', component):
-                            match = True
+                    for i, component in enumerate(components):
+                        # Check for nested files/folders
+                        if len(expression_components) > 1:
+                            while len(expression_components) < len(components):
+                                expression_components.insert(-1, '*')
+                            # Reset the number of matches required to the new length of the expression components
+                            matches_required = len(expression_components)
+                            # Use re.sub to convert * to .* to be consistent with regex rules
+                            regex_expression = re.sub(r'(?<!\.)\*', '.*', expression_components[i])
+                            # If the components match, increment the number of matches
+                            if re.fullmatch(rf'{regex_expression}$', component):
+                                # Set the match to the current component to true
+                                component_matches[component] = True
+                        else:
+                            # Use re.sub to convert * to .* to be consistent with regex rules
+                            regex_expression = re.sub(r'(?<!\.)\*', '.*', expression)
+                            # If the component matches, set the match boolean to True
+                            if re.fullmatch(rf'{regex_expression}$', component):
+                                match = True
+                    # Check to see if the number of matches observed in a multi-component expression is the number
+                    # matches required for a match before setting the match boolean to True
+                    if len(component_matches) == matches_required:
+                        match = True
                 # The expression does not look like a regular expression
                 else:
                     for component in components:
@@ -236,24 +258,20 @@ class AzureList(object):
                 self.output_file = os.path.abspath(os.path.expanduser(os.path.join(output_file)))
             else:
                 self.output_file = os.path.abspath(os.path.join(output_file))
-            # Ensure that the output file can be used
-            if not os.path.isfile(self.output_file):
-                # Create the parental directory for the output file as required
-                os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
-                try:
-                    open(self.output_file, 'w').close()
-                except FileNotFoundError:
-                    logging.error(f'Cannot create the output file: {self.output_file}')
-                    raise SystemExit
-                except PermissionError:
-                    logging.error(f'Insufficient permissions to create output file {self.output_file}')
-                    raise SystemExit
-                except IsADirectoryError:
-                    logging.error(
-                        f'A directory or an empty file name was provided for the output file {self.output_file}')
-                    raise SystemExit
-            else:
-                open(self.output_file, 'w').close()
+                # Ensure that the output file can be used
+                if not os.path.isfile(self.output_file):
+                    try:
+                        # Create the parental directory for the output file as required
+                        os.makedirs(os.path.dirname(self.output_file), exist_ok=True)
+                    except PermissionError:
+                        logging.error(f'Insufficient permissions to create output file {self.output_file}')
+                        raise SystemExit
+                    try:
+                        open(self.output_file, 'w').close()
+                    except IsADirectoryError:
+                        logging.error(
+                            f'A directory or an empty file name was provided for the output file {self.output_file}')
+                        raise SystemExit
         else:
             self.output_file = str()
         self.passphrase = passphrase

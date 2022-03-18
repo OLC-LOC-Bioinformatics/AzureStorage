@@ -2,3 +2,4 @@
 00container	move_folder/	cool
 00container	nested_1/renamed/	cool
 00container	nested_1/renamed/nested/double_nested	hot
+00container	invalid_folder	hot

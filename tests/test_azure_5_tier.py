@@ -78,6 +78,28 @@ def test_file_tier_missing(variables, file_name):
                             storage_tier=variables.storage_tier)
 
 
+def test_file_tier_invalid_category(variables):
+    with pytest.raises(SystemExit):
+        file_tier_set = AzureTier(container_name=variables.container_name,
+                                  object_name='file_1.txt',
+                                  account_name=variables.account_name,
+                                  passphrase=variables.passphrase,
+                                  storage_tier=variables.storage_tier,
+                                  category='container')
+        file_tier_set.main()
+
+
+def test_file_tier_invalid_container(variables):
+    with pytest.raises(SystemExit):
+        file_tier_set = AzureTier(container_name='000000000container',
+                                  object_name='file_1.txt',
+                                  account_name=variables.account_name,
+                                  passphrase=variables.passphrase,
+                                  storage_tier=variables.storage_tier,
+                                  category='file')
+        file_tier_set.main()
+
+
 @patch('argparse.ArgumentParser.parse_args')
 def test_file_tier_integration(mock_args, variables):
     file_name = 'container_integration/file_2.txt'
@@ -141,6 +163,17 @@ def test_folder_tier_missing(variables, folder_name):
                               blob_service_client=variables.blob_service_client,
                               container_name=variables.container_name,
                               storage_tier=variables.storage_tier)
+
+
+def test_folder_tier_invalid_container(variables):
+    with pytest.raises(SystemExit):
+        file_tier_set = AzureTier(container_name='000000000container',
+                                  object_name='container_integration',
+                                  account_name=variables.account_name,
+                                  passphrase=variables.passphrase,
+                                  storage_tier=variables.storage_tier,
+                                  category='folder')
+        file_tier_set.main()
 
 
 @patch('argparse.ArgumentParser.parse_args')
@@ -242,3 +275,7 @@ def test_container_tier_integration_missing(mock_args, variables):
                                                     storage_tier=variables.storage_tier)
         arguments = cli()
         container_tier(arguments)
+
+
+def test_cli():
+    os.system('AzureTier -h')

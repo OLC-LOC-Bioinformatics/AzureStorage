@@ -15,7 +15,8 @@ class AzureContainerTier(object):
         self.container_name, self.connect_str, self.blob_service_client, self.container_client = \
             client_prep(container_name=self.container_name,
                         passphrase=self.passphrase,
-                        account_name=self.account_name)
+                        account_name=self.account_name,
+                        create=False)
         self.container_tier(container_client=self.container_client,
                             blob_service_client=self.blob_service_client,
                             container_name=self.container_name,
@@ -64,7 +65,8 @@ class AzureTier(object):
         self.container_name, self.connect_str, self.blob_service_client, self.container_client = \
             client_prep(container_name=self.container_name,
                         passphrase=self.passphrase,
-                        account_name=self.account_name)
+                        account_name=self.account_name,
+                        create=False)
         # Run the proper method depending on whether a file or a folder is requested
         if self.category == 'file':
             self.file_tier(container_client=self.container_client,
@@ -98,20 +100,24 @@ class AzureTier(object):
         present = False
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
-        for blob_file in generator:
-            # Filter for the blob name
-            if blob_file.name == object_name:
-                # Update the blob presence variable
-                present = True
-                # Create the blob client
-                blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                                 container_name=container_name,
-                                                 blob_file=blob_file)
-                # Set the storage tier
-                blob_client.set_standard_blob_tier(standard_blob_tier=storage_tier)
-        # Send an error to the user that the blob could not be found
-        if not present:
-            logging.error(f'Could not locate the desired file {object_name} in {container_name}')
+        try:
+            for blob_file in generator:
+                # Filter for the blob name
+                if blob_file.name == object_name:
+                    # Update the blob presence variable
+                    present = True
+                    # Create the blob client
+                    blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                                     container_name=container_name,
+                                                     blob_file=blob_file)
+                    # Set the storage tier
+                    blob_client.set_standard_blob_tier(standard_blob_tier=storage_tier)
+            # Send an error to the user that the blob could not be found
+            if not present:
+                logging.error(f'Could not locate the desired file {object_name} in {container_name}')
+                raise SystemExit
+        except azure.core.exceptions.ResourceNotFoundError:
+            logging.error(f' The specified container, {container_name}, does not exist.')
             raise SystemExit
 
     @staticmethod
@@ -130,22 +136,26 @@ class AzureTier(object):
         present = False
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
-        for blob_file in generator:
-            # Create the path of the file by extracting the path of the file
-            blob_path = os.path.join(os.path.split(blob_file.name)[0])
-            # Ensure that the supplied folder path is present in the blob path
-            if os.path.normpath(object_name) in os.path.normpath(blob_path):
-                # Update the folder presence boolean
-                present = True
-                # Create the blob client
-                blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                                 container_name=container_name,
-                                                 blob_file=blob_file)
-                # Set the storage tier
-                blob_client.set_standard_blob_tier(standard_blob_tier=storage_tier)
-        # Send an error to the user that the folder could not be found
-        if not present:
-            logging.error(f'Could not locate the desired folder {object_name} in container {container_name}')
+        try:
+            for blob_file in generator:
+                # Create the path of the file by extracting the path of the file
+                blob_path = os.path.join(os.path.split(blob_file.name)[0])
+                # Ensure that the supplied folder path is present in the blob path
+                if os.path.normpath(object_name) in os.path.normpath(blob_path):
+                    # Update the folder presence boolean
+                    present = True
+                    # Create the blob client
+                    blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                                     container_name=container_name,
+                                                     blob_file=blob_file)
+                    # Set the storage tier
+                    blob_client.set_standard_blob_tier(standard_blob_tier=storage_tier)
+            # Send an error to the user that the folder could not be found
+            if not present:
+                logging.error(f'Could not locate the desired folder {object_name} in container {container_name}')
+                raise SystemExit
+        except azure.core.exceptions.ResourceNotFoundError:
+            logging.error(f' The specified container, {container_name}, does not exist.')
             raise SystemExit
 
     def __init__(self, object_name, container_name, account_name, passphrase, storage_tier, category):

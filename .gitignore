@@ -19,3 +19,7 @@ dist/
 # pycache files #
 #################
 __pycache__/
+
+# Coverage configurations #
+###########################
+.coverage

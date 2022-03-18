@@ -36,8 +36,7 @@ def test_delete_file(variables, file_name):
     delete_file(container_client=variables.container_client,
                 object_name=file_name,
                 blob_service_client=variables.blob_service_client,
-                container_name=variables.container_name,
-                account_name=variables.account_name)
+                container_name=variables.container_name)
     blobs = variables.container_client.list_blobs()
     assert file_name not in [blob.name for blob in blobs]
 
@@ -52,8 +51,18 @@ def test_delete_file_missing(variables, file_name):
         delete_file(container_client=variables.container_client,
                     object_name=file_name,
                     blob_service_client=variables.blob_service_client,
-                    container_name=variables.container_name,
-                    account_name=variables.account_name)
+                    container_name=variables.container_name)
+
+
+def test_delete_file_invalid_category(variables):
+    with pytest.raises(SystemExit):
+        del_file = AzureDelete(object_name='file_1.txt',
+                               container_name=variables.container_name,
+                               account_name=variables.account_name,
+                               passphrase=variables.passphrase,
+                               retention_time=8,
+                               category='container')
+        del_file.main()
 
 
 @patch('argparse.ArgumentParser.parse_args')
@@ -156,6 +165,13 @@ def test_delete_folder_integration_missing(mock_args, variables):
                                                     retention_time=1)
         arguments = cli()
         folder_delete(arguments)
+
+
+def test_delete_container_missing(variables):
+    with pytest.raises(SystemExit):
+        delete_container(blob_service_client=variables.blob_service_client,
+                         container_name='000000000container',
+                         account_name=variables.account_name)
 
 
 @patch('argparse.ArgumentParser.parse_args')

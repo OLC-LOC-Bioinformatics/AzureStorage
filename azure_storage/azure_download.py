@@ -14,7 +14,8 @@ class AzureContainerDownload(object):
         self.container_name, self.connect_str, self.blob_service_client, self.container_client = \
             client_prep(container_name=self.container_name,
                         passphrase=self.passphrase,
-                        account_name=self.account_name)
+                        account_name=self.account_name,
+                        create=False)
         self.download_container(container_client=self.container_client,
                                 blob_service_client=self.blob_service_client,
                                 container_name=self.container_name,
@@ -56,6 +57,7 @@ class AzureContainerDownload(object):
                     downloaded_file.write(blob_client.download_blob().readall())
         except azure.core.exceptions.ResourceNotFoundError:
             logging.error(f' The specified container, {container_name}, does not exist.')
+            raise SystemExit
 
     def __init__(self, container_name, output_path, account_name, passphrase):
         # Set the container name variable
@@ -66,10 +68,9 @@ class AzureContainerDownload(object):
         else:
             self.output_path = os.path.abspath(os.path.join(output_path))
         # Create the output path
-        os.makedirs(self.output_path, exist_ok=True)
         try:
-            assert os.path.isdir(self.output_path)
-        except AssertionError:
+            os.makedirs(self.output_path, exist_ok=True)
+        except PermissionError:
             logging.error(f'Could not use the supplied output path: {self.output_path}')
             raise SystemExit
         # Initialise necessary class variables
@@ -86,7 +87,8 @@ class AzureDownload(object):
         self.container_name, self.connect_str, self.blob_service_client, self.container_client = \
             client_prep(container_name=self.container_name,
                         passphrase=self.passphrase,
-                        account_name=self.account_name)
+                        account_name=self.account_name,
+                        create=False)
         # Run the proper method depending on whether a file or a folder is requested
         if self.category == 'file':
             self.download_file(container_client=self.container_client,
@@ -120,26 +122,30 @@ class AzureDownload(object):
         present = False
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
-        for blob_file in generator:
-            # Filter for the blob name
-            if blob_file.name == object_name:
-                # Update the file presence variable
-                present = True
-                # Create the blob client
-                blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                                 container_name=container_name,
-                                                 blob_file=blob_file)
-                # Set the name of file by removing any path information
-                file_name = os.path.basename(blob_file.name)
-                # Finally, set the name and the path of the output file
-                download_file = os.path.join(output_path, file_name)
-                # Open the target output file as binary
-                with open(download_file, 'wb') as downloaded_file:
-                    # Write the data from the blob client to the local file
-                    downloaded_file.write(blob_client.download_blob().readall())
-        # Send an error to the user that the file could not be found
-        if not present:
-            logging.error(f'Could not locate the desired file {object_name} in {container_name}')
+        try:
+            for blob_file in generator:
+                # Filter for the blob name
+                if blob_file.name == object_name:
+                    # Update the file presence variable
+                    present = True
+                    # Create the blob client
+                    blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                                     container_name=container_name,
+                                                     blob_file=blob_file)
+                    # Set the name of file by removing any path information
+                    file_name = os.path.basename(blob_file.name)
+                    # Finally, set the name and the path of the output file
+                    download_file = os.path.join(output_path, file_name)
+                    # Open the target output file as binary
+                    with open(download_file, 'wb') as downloaded_file:
+                        # Write the data from the blob client to the local file
+                        downloaded_file.write(blob_client.download_blob().readall())
+            # Send an error to the user that the file could not be found
+            if not present:
+                logging.error(f'Could not locate the desired file {object_name} in {container_name}')
+                raise SystemExit
+        except azure.core.exceptions.ResourceNotFoundError:
+            logging.error(f' The specified container, {container_name}, does not exist.')
             raise SystemExit
 
     @staticmethod
@@ -158,32 +164,36 @@ class AzureDownload(object):
         present = False
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
-        for blob_file in generator:
-            # Create the path of the file by adding the container name to the path of the file
-            blob_path = os.path.join(container_name, os.path.split(blob_file.name)[0])
-            # Ensure that the supplied folder path is present in the blob path
-            if os.path.normpath(object_name) in os.path.normpath(blob_path):
-                # Update the folder presence boolean
-                present = True
-                # Create the blob client
-                blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                                 container_name=container_name,
-                                                 blob_file=blob_file)
-                # Determine the path to output the file. Join the supplied path and the path of the blob
-                download_path = os.path.join(output_path, os.path.join(os.path.dirname(blob_file.name)))
-                # Create the path if required
-                os.makedirs(download_path, exist_ok=True)
-                # Set the name of file by removing any path information
-                file_name = os.path.basename(blob_file.name)
-                # Finally, set the name and the path of the output file
-                download_file = os.path.join(download_path, file_name)
-                # Open the target output file as binary
-                with open(download_file, 'wb') as downloaded_file:
-                    # Write the data from the blob client to the local file
-                    downloaded_file.write(blob_client.download_blob().readall())
-        # Send an error to the user that the folder could not be found
-        if not present:
-            logging.error(f'Could not locate the desired folder {object_name} in container {container_name}')
+        try:
+            for blob_file in generator:
+                # Create the path of the file by adding the container name to the path of the file
+                blob_path = os.path.join(container_name, os.path.split(blob_file.name)[0])
+                # Ensure that the supplied folder path is present in the blob path
+                if os.path.normpath(object_name) in os.path.normpath(blob_path):
+                    # Update the folder presence boolean
+                    present = True
+                    # Create the blob client
+                    blob_client = create_blob_client(blob_service_client=blob_service_client,
+                                                     container_name=container_name,
+                                                     blob_file=blob_file)
+                    # Determine the path to output the file. Join the supplied path and the path of the blob
+                    download_path = os.path.join(output_path, os.path.join(os.path.dirname(blob_file.name)))
+                    # Create the path if required
+                    os.makedirs(download_path, exist_ok=True)
+                    # Set the name of file by removing any path information
+                    file_name = os.path.basename(blob_file.name)
+                    # Finally, set the name and the path of the output file
+                    download_file = os.path.join(download_path, file_name)
+                    # Open the target output file as binary
+                    with open(download_file, 'wb') as downloaded_file:
+                        # Write the data from the blob client to the local file
+                        downloaded_file.write(blob_client.download_blob().readall())
+            # Send an error to the user that the folder could not be found
+            if not present:
+                logging.error(f'Could not locate the desired folder {object_name} in container {container_name}')
+                raise SystemExit
+        except azure.core.exceptions.ResourceNotFoundError:
+            logging.error(f' The specified container, {container_name}, does not exist.')
             raise SystemExit
 
     def __init__(self, object_name, container_name, output_path, account_name, passphrase, category):
@@ -197,7 +207,11 @@ class AzureDownload(object):
         else:
             self.output_path = os.path.abspath(os.path.join(output_path))
         # Create the output path
-        os.makedirs(self.output_path, exist_ok=True)
+        try:
+            os.makedirs(self.output_path, exist_ok=True)
+        except PermissionError:
+            logging.error(f'Could not use the supplied output path: {self.output_path}')
+            raise SystemExit
         # Initialise necessary class variables
         self.passphrase = passphrase
         self.account_name = account_name

@@ -34,9 +34,6 @@ class AzureUpload(object):
                                account_name=self.account_name,
                                path=self.path,
                                storage_tier=self.storage_tier)
-        else:
-            logging.error(f'Something is wrong. There is no {self.category} option available')
-            raise SystemExit
 
     @staticmethod
     def upload_file(object_name, blob_service_client, container_name, account_name, path, storage_tier):
@@ -139,10 +136,6 @@ class AzureUpload(object):
                 except azure.core.exceptions.ResourceExistsError:
                     logging.warning(f'The file {local_file} already exists in container {container_name} '
                                     f'in storage account {account_name} as {target_file}')
-                except FileNotFoundError:
-                    logging.error(f'Could not find the specified file {local_file} to upload. Please ensure that the '
-                                  f'supplied name and path are correct.')
-                    raise SystemExit
 
     def __init__(self, object_name, container_name, account_name, passphrase, path, storage_tier, category):
         # Set the name of the file/folder to upload
@@ -153,12 +146,15 @@ class AzureUpload(object):
             except AssertionError:
                 logging.error(f'Cannot locate the specified file to upload: {self.object_name}')
                 raise SystemExit
-        else:
+        elif category == 'folder':
             try:
                 assert os.path.isdir(self.object_name)
             except AssertionError:
                 logging.error(f'Cannot located the specified folder to upload: {self.object_name}')
                 raise SystemExit
+        else:
+            logging.error(f'Something is wrong. There is no {category} option available')
+            raise SystemExit
         # Initialise necessary class variables
         self.passphrase = passphrase
         self.account_name = account_name

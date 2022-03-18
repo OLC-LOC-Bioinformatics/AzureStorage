@@ -63,6 +63,9 @@
                             <li class="navitem">
                                 <a href="../automate/" class="nav-link">Automate</a>
                             </li>
+                            <li class="navitem">
+                                <a href="../list/" class="nav-link">List</a>
+                            </li>
                         </ul>
 
                     <ul class="nav navbar-nav ml-auto">
@@ -134,7 +137,7 @@ conda update -q conda
 <p>You will need to clone this repository and run the tests with pytest</p>
 <p><code>git clone https://github.com/OLC-LOC-Bioinformatics/AzureStorage.git</code></p>
 <p><code>cd AzureStorage</code></p>
-<p><code>python -m pytest tests/</code></p></div>
+<p><code>python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec</code></p></div>
             </div>
         </div>
 

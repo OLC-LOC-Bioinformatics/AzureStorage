@@ -116,7 +116,7 @@ To list all files in all containers in your storage account
 
 To list all files in all containers ending with `.gz`
 
-`AzureList search -a account_name *.gz`
+`AzureList search -a account_name \*.gz`
 
 To list all files in the container `container-name`
 
@@ -128,15 +128,15 @@ To list all files in the container `container-name` starting with `reports`
 
 To list all files in the container `container-name` ending with `.gz`
 
-`AzureList search -a account_name -c container-name *.gz`
+`AzureList search -a account_name -c container-name \*.gz`
 
 To list all files in the container `container-name` that contain `.gz` 
 
-`AzureList search -a account_name -c container-name *.gz*`
+`AzureList search -a account_name -c container-name \*.gz*`
 
 To list all files in the container `container-name` that contain `.gz` (but not at the end)
 
-`AzureList search -a account_name -c container-name *.gz.+`
+`AzureList search -a account_name -c container-name \*.gz.+`
 
 #### AzureList search usage
 

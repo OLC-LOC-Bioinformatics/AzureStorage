@@ -48,8 +48,7 @@ class AzureDelete(object):
             delete_file(container_client=self.container_client,
                         object_name=self.object_name,
                         blob_service_client=self.blob_service_client,
-                        container_name=self.container_name,
-                        account_name=self.account_name)
+                        container_name=self.container_name)
         elif self.category == 'folder':
             delete_folder(container_client=self.container_client,
                           object_name=self.object_name,
