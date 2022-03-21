@@ -32,6 +32,8 @@ jobs:
             conda create -n azure_storage python=3.8.5
             source activate azure_storage
             conda install -c olcbioinformatics azure_storage
+            mkdir /invalid
+            chmod -R 000 /invalid
             python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec --cov-report=xml:test_reports/azure_storage.xml
       - store_artifacts:
           path: test_reports/

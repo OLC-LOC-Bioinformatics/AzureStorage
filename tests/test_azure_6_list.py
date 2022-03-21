@@ -102,7 +102,7 @@ def test_list_container_tilde(variables):
 
 
 def test_list_container_invalid_path(variables):
-    output_file = os.path.join('/var', 'search_outputs.txt')
+    output_file = os.path.join('/invalid', 'search_outputs.txt')
     with pytest.raises(SystemExit):
         AzureContainerList(
             expression=variables.container_name,
@@ -187,7 +187,7 @@ def test_list_file_tilde(variables):
 
 
 def test_list_file_invalid_path(variables):
-    output_file = os.path.join('/var', 'search_outputs.txt')
+    output_file = os.path.join('/invalid', 'search_outputs.txt')
     with pytest.raises(SystemExit):
         AzureList(
             container_name=variables.container_name,
