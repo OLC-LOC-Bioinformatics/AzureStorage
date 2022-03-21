@@ -88,6 +88,9 @@ class AzureContainerSAS(object):
             except IsADirectoryError:
                 logging.error(f'A directory or an empty file name was provided for the output file {self.output_file}')
                 raise SystemExit
+            except PermissionError:
+                logging.error(f'Insufficient permissions to create output file {self.output_file}')
+                raise SystemExit
         else:
             open(self.output_file, 'w').close()
         # Ensure that the expiry provided is valid
@@ -243,6 +246,9 @@ class AzureSAS(object):
                 open(self.output_file, 'w').close()
             except IsADirectoryError:
                 logging.error(f'A directory or an empty file name was provided for the output file {self.output_file}')
+                raise SystemExit
+            except PermissionError:
+                logging.error(f'Insufficient permissions to create output file {self.output_file}')
                 raise SystemExit
         else:
             open(self.output_file, 'w').close()
