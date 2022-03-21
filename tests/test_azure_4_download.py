@@ -145,7 +145,7 @@ def test_download_folder_tilde(variables):
 
 def test_download_folder_invalid_path(variables):
     with pytest.raises(SystemExit):
-        path = '/invalid'
+        path = '/var'
         folder_downloader = AzureDownload(object_name='container_integration/',
                                           container_name=variables.container_name,
                                           output_path=path,
@@ -178,7 +178,7 @@ def test_download_container_tilde(variables):
 
 def test_download_container_invalid_path(variables):
     with pytest.raises(SystemExit):
-        path = '/invalid'
+        path = '/var'
         container_downloader = AzureContainerDownload(container_name=variables.container_name,
                                                       output_path=path,
                                                       account_name=variables.account_name,

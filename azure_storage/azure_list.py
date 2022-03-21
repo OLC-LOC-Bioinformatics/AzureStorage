@@ -103,6 +103,9 @@ class AzureContainerList(object):
                         logging.error(
                             f'A directory or an empty file name was provided for the output file {self.output_file}')
                         raise SystemExit
+                    except PermissionError:
+                        logging.error(f'Insufficient permissions to create output file {self.output_file}')
+                        raise SystemExit
         else:
             self.output_file = str()
         self.connect_str = str()
@@ -271,6 +274,9 @@ class AzureList(object):
                     except IsADirectoryError:
                         logging.error(
                             f'A directory or an empty file name was provided for the output file {self.output_file}')
+                        raise SystemExit
+                    except PermissionError:
+                        logging.error(f'Insufficient permissions to create output file {self.output_file}')
                         raise SystemExit
         else:
             self.output_file = str()
