@@ -1,4 +1,7 @@
 ## AzureStorage
+
+[![CircleCI](https://circleci.com/gh/OLC-LOC-Bioinformatics/AzureStorage/tree/main.svg?style=shield)](https://circleci.com/gh/OLC-LOC-Bioinformatics/AzureStorage/tree/main)
+
 This suite of tools (written in Python) allows you to manipulate containers/files/folders in your Azure storage account.
 
 Full documentation available at the [AzureStorage Github pages site]( https://OLC-LOC-Bioinformatics.github.io/AzureStorage/)
