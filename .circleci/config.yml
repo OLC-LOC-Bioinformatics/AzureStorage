@@ -31,7 +31,7 @@ jobs:
             conda update -y conda
             conda config --add channels conda-forge
             conda create -n azure_storage python=3.8.5
-            conda activate azure_storage
+            source activate azure_storage
             conda install -c olcbioinformatics azure_storage
             python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec --cov-report=html:test-reports
       - store_artifacts:
