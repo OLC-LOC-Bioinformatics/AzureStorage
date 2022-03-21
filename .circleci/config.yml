@@ -32,12 +32,15 @@ jobs:
             conda create -n azure_storage python=3.8.5
             source activate azure_storage
             conda install -c olcbioinformatics azure_storage
-            python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec --cov-report=html:test-reports
+            python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec --cov-report=xml:test-reports/azure_storage.xml
       - store_artifacts:
           path: test_reports/
           destination: circleci-docs
       - codecov/upload:
-          file: test-reports/index.html
+          file: test-reports/azure_storage.xml
+          url: https://uploader.codecov.io/latest/linux/codecov
+          validate_url: true
+          token: '1cf08b4b-8fe7-4e36-92ea-712fc445b1f2'
 workflows:
     build_and_test:
         jobs:
