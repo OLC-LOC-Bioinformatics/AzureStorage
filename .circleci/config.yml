@@ -2,6 +2,10 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
+# Create the orb for the code coverage upload
+orbs:
+  codecov: codecov/codecov@3.0.0
+
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -23,6 +27,7 @@ jobs:
             wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
             bash miniconda.sh -b -p $HOME/miniconda
             export PATH="$HOME/miniconda/bin:$PATH"
+            conda config --set always_yes yes --set changeps1 no
             conda update -y conda
             conda config --add channels conda-forge
             conda create -n azure_storage python=3.8.5
@@ -36,6 +41,8 @@ jobs:
       - store_artifacts:
           path: test_reports/
           destination: circleci-docs
+      - codecov/upload:
+          file: test-reports/index.html
 workflows:
     build_and_test:
         jobs:
