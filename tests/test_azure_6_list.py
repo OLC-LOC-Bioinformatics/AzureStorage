@@ -1,4 +1,5 @@
-from azure_storage.methods import client_prep, create_blob_service_client, extract_account_name, extract_connection_string
+from azure_storage.methods import client_prep, create_blob_service_client, extract_account_name, \
+    extract_connection_string
 from azure_storage.azure_list import AzureContainerList, AzureList, azure_search, cli, container_search
 from unittest.mock import patch
 import argparse

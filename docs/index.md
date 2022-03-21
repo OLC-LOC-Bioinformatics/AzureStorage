@@ -17,4 +17,4 @@ There are nine scripts in this package:
 
 ### Feedback
 
-If you encounter any issues installing or running AzureStorage, have feature requests, or need assistance, please [open an issue on Github](https://github.com/OLC-LOC-Bioinformatics/AzureStorage/issues/new/choose), or email me at `adam.koziol@inspection.gc.ca`  
+If you encounter any issues installing or running AzureStorage, have feature requests, or need assistance, please [open an issue on GitHub](https://github.com/OLC-LOC-Bioinformatics/AzureStorage/issues/new/choose), or email me at `adam.koziol@inspection.gc.ca`  

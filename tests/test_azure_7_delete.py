@@ -1,5 +1,5 @@
 from azure_storage.methods import client_prep, delete_container, delete_file, delete_folder, extract_account_name
-from azure_storage.azure_delete import AzureContainerDelete, AzureDelete, cli, container_delete, file_delete, \
+from azure_storage.azure_delete import AzureDelete, cli, container_delete, file_delete, \
     folder_delete
 from unittest.mock import patch
 import argparse

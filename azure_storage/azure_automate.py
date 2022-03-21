@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from azure_storage.methods import arg_dict_cleanup, create_batch_dict, create_parent_parser, parse_batch_file, \
-    sas_prep, setup_arguments
+    setup_arguments
 from azure_storage.azure_upload import AzureUpload
 from azure_storage.azure_sas import AzureContainerSAS, AzureSAS
 from azure_storage.azure_move import AzureContainerMove, AzureMove

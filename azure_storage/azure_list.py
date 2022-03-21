@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from azure_storage.methods import create_blob_service_client, client_prep, create_container, create_parent_parser, \
+from azure_storage.methods import create_blob_service_client, client_prep, create_parent_parser, \
     extract_connection_string, setup_arguments
 from argparse import ArgumentParser, RawTextHelpFormatter
 from termcolor import colored

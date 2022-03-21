@@ -1,6 +1,5 @@
 #!/usr/bin/env python
-from azure_storage.methods import client_prep, create_blob_client, create_container, create_parent_parser, \
-    setup_arguments
+from azure_storage.methods import client_prep, create_blob_client, create_parent_parser, setup_arguments
 from argparse import ArgumentParser, RawTextHelpFormatter
 import coloredlogs
 import logging

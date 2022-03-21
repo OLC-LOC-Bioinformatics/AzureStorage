@@ -1,4 +1,4 @@
-from azure_storage.methods import client_prep, create_batch_dict, create_blob_service_client, create_container, \
+from azure_storage.methods import create_batch_dict, create_blob_service_client, create_container, \
     extract_account_name, extract_connection_string
 from azure_storage.azure_automate import file_upload, folder_upload, container_sas, file_sas, folder_sas, \
     container_move, file_move, folder_move, container_download, file_download, folder_download, container_tier, \

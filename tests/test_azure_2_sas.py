@@ -1,5 +1,4 @@
-from azure_storage.methods import create_container_client, create_blob_sas, create_blob_service_client, \
-    extract_account_name, extract_connection_string, sas_prep, write_sas
+from azure_storage.methods import extract_account_name, sas_prep, write_sas
 from azure_storage.azure_sas import AzureContainerSAS, AzureSAS, cli, container_sas, file_sas, folder_sas
 from unittest.mock import patch
 import argparse

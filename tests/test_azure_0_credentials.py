@@ -1,16 +1,18 @@
 #!/usr/bin/env python
 from azure_storage.methods import extract_account_name, extract_account_key, extract_connection_string, \
-    delete_keyring_credentials, set_account_name, set_connection_string, setup_arguments
+    delete_keyring_credentials, set_account_name, set_connection_string
 from azure_storage.azure_credentials import cli, delete_credentials, store_credentials
 from unittest.mock import patch
 import argparse
 import pytest
+import os
 
 
 connect_str = \
         'DefaultEndpointsProtocol=https;AccountName=testcredentials;AccountKey=xxx;EndpointSuffix=core.windows.net'
 passphrase = '12234'
 account_name = 'testcredentials'
+azure_account = str()
 
 
 @patch('getpass.getpass')
@@ -30,7 +32,8 @@ def test_set_credentials_malformed_string(getpass):
 
 
 def test_set_account_name():
-    assert set_account_name(passphrase=passphrase, account_name=account_name) == account_name
+    assert set_account_name(passphrase=passphrase,
+                            account_name=account_name) == account_name
 
 
 def test_extract_account_name():
@@ -46,24 +49,28 @@ def test_extract_account_key_invalid_str():
 @patch('getpass.getpass')
 def test_set_credentials(getpass):
     getpass.return_value = connect_str
-    assert set_connection_string(passphrase=passphrase, account_name=account_name) == connect_str
+    assert set_connection_string(passphrase=passphrase,
+                                 account_name=account_name) == connect_str
 
 
 def test_extract_credentials():
-    assert extract_connection_string(passphrase=passphrase, account_name=account_name) \
+    assert extract_connection_string(passphrase=passphrase,
+                                     account_name=account_name) \
         .startswith('DefaultEndpointsProtocol')
 
 
 @patch('getpass.getpass')
 def test_extract_credentials_new_phrase(getpass):
     getpass.return_value = connect_str
-    assert extract_connection_string(passphrase='fake', account_name=account_name) \
+    assert extract_connection_string(passphrase='fake',
+                                     account_name=account_name) \
         .startswith('DefaultEndpointsProtocol')
 
 
 def test_delete_credentials():
     phrase = 'fake'
-    assert delete_keyring_credentials(passphrase=phrase, account_name=account_name) == account_name
+    assert delete_keyring_credentials(passphrase=phrase,
+                                      account_name=account_name) == account_name
 
 
 @patch('getpass.getpass')
@@ -72,16 +79,19 @@ def test_extract_credentials_invalid(getpass):
     phrase = 'fake'
     account = 'bogus'
     with pytest.raises(SystemExit):
-        set_connection_string(passphrase=phrase, account_name=account)
+        set_connection_string(passphrase=phrase,
+                              account_name=account)
 
 
 def test_delete_account_name():
-    assert delete_keyring_credentials(passphrase=passphrase, account_name=passphrase) == passphrase
+    assert delete_keyring_credentials(passphrase=passphrase,
+                                      account_name=passphrase) == passphrase
 
 
 def test_delete_account_name_missing():
     with pytest.raises(SystemExit):
-        delete_keyring_credentials(passphrase=passphrase, account_name=passphrase)
+        delete_keyring_credentials(passphrase=passphrase,
+                                   account_name=passphrase)
 
 
 def test_delete_connection_string():
@@ -99,7 +109,8 @@ def test_delete_connection_string_missing():
 @patch('getpass.getpass')
 def test_credentials_store_integration(getpass, mock_args):
     getpass.return_value = connect_str
-    mock_args.return_value = argparse.Namespace(passphrase=passphrase, account_name=account_name)
+    mock_args.return_value = argparse.Namespace(passphrase=passphrase,
+                                                account_name=account_name)
     arguments = cli()
     store_credentials(args=arguments)
 
@@ -116,11 +127,13 @@ def test_extract_account_name_new(monkeypatch):
 
 def test_delete_account_name_new():
     phrase = 'fake'
-    assert delete_keyring_credentials(passphrase=phrase, account_name=phrase) == phrase
+    assert delete_keyring_credentials(passphrase=phrase,
+                                      account_name=phrase) == phrase
 
 
 def test_extract_credentials_integration():
-    assert extract_connection_string(passphrase=passphrase, account_name=account_name) \
+    assert extract_connection_string(passphrase=passphrase,
+                                     account_name=account_name) \
         .startswith('DefaultEndpointsProtocol')
 
 
@@ -128,17 +141,38 @@ def test_extract_credentials_integration():
 @patch('getpass.getpass')
 def test_credentials_delete_integration(getpass, mock_args):
     getpass.return_value = connect_str
-    mock_args.return_value = argparse.Namespace(passphrase=passphrase, account_name=account_name)
+    mock_args.return_value = argparse.Namespace(passphrase=passphrase,
+                                                account_name=account_name)
     arguments = cli()
     delete_credentials(args=arguments)
 
 
 def test_delete_account_name_integration():
     with pytest.raises(SystemExit):
-        delete_keyring_credentials(passphrase=passphrase, account_name=passphrase)
+        delete_keyring_credentials(passphrase=passphrase,
+                                   account_name=passphrase)
 
 
 def test_delete_connection_string_integration():
     with pytest.raises(SystemExit):
         delete_keyring_credentials(passphrase=passphrase,
                                    account_name=account_name)
+
+
+@patch('getpass.getpass')
+def test_set_account_from_env_var(getpass):
+    global azure_account
+    azure_account = os.environ.get('AZURE_STORAGE_ACCOUNT')
+    if azure_account:
+        getpass.return_value = azure_account
+        assert set_account_name(passphrase='AzureStorage',
+                                account_name=azure_account) == azure_account
+
+
+@patch('getpass.getpass')
+def test_set_connect_str_from_env_var(getpass):
+    connection_string = os.environ.get('AZURE_CONNECTION_STRING')
+    if connection_string:
+        getpass.return_value = connection_string
+        assert set_connection_string(passphrase='AzureStorage',
+                                     account_name=azure_account) == connection_string

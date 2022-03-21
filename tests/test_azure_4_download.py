@@ -1,5 +1,4 @@
-from azure_storage.methods import client_prep, create_blob_service_client, create_container_client, \
-    extract_account_name, extract_connection_string
+from azure_storage.methods import client_prep, extract_account_name
 from azure_storage.azure_download import AzureContainerDownload, AzureDownload, cli, container_download, \
     file_download, folder_download
 from unittest.mock import patch
@@ -85,6 +84,7 @@ def test_download_file_invalid_container(variables):
                                         passphrase=variables.passphrase,
                                         category='container')
         file_downloader.main()
+
 
 @patch('argparse.ArgumentParser.parse_args')
 def test_download_file_integration(mock_args, variables):

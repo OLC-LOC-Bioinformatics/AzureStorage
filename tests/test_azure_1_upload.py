@@ -1,6 +1,5 @@
-from azure_storage.methods import confirm_account_match, create_blob_service_client, create_container_client, \
-    create_container, extract_account_name, extract_connection_string, \
-    validate_container_name
+from azure_storage.methods import confirm_account_match, create_blob_service_client, create_container, \
+    extract_account_name, extract_connection_string, setup_logging, validate_container_name
 from azure_storage.azure_upload import AzureUpload, cli, file_upload, folder_upload
 from unittest.mock import patch
 import argparse
@@ -27,6 +26,7 @@ def setup():
             self.test_path = os.path.abspath(os.path.dirname(__file__))
             self.file_path = os.path.join(self.test_path, 'files')
             self.storage_tier = 'Hot'
+            self.verbosity = 'info'
 
     return Variables()
 
@@ -298,3 +298,7 @@ def test_upload_folder_integration_invalid(mock_args, variables):
                                                     storage_tier=variables.storage_tier)
         arguments = cli()
         folder_upload(args=arguments)
+
+
+def test_setup_logging(variables):
+    setup_logging(arguments=variables)
