@@ -38,7 +38,6 @@ jobs:
           destination: circleci-docs
       - codecov/upload:
           file: test-reports/azure_storage.xml
-          url: https://uploader.codecov.io/latest/linux/codecov
 workflows:
     build_and_test:
         jobs:
