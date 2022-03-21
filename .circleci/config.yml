@@ -39,4 +39,4 @@ jobs:
 workflows:
     build_and_test:
         jobs:
-          azure-storage
+          - azure-storage
