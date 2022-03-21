@@ -39,8 +39,6 @@ jobs:
       - codecov/upload:
           file: test-reports/azure_storage.xml
           url: https://uploader.codecov.io/latest/linux/codecov
-          validate_url: true
-          token: '1cf08b4b-8fe7-4e36-92ea-712fc445b1f2'
 workflows:
     build_and_test:
         jobs:
