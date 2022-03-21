@@ -20,6 +20,6 @@ dist/
 #################
 __pycache__/
 
-# Coverage configurations #
-###########################
-.coverage
+# coverage reports #
+####################
+coverage_reports/

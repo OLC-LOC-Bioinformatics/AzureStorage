@@ -103,13 +103,14 @@ def test_list_container_tilde(variables):
 
 def test_list_container_invalid_path(variables):
     output_file = os.path.join('/invalid', 'search_outputs.txt')
-    with pytest.raises(SystemExit):
-        AzureContainerList(
-            expression=variables.container_name,
-            account_name=variables.account_name,
-            output_file=output_file,
-            passphrase=variables.passphrase
-        )
+    if not os.environ.get('CIRCLECI'):
+        with pytest.raises(SystemExit):
+            AzureContainerList(
+                expression=variables.container_name,
+                account_name=variables.account_name,
+                output_file=output_file,
+                passphrase=variables.passphrase
+            )
 
 
 def test_list_container_directory_provided(variables):
@@ -188,14 +189,15 @@ def test_list_file_tilde(variables):
 
 def test_list_file_invalid_path(variables):
     output_file = os.path.join('/invalid', 'search_outputs.txt')
-    with pytest.raises(SystemExit):
-        AzureList(
-            container_name=variables.container_name,
-            expression=None,
-            account_name=variables.account_name,
-            output_file=output_file,
-            passphrase=variables.passphrase
-        )
+    if not os.environ.get('CIRCLECI'):
+        with pytest.raises(SystemExit):
+            AzureList(
+                container_name=variables.container_name,
+                expression=None,
+                account_name=variables.account_name,
+                output_file=output_file,
+                passphrase=variables.passphrase
+            )
 
 
 def test_list_file_directory_provided(variables):

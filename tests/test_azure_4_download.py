@@ -144,15 +144,16 @@ def test_download_folder_tilde(variables):
 
 
 def test_download_folder_invalid_path(variables):
-    with pytest.raises(SystemExit):
-        path = '/invalid'
-        folder_downloader = AzureDownload(object_name='container_integration/',
-                                          container_name=variables.container_name,
-                                          output_path=path,
-                                          account_name=variables.account_name,
-                                          passphrase=variables.passphrase,
-                                          category='folder')
-        folder_downloader.main()
+    if not os.environ.get('CIRCLECI'):
+        with pytest.raises(SystemExit):
+            path = '/invalid'
+            folder_downloader = AzureDownload(object_name='container_integration/',
+                                              container_name=variables.container_name,
+                                              output_path=path,
+                                              account_name=variables.account_name,
+                                              passphrase=variables.passphrase,
+                                              category='folder')
+            folder_downloader.main()
 
 
 def test_download_folder_invalid_container(variables):
@@ -177,13 +178,14 @@ def test_download_container_tilde(variables):
 
 
 def test_download_container_invalid_path(variables):
-    with pytest.raises(SystemExit):
-        path = '/invalid'
-        container_downloader = AzureContainerDownload(container_name=variables.container_name,
-                                                      output_path=path,
-                                                      account_name=variables.account_name,
-                                                      passphrase=variables.passphrase)
-        container_downloader.main()
+    if not os.environ.get('CIRCLECI'):
+        with pytest.raises(SystemExit):
+            path = '/invalid'
+            container_downloader = AzureContainerDownload(container_name=variables.container_name,
+                                                          output_path=path,
+                                                          account_name=variables.account_name,
+                                                          passphrase=variables.passphrase)
+            container_downloader.main()
 
 
 def test_download_container_invalid(variables):

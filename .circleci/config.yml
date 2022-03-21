@@ -38,8 +38,12 @@ jobs:
       - store_artifacts:
           path: test_reports/
           destination: circleci-docs
-      - codecov/upload:
-          file: test_reports/azure_storage.xml
+      - run:
+          name: Codecov
+          command: |
+          curl -Os https://uploader.codecov.io/latest/linux/codecov
+          chmod +x codecov
+          ./codecov -f test_reports/azure_storage.xml -Z
 workflows:
     build_and_test:
         jobs:
