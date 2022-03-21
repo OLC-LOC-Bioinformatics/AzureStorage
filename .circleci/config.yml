@@ -36,3 +36,7 @@ jobs:
       - store_artifacts:
           path: test_reports/
           destination: circleci-docs
+workflows:
+    build_and_test:
+        jobs:
+          azure-storage

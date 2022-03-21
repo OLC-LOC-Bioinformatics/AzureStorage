@@ -4,7 +4,7 @@
 
 This suite of tools (written in Python) allows you to manipulate containers/files/folders in your Azure storage account.
 
-Full documentation available at the [AzureStorage Github pages site]( https://OLC-LOC-Bioinformatics.github.io/AzureStorage/)
+Full documentation available at the [AzureStorage GitHub pages site]( https://OLC-LOC-Bioinformatics.github.io/AzureStorage/)
 
 ## Quickstart
 
