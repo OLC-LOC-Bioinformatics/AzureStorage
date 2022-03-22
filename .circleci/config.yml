@@ -40,7 +40,7 @@ jobs:
           destination: circleci-docs
       - codecov/upload:
           file: ~/project/test_reports/azure_storage.xml
-          xtra_args: -R ~/project/test_reports/
+          xtra_args: -R ~/project/AzureStorage/
 workflows:
     build_and_test:
         jobs:

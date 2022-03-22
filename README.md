@@ -5,6 +5,7 @@
 [![Documentation Status](https://readthedocs.org/projects/pip/badge/?version=stable)](https://OLC-LOC-Bioinformatics.github.io/AzureStorage/?badge=stable)
 [![Anaconda-Server Badge](https://anaconda.org/conda-forge/vsc-install/badges/installer/conda.svg)](https://anaconda.org/olcbioinformatics/azure_storage)
 [![GitHub version](https://badge.fury.io/gh/OLC-LOC-Bioinformatics%2FAzureStorage.svg)](https://badge.fury.io/gh/OLC-LOC-Bioinformatics%2FAzureStorage)
+[![license](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/OLC-LOC-Bioinformatics/AzureStorage/blob/main/LICENSE)
 
 This suite of tools (written in Python) allows you to manipulate containers/files/folders in your Azure storage account.
 
