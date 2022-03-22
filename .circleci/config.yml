@@ -34,13 +34,13 @@ jobs:
             conda install -c olcbioinformatics azure_storage
             mkdir /invalid
             chmod -R 000 /invalid
-            python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec --cov-report=xml:$CIRCLE_WORKING_DIRECTORY/test_reports/azure_storage.xml
+            python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec --cov-report=xml:test_reports/azure_storage.xml
       - store_artifacts:
-          path: $CIRCLE_WORKING_DIRECTORY/test_reports/
+          path: test_reports/
           destination: circleci-docs
       - codecov/upload:
-          file: $CIRCLE_WORKING_DIRECTORY/test_reports/azure_storage.xml
-          xtra_args: -R ~/project/AzureStorage/
+          file: /root/project/test_reports/azure_storage.xml
+          xtra_args: -R /root/project/
 workflows:
     build_and_test:
         jobs:
