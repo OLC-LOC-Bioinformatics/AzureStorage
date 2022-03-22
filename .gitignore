@@ -20,6 +20,8 @@ dist/
 #################
 __pycache__/
 
-# coverage reports #
-####################
+# coverage files #
+##################
 coverage_reports/
+.coverage
+codecov

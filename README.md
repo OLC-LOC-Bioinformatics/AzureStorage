@@ -1,10 +1,14 @@
 ## AzureStorage
 
 [![CircleCI](https://circleci.com/gh/OLC-LOC-Bioinformatics/AzureStorage/tree/main.svg?style=shield)](https://circleci.com/gh/OLC-LOC-Bioinformatics/AzureStorage/tree/main)
+[![codecov](https://codecov.io/gh/OLC-LOC-Bioinformatics/AzureStorage/branch/main/graph/badge.svg?token=B65SOEV6QE)](https://codecov.io/gh/OLC-LOC-Bioinformatics/AzureStorage)
+[![Documentation Status](https://readthedocs.org/projects/pip/badge/?version=stable)](https://OLC-LOC-Bioinformatics.github.io/AzureStorage/?badge=stable)
+[![Anaconda-Server Badge](https://anaconda.org/conda-forge/vsc-install/badges/installer/conda.svg)](https://anaconda.org/olcbioinformatics/azure_storage)
+[![GitHub version](https://badge.fury.io/gh/OLC-LOC-Bioinformatics%2FAzureStorage.svg)](https://badge.fury.io/gh/OLC-LOC-Bioinformatics%2FAzureStorage)
 
 This suite of tools (written in Python) allows you to manipulate containers/files/folders in your Azure storage account.
 
-Full documentation available at the [AzureStorage GitHub pages site]( https://OLC-LOC-Bioinformatics.github.io/AzureStorage/)
+Full documentation available at the [AzureStorage GitHub pages site](https://OLC-LOC-Bioinformatics.github.io/AzureStorage/)
 
 ## Quickstart
 
