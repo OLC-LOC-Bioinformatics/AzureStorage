@@ -39,7 +39,7 @@ jobs:
           path: test_reports/
           destination: circleci-docs
       - codecov/upload:
-          file: test_reports/azure_storage.xml
+          file: ~/project/test_reports/azure_storage.xml
 workflows:
     build_and_test:
         jobs:
