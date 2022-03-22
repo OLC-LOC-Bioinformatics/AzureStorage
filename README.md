@@ -2,9 +2,10 @@
 
 [![CircleCI](https://circleci.com/gh/OLC-LOC-Bioinformatics/AzureStorage/tree/main.svg?style=shield)](https://circleci.com/gh/OLC-LOC-Bioinformatics/AzureStorage/tree/main)
 [![codecov](https://codecov.io/gh/OLC-LOC-Bioinformatics/AzureStorage/branch/main/graph/badge.svg?token=B65SOEV6QE)](https://codecov.io/gh/OLC-LOC-Bioinformatics/AzureStorage)
+[![Anaconda-Server Badge](https://img.shields.io/badge/install%20with-conda-brightgreen)](https://anaconda.org/olcbioinformatics/azure_storage)
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/OLC-LOC-Bioinformatics/AzureStorage?label=version)
+[![GitHub issues](https://img.shields.io/github/issues/OLC-LOC-Bioinformatics/AzureStorage)](https://github.com/OLC-LOC-Bioinformatics/AzureStorage/issues)
 [![Documentation Status](https://readthedocs.org/projects/pip/badge/?version=stable)](https://OLC-LOC-Bioinformatics.github.io/AzureStorage/?badge=stable)
-[![Anaconda-Server Badge](https://anaconda.org/conda-forge/vsc-install/badges/installer/conda.svg)](https://anaconda.org/olcbioinformatics/azure_storage)
-[![GitHub version](https://badge.fury.io/gh/OLC-LOC-Bioinformatics%2FAzureStorage.svg)](https://badge.fury.io/gh/OLC-LOC-Bioinformatics%2FAzureStorage)
 [![license](https://img.shields.io/badge/license-MIT-brightgreen)](https://github.com/OLC-LOC-Bioinformatics/AzureStorage/blob/main/LICENSE)
 
 This suite of tools (written in Python) allows you to manipulate containers/files/folders in your Azure storage account.
@@ -13,7 +14,7 @@ Full documentation available at the [AzureStorage GitHub pages site](https://OLC
 
 ## Quickstart
 
-Conda is required to install AzureStorage see the [documentation](http://bioconda.github.io/) or [AzureStorage installation](https://olc-loc-bioinformatics.github.io/AzureStorage/install/) for instructions of getting conda installed on your system
+Conda is required to install AzureStorage. See the [documentation](http://bioconda.github.io/) or [AzureStorage installation](https://olc-loc-bioinformatics.github.io/AzureStorage/install/) for instructions of getting conda installed on your system
 
 `conda install -c olc-bioinformatics azure-storage`
 

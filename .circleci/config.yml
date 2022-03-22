@@ -19,7 +19,7 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Setup Miniconda
+          name: Setup Environment and Run Tests
           command: |
             apt update
             apt install -y wget coreutils curl gnupg
