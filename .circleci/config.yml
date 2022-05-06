@@ -19,29 +19,32 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Setup Environment and Run Tests
-          command: |
-            apt update
-            apt install -y wget coreutils curl gnupg
-            wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/miniconda.sh;
-            bash $HOME/miniconda.sh -b -p $HOME/miniconda
-            export PATH="$HOME/miniconda/bin:$PATH"
-            conda config --set always_yes yes --set changeps1 no
-            conda update -y conda
-            conda config --add channels conda-forge
-            conda create -n azure_storage python=3.8.5
-            source activate azure_storage
-            conda install -c olcbioinformatics azure_storage
-            mkdir /invalid
-            chmod -R 000 /invalid
-            python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec --cov-report=xml:test_reports/azure_storage.xml
+        name: Setup Environment and Run Tests
+        command: |
+          apt update
+          apt install -y wget coreutils curl gnupg
+          wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O $HOME/miniconda.sh;
+          bash $HOME/miniconda.sh -b -p $HOME/miniconda
+          export PATH="$HOME/miniconda/bin:$PATH"
+          conda config --set always_yes yes --set changeps1 no
+          conda update -y conda
+          conda config --add channels conda-forge
+          conda create -n azure_storage python=3.8.5
+          source activate azure_storage
+          conda install -c olcbioinformatics azure_storage
+          mkdir /invalid
+          chmod -R 000 /invalid
+          python -m pytest tests/ --cov=azure_storage --cov-config=.coveragec --cov-report=xml:test_reports/azure_storage.xml
       - store_artifacts:
-          path: test_reports/
-          destination: circleci-docs
+        path: test_reports/
+        destination: circleci-docs
       - codecov/upload:
-          file: /root/project/test_reports/azure_storage.xml
-          xtra_args: -R /root/project/
+        file: /root/project/test_reports/azure_storage.xml
+        xtra_args: -R /root/project/
 workflows:
-    build_and_test:
-        jobs:
-          - azure-storage
+  build_and_test:
+    filters:
+      branches:
+        ignore: gh-pages
+    jobs:
+      - azure-storage
