@@ -1,120 +1,160 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        
-        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/list/">
-        <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>List - OLC Bioinformatics Azure Storage</title>
-        <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/font-awesome.min.css" rel="stylesheet">
-        <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/docco.min.css">
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/list/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>List - OLC Bioinformatics Azure Storage</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-        <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
-    </head>
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "List";
+    var mkdocs_page_input_path = "list.md";
+    var mkdocs_page_url = "/AzureStorage/list/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
 
-    <body>
-        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="..">OLC Bioinformatics Azure Storage</a>
-                <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+<body class="wy-body-for-nav" role="document">
 
-                <!-- Expanded navigation -->
-                <div id="navbar-collapse" class="navbar-collapse collapse">
-                        <!-- Main navigation -->
-                        <ul class="nav navbar-nav">
-                            <li class="navitem">
-                                <a href=".." class="nav-link">Home</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../install/" class="nav-link">Installation</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../credentials/" class="nav-link">Credentials</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../upload/" class="nav-link">Upload</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../sas_url/" class="nav-link">SAS URL</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../move/" class="nav-link">Move</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../download/" class="nav-link">Download</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../set_tier/" class="nav-link">Set Tier</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../delete/" class="nav-link">Delete</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../automate/" class="nav-link">Automate</a>
-                            </li>
-                            <li class="navitem active">
-                                <a href="./" class="nav-link">List</a>
-                            </li>
-                        </ul>
-
-                    <ul class="nav navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
-                                <i class="fa fa-search"></i> Search
-                            </a>
-                        </li>
-                            <li class="nav-item">
-                                <a rel="prev" href="../automate/" class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" class="nav-link disabled">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/list.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
-                            </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
-            <span class="fa fa-angle-down"></span>
-        </button>
-    </div>
+  <div class="wy-grid-for-nav">
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
-        <ul class="nav flex-column">
-            
-            <li class="nav-item" data-level="2"><a href="#azurelist" class="nav-link">AzureList</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-        </ul>
-    </div>
-</div></div>
-                    <div class="col-md-9" role="main">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> OLC Bioinformatics Azure Storage</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
 
-<h2 id="azurelist">AzureList</h2>
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../install/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../credentials/">Credentials</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../upload/">Upload</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../sas_url/">SAS URL</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../move/">Move</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../download/">Download</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../set_tier/">Set Tier</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../delete/">Delete</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../automate/">Automate</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">List</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#general-usage">General Usage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azurelist-container">AzureList container</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#azurelist-container-required-arguments">AzureList container required arguments</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azurelist-container-optional-arguments">AzureList container optional arguments</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azurelist-container-example-commands">AzureList container example commands</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azurelist-container-usage">AzureList container usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azurelist-search">AzureList search</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#azurelist-search-required-arguments">AzureList search required arguments</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azurelist-search-optional-arguments">AzureList search optional arguments</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azurelist-search-example-commands">AzureList search example commands</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azurelist-search-usage">AzureList search usage</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">OLC Bioinformatics Azure Storage</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>List</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/list.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="azurelist">AzureList</h2>
 <p>List and optionally filter containers and/or files in your Azure storage account</p>
 <p>Choose either the <a href="#azurelist-container"><code>container</code></a>, or the <a href="#azurelist-search"><code>search</code></a> functionality</p>
 <p>This script allows you to filter using regular expressions, so make sure you <a href="https://docs.python.org/3/howto/regex.html">know what you're doing</a>, <a href="https://docs.python.org/3/howto/regex.html">check out a tutorial</a>, <a href="https://www.dataquest.io/blog/regex-cheatsheet/">look at a cheatsheet</a>, and/or <a href="https://pythex.org/">test your expressions</a></p>
@@ -132,6 +172,7 @@ Available functionality:
     container         Filter and list containers in your Azure storage account
     search            Search files in a container (or containers) in Azure storage
 </code></pre>
+
 <h3 id="azurelist-container">AzureList container</h3>
 <p>List and optionally filter containers in your Azure storage account</p>
 <h4 id="azurelist-container-required-arguments">AzureList container required arguments</h4>
@@ -181,6 +222,7 @@ optional arguments:
   -o OUTPUT_FILE, --output_file OUTPUT_FILE
                         Optionally provide the name and path of file in which the outputs are to be saved.
 </code></pre>
+
 <h3 id="azurelist-search">AzureList search</h3>
 <p>Filter files in a container (or containers) in Azure storage</p>
 <h4 id="azurelist-search-required-arguments">AzureList search required arguments</h4>
@@ -233,81 +275,56 @@ optional arguments:
                         Optionally provide the name and path of file in which the outputs are to be saved.
   -c [CONTAINER_NAME], --container_name [CONTAINER_NAME]
                         Name of the Azure storage container. This command supports regular expressions e.g. 1912* will return all containers starting with 1912.Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \! You can make your queries as complex as you wish: 1912\d{2}-\D{3}\(\?\!*output\) will only return containers that start with 1912, and have two additional digits. If the word output is present, any matches are ignored. There also have to be exactly three letters following a dash and the first six numbers e.g. 191216-dar and 191227-dar will be returned but not 191216-dar-outputs 191202-test, 191216dar, 1912162-dar, 191203-m05722, 191114-gta, or 200105-dar (and many others)
-</code></pre></div>
+</code></pre>
+              
             </div>
-        </div>
-
-        <footer class="col-md-12">
-            <hr>
-            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
-        <script>
-            var base_url = "..",
-                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
-        </script>
-        <script src="../js/base.js" defer></script>
-        <script src="../search/main.js" defer></script>
-
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body">
-                <p>From here you can search these documents. Enter your search terms below.</p>
-                <form>
-                    <div class="form-group">
-                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
-                    </div>
-                </form>
-                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="../automate/" class="btn btn-neutral" title="Automate"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th style="width: 20%;">Keys</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="help shortcut"><kbd>?</kbd></td>
-                    <td>Open this help</td>
-                  </tr>
-                  <tr>
-                    <td class="next shortcut"><kbd>n</kbd></td>
-                    <td>Next page</td>
-                  </tr>
-                  <tr>
-                    <td class="prev shortcut"><kbd>p</kbd></td>
-                    <td>Previous page</td>
-                  </tr>
-                  <tr>
-                    <td class="search shortcut"><kbd>s</kbd></td>
-                    <td>Search</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-            </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
         </div>
-    </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../automate/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+    </span>
 </div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
-    </body>
+</body>
 </html>

@@ -1,120 +1,370 @@
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        
-        
-        <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/automate/">
-        <link rel="shortcut icon" href="../img/favicon.ico">
-        <title>Automate - OLC Bioinformatics Azure Storage</title>
-        <link href="../css/bootstrap.min.css" rel="stylesheet">
-        <link href="../css/font-awesome.min.css" rel="stylesheet">
-        <link href="../css/base.css" rel="stylesheet">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/docco.min.css">
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  
+  <link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/automate/">
+  <link rel="shortcut icon" href="../img/favicon.ico">
+  <title>Automate - OLC Bioinformatics Azure Storage</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,700|Roboto+Slab:400,700|Inconsolata:400,700" />
 
-        <script src="../js/jquery-1.10.2.min.js" defer></script>
-        <script src="../js/bootstrap.min.js" defer></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script> 
-    </head>
+  <link rel="stylesheet" href="../css/theme.css" />
+  <link rel="stylesheet" href="../css/theme_extra.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" />
+  
+  <script>
+    // Current page data
+    var mkdocs_page_name = "Automate";
+    var mkdocs_page_input_path = "automate.md";
+    var mkdocs_page_url = "/AzureStorage/automate/";
+  </script>
+  
+  <script src="../js/jquery-2.1.1.min.js" defer></script>
+  <script src="../js/modernizr-2.8.3.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script> 
+  
+</head>
 
-    <body>
-        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
-            <div class="container">
-                <a class="navbar-brand" href="..">OLC Bioinformatics Azure Storage</a>
-                <!-- Expander button -->
-                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+<body class="wy-body-for-nav" role="document">
 
-                <!-- Expanded navigation -->
-                <div id="navbar-collapse" class="navbar-collapse collapse">
-                        <!-- Main navigation -->
-                        <ul class="nav navbar-nav">
-                            <li class="navitem">
-                                <a href=".." class="nav-link">Home</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../install/" class="nav-link">Installation</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../credentials/" class="nav-link">Credentials</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../upload/" class="nav-link">Upload</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../sas_url/" class="nav-link">SAS URL</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../move/" class="nav-link">Move</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../download/" class="nav-link">Download</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../set_tier/" class="nav-link">Set Tier</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../delete/" class="nav-link">Delete</a>
-                            </li>
-                            <li class="navitem active">
-                                <a href="./" class="nav-link">Automate</a>
-                            </li>
-                            <li class="navitem">
-                                <a href="../list/" class="nav-link">List</a>
-                            </li>
-                        </ul>
-
-                    <ul class="nav navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
-                                <i class="fa fa-search"></i> Search
-                            </a>
-                        </li>
-                            <li class="nav-item">
-                                <a rel="prev" href="../delete/" class="nav-link">
-                                    <i class="fa fa-arrow-left"></i> Previous
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a rel="next" href="../list/" class="nav-link">
-                                    Next <i class="fa fa-arrow-right"></i>
-                                </a>
-                            </li>
-                            <li class="nav-item">
-                                <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/automate.md" class="nav-link"><i class="fa fa-github"></i> Edit on GitHub</a>
-                            </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="row">
-                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
-            <span class="fa fa-angle-down"></span>
-        </button>
-    </div>
+  <div class="wy-grid-for-nav">
 
     
-    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
-        <ul class="nav flex-column">
-            
-            <li class="nav-item" data-level="2"><a href="#azureautomate" class="nav-link">AzureAutomate</a>
-              <ul class="nav flex-column">
-              </ul>
-            </li>
-        </ul>
-    </div>
-</div></div>
-                    <div class="col-md-9" role="main">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+        <a href=".." class="icon icon-home"> OLC Bioinformatics Azure Storage</a>
+        <div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
 
-<h2 id="azureautomate">AzureAutomate</h2>
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../install/">Installation</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../credentials/">Credentials</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../upload/">Upload</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../sas_url/">SAS URL</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../move/">Move</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../download/">Download</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../set_tier/">Set Tier</a>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../delete/">Delete</a>
+                    </li>
+                </ul>
+                <ul class="current">
+                    <li class="toctree-l1 current"><a class="reference internal current" href="./">Automate</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#general-usage">General usage</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-upload">AzureAutomate upload</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#general-usage_1">General usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-upload-file">AzureAutomate upload file</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-upload-folder">AzureAutomate upload folder</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_1">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_1">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_1">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_1">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-sas">AzureAutomate sas</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#general-usage_2">General usage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azureautomate-sas-container">AzureAutomate sas container</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_2">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_2">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_2">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_2">Usage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azureautomate-sas-file">AzureAutomate sas file</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_3">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_3">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_3">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_3">Usage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azureautomate-sas-folder">AzureAutomate sas folder</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_4">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_4">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_4">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_4">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-move">AzureAutomate move</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#general-usage_3">General usage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azureautomate-move-container">AzureAutomate move container</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_5">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_5">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_5">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_5">Usage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azureautomate-move-file">AzureAutomate move file</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_6">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_6">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_6">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_6">Usage</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#azureautomate-move-folder">AzureAutomate move folder</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_7">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_7">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_7">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_7">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-download">AzureAutomate download</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#general-usage_4">General usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-download-container">AzureAutomate download container</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_8">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_8">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_8">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_8">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-download-file">AzureAutomate download file</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_9">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_9">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_9">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_9">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-download-folder">AzureAutomate download folder</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_10">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_10">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_10">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_10">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-tier">AzureAutomate tier</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#general-usage_5">General usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-tier-container">AzureAutomate tier container</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_11">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_11">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_11">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_11">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-tier-file">AzureAutomate tier file</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_12">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_12">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_12">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_12">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-tier-folder">AzureAutomate tier folder</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_13">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_13">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_13">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_13">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-delete">AzureAutomate delete</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#general-usage_6">General usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-delete-container">AzureAutomate delete container</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_14">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_14">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_14">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_14">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-delete-file">AzureAutomate delete file</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_15">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_15">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_15">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_15">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-delete-folder">AzureAutomate delete folder</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#required-arguments_16">Required arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#optional-arguments_16">Optional arguments:</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#batch-file-format_16">Batch file format</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#usage_16">Usage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#azureautomate-batch">AzureAutomate batch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#batch-file-format_17">Batch file format</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#usage_17">Usage</a>
+    </li>
+    </ul>
+                    </li>
+                </ul>
+                <ul>
+                    <li class="toctree-l1"><a class="reference internal" href="../list/">List</a>
+                    </li>
+                </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="..">OLC Bioinformatics Azure Storage</a>
+      </nav>
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="..">Docs</a> &raquo;</li>
+    
+      
+    
+    <li>Automate</li>
+    <li class="wy-breadcrumbs-aside">
+      
+        <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/master/docs/automate.md"
+          class="icon icon-github"> Edit on GitHub</a>
+      
+    </li>
+  </ul>
+  
+  <hr/>
+</div>
+          <div role="main">
+            <div class="section">
+              
+                <h2 id="azureautomate">AzureAutomate</h2>
 <p>Perform multiple upload, SAS URL creation, move, download, storage tier setting, or delete actions. Alternatively, perform multiple actions in a single call</p>
 <p>Choose either the <a href="#azureautomate-upload"><code>upload</code></a>, <a href="#azureautomate-sas"><code>sas</code></a>, <a href="#azureautomate-move"><code>move</code></a>, <a href="#azureautomate-download"><code>download</code></a>, <a href="#azureautomate-tier"><code>tier</code></a>, <a href="#azureautomate-delete"><code>delete</code></a>, or <a href="#azureautomate-batch"><code>batch</code></a> functionality</p>
 <h4 id="general-usage">General usage</h4>
@@ -135,6 +385,7 @@ Available functionality:
     delete              Delete containers/files/folders in Azure storage
     batch               Perform multiple different operations in batch
 </code></pre>
+
 <h3 id="azureautomate-upload">AzureAutomate upload</h3>
 <p>Choose either the <a href="#azureautomate-upload-file"><code>file</code></a> or <a href="#azureautomate-upload-folder"><code>folder</code></a> functionality</p>
 <h4 id="general-usage_1">General usage</h4>
@@ -150,6 +401,7 @@ Upload functionality:
     file         Upload files to Azure storage
     folder       Upload folders to Azure storage
 </code></pre>
+
 <h3 id="azureautomate-upload-file">AzureAutomate upload file</h3>
 <p>Automate the upload of multiple files to your Azure storage account</p>
 <h4 id="required-arguments">Required arguments:</h4>
@@ -184,6 +436,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, file name, destination path (optional), storage tier (optional)
 </code></pre>
+
 <h3 id="azureautomate-upload-folder">AzureAutomate upload folder</h3>
 <p>Automate the upload of multiple folders to your Azure storage account</p>
 <h4 id="required-arguments_1">Required arguments:</h4>
@@ -218,6 +471,7 @@ optional arguments:
                         Tab-separated file with the following fields (one entry per line):
                          container name, folder name, destination path (optional), storage tier (optional)
 </code></pre>
+
 <h3 id="azureautomate-sas">AzureAutomate sas</h3>
 <p>Choose either the <a href="#azureautomate-sas-container"><code>container</code></a>, <a href="#azureautomate-sas-file"><code>file</code></a>, or <a href="#azureautomate-sas-folder"><code>folder</code></a> functionality</p>
 <h4 id="general-usage_2">General usage</h4>
@@ -234,6 +488,7 @@ SAS URL creation functionality:
     file                Create SAS URLs for files in Azure storage
     folder              Create SAS URLs for folders in Azure storage
 </code></pre>
+
 <h4 id="azureautomate-sas-container">AzureAutomate sas container</h4>
 <p>Automate the creation of SAS URLs for multiple containers in your Azure storage account</p>
 <h4 id="required-arguments_2">Required arguments:</h4>
@@ -268,6 +523,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                         container name, expiry (optional), output file (optional)
 </code></pre>
+
 <h4 id="azureautomate-sas-file">AzureAutomate sas file</h4>
 <p>Automate the creation of SAS URLs for multiple files in your Azure storage account</p>
 <h4 id="required-arguments_3">Required arguments:</h4>
@@ -302,6 +558,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, file name and path, expiry (optional), output file (optional)
 </code></pre>
+
 <h4 id="azureautomate-sas-folder">AzureAutomate sas folder</h4>
 <p>Automate the creation of SAS URLs for multiple folders in your Azure storage account</p>
 <h4 id="required-arguments_4">Required arguments:</h4>
@@ -336,6 +593,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, folder name and path, expiry (optional), output file (optional)
 </code></pre>
+
 <h3 id="azureautomate-move">AzureAutomate move</h3>
 <p>Choose either the <a href="#azureautomate-move-container"><code>container</code></a>, <a href="#azureautomate-move-file"><code>file</code></a>, or <a href="#azureautomate-move-folder"><code>folder</code></a> functionality</p>
 <h4 id="general-usage_3">General usage</h4>
@@ -352,6 +610,7 @@ Move functionality:
     file                Move files in Azure storage
     folder              Move folders in Azure storage
 </code></pre>
+
 <h4 id="azureautomate-move-container">AzureAutomate move container</h4>
 <p>Automate the moving of multiple containers in your Azure storage account</p>
 <h4 id="required-arguments_5">Required arguments:</h4>
@@ -386,6 +645,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, target container, destination path (optional), storage tier (optional)
 </code></pre>
+
 <h4 id="azureautomate-move-file">AzureAutomate move file</h4>
 <p>Automate the moving of multiple files in your Azure storage account</p>
 <h4 id="required-arguments_6">Required arguments:</h4>
@@ -420,6 +680,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, target container, file name, destination path (optional), storage tier (optional)
 </code></pre>
+
 <h4 id="azureautomate-move-folder">AzureAutomate move folder</h4>
 <p>Automate the moving of multiple folders in your Azure storage account</p>
 <h4 id="required-arguments_7">Required arguments:</h4>
@@ -455,6 +716,7 @@ optional arguments:
                          container name, target container, folder name, destination path (optional), storage tier (optional)
 
 </code></pre>
+
 <h3 id="azureautomate-download">AzureAutomate download</h3>
 <p>Choose either the <a href="#azureautomate-download-container"><code>container</code></a>, <a href="#azureautomate-download-file"><code>file</code></a>, or <a href="#azureautomate-download-folder"><code>folder</code></a> functionality</p>
 <h4 id="general-usage_4">General usage</h4>
@@ -471,6 +733,7 @@ Download functionality:
     file                Download files from Azure storage
     folder              Download folders from Azure storage
 </code></pre>
+
 <h3 id="azureautomate-download-container">AzureAutomate download container</h3>
 <p>Automate the downloading of multiple containers from your Azure storage account</p>
 <h4 id="required-arguments_8">Required arguments:</h4>
@@ -505,6 +768,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, output path (optional)
 </code></pre>
+
 <h3 id="azureautomate-download-file">AzureAutomate download file</h3>
 <p>Automate the downloading of multiple files from your Azure storage account</p>
 <h4 id="required-arguments_9">Required arguments:</h4>
@@ -539,6 +803,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, file name, output path (optional)
 </code></pre>
+
 <h3 id="azureautomate-download-folder">AzureAutomate download folder</h3>
 <p>Automate the downloading of multiple folders from your Azure storage account</p>
 <h4 id="required-arguments_10">Required arguments:</h4>
@@ -573,6 +838,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, folder name, output path (optional)
 </code></pre>
+
 <h3 id="azureautomate-tier">AzureAutomate tier</h3>
 <p>Choose either the <a href="#azureautomate-tier-container"><code>container</code></a>, <a href="#azureautomate-tier-file"><code>file</code></a>, or <a href="#azureautomate-tier-folder"><code>folder</code></a> functionality</p>
 <h4 id="general-usage_5">General usage</h4>
@@ -589,6 +855,7 @@ Storage tier setting functionality:
     file                Set the storage tier of files in Azure storage
     folder              Set the storage tier of folders in Azure storage
 </code></pre>
+
 <h3 id="azureautomate-tier-container">AzureAutomate tier container</h3>
 <p>Automate setting the storage tier for multiple containers in your Azure storage account</p>
 <h4 id="required-arguments_11">Required arguments:</h4>
@@ -624,6 +891,7 @@ optional arguments:
                          container name, storage tier
 
 </code></pre>
+
 <h3 id="azureautomate-tier-file">AzureAutomate tier file</h3>
 <p>Automate setting the storage tier for multiple files in your Azure storage account</p>
 <h4 id="required-arguments_12">Required arguments:</h4>
@@ -658,6 +926,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, file name, storage tier
 </code></pre>
+
 <h3 id="azureautomate-tier-folder">AzureAutomate tier folder</h3>
 <p>Automate setting the storage tier for multiple folders in your Azure storage account</p>
 <h4 id="required-arguments_13">Required arguments:</h4>
@@ -692,6 +961,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, folder name, storage tier
 </code></pre>
+
 <h3 id="azureautomate-delete">AzureAutomate delete</h3>
 <p>Choose either the <a href="#azureautomate-delete-container"><code>container</code></a>, <a href="#azureautomate-delete-file"><code>file</code></a>, or <a href="#azureautomate-delete-folder"><code>folder</code></a> functionality</p>
 <h4 id="general-usage_6">General usage</h4>
@@ -708,6 +978,7 @@ Delete functionality:
     file                Delete files in Azure storage
     folder              Delete folders in Azure storage
 </code></pre>
+
 <h3 id="azureautomate-delete-container">AzureAutomate delete container</h3>
 <p>Automate deleting multiple containers in your Azure storage account</p>
 <h4 id="required-arguments_14">Required arguments:</h4>
@@ -742,6 +1013,7 @@ optional arguments:
                         File with the following field:
                          container name
 </code></pre>
+
 <h3 id="azureautomate-delete-file">AzureAutomate delete file</h3>
 <p>Automate deleting multiple files in your Azure storage account</p>
 <h4 id="required-arguments_15">Required arguments:</h4>
@@ -777,6 +1049,7 @@ optional arguments:
                          container name, file name, retention time (optional)
 
 </code></pre>
+
 <h3 id="azureautomate-delete-folder">AzureAutomate delete folder</h3>
 <p>Automate deleting multiple folders in your Azure storage account</p>
 <h4 id="required-arguments_16">Required arguments:</h4>
@@ -811,6 +1084,7 @@ optional arguments:
                         Tab-separated file with the following fields:
                          container name, folder name, retention time (optional)
 </code></pre>
+
 <h3 id="azureautomate-batch">AzureAutomate batch</h3>
 <p>Automate multiple operations</p>
 <h3 id="batch-file-format_17">Batch file format</h3>
@@ -852,81 +1126,60 @@ optional arguments:
                         delete, container, container name
                         delete, file, container name, file name, retention time (optional)
                         delete, folder, container name, folder name, retention time (optional)
-</code></pre></div>
+</code></pre>
+              
             </div>
-        </div>
-
-        <footer class="col-md-12">
-            <hr>
-            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
-        </footer>
-        <script>
-            var base_url = "..",
-                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
-        </script>
-        <script src="../js/base.js" defer></script>
-        <script src="../search/main.js" defer></script>
-
-        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="searchModalLabel">Search</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body">
-                <p>From here you can search these documents. Enter your search terms below.</p>
-                <form>
-                    <div class="form-group">
-                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
-                    </div>
-                </form>
-                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="../list/" class="btn btn-neutral float-right" title="List">Next <span class="icon icon-circle-arrow-right"></span></a>
+      
+      
+        <a href="../delete/" class="btn btn-neutral" title="Delete"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+      
     </div>
-</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-            </div>
-            <div class="modal-body">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th style="width: 20%;">Keys</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td class="help shortcut"><kbd>?</kbd></td>
-                    <td>Open this help</td>
-                  </tr>
-                  <tr>
-                    <td class="next shortcut"><kbd>n</kbd></td>
-                    <td>Next page</td>
-                  </tr>
-                  <tr>
-                    <td class="prev shortcut"><kbd>p</kbd></td>
-                    <td>Previous page</td>
-                  </tr>
-                  <tr>
-                    <td class="search shortcut"><kbd>s</kbd></td>
-                    <td>Search</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="modal-footer">
-            </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+    
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+      
         </div>
-    </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="versions">
+    <span class="rst-current-version" data-toggle="rst-current-version">
+      
+          <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/" class="fa fa-github" style="float: left; color: #fcfcfc"> GitHub</a>
+      
+      
+        <span><a href="../delete/" style="color: #fcfcfc;">&laquo; Previous</a></span>
+      
+      
+        <span style="margin-left: 15px"><a href="../list/" style="color: #fcfcfc">Next &raquo;</a></span>
+      
+    </span>
 </div>
+    <script>var base_url = '..';</script>
+    <script src="../js/theme.js" defer></script>
+      <script src="../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
 
-    </body>
+</body>
 </html>
