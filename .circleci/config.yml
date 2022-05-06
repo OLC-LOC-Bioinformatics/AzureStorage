@@ -43,8 +43,8 @@ jobs:
           xtra_args: -R /root/project/
 workflows:
     build_and_test:
-        filters:
-          branches:
-            ignore: gh-pages
         jobs:
-          - azure-storage
+          - azure-storage:
+              filters:
+                branches:
+                  ignore: gh-pages
