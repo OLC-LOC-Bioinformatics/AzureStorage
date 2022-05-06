@@ -42,9 +42,9 @@ jobs:
           file: /root/project/test_reports/azure_storage.xml
           xtra_args: -R /root/project/
 workflows:
-    filters:
-      branches:
-        ignore: gh-pages
     build_and_test:
+        filters:
+          branches:
+            ignore: gh-pages
         jobs:
           - azure-storage
