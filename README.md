@@ -16,7 +16,7 @@ Full documentation available at the [AzureStorage GitHub pages site](https://OLC
 
 Conda is required to install AzureStorage. See the [documentation](http://bioconda.github.io/) or [AzureStorage installation](https://olc-loc-bioinformatics.github.io/AzureStorage/install/) for instructions of getting conda installed on your system
 
-`conda install -c olcbioinformatics azure-storage`
+`conda install -c olcbioinformatics azure_storage`
 
 ### Credentials
 
