@@ -218,7 +218,7 @@ def test_batch_folder_tier_integration(mock_args, variables):
     folder_tier(args=arguments)
     blobs = variables.target_client.list_blobs()
     for blob in blobs:
-        if blob.name == os.path.join('move_folder', 'file_1.txt'):
+        if blob.name == os.path.join('nested_1', 'renamed', 'nested_file_2.txt'):
             assert blob.blob_tier == 'Cool'
 
 

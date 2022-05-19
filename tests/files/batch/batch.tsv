@@ -1,24 +1,24 @@
-upload	file	000container	tests/files/file_1.txt	nested	
+upload	file	000container	tests/files/file_1.txt	nested
 upload	file	000container	tests/files/file_1.txt	''	cool
 upload	file	000container	tests/files/file_2.txt	nested	cool
 upload	file	000container	tests/files/file_1.txt	nested/double_nested
-upload	file	000container	tests/files/file_2.txt	""	
-upload	folder	000container	tests/files/folder	nested_folder	
+upload	file	000container	tests/files/file_2.txt
+upload	folder	000container	tests/files/folder	nested_folder
 upload	folder	000container	tests/files/folder_2	''	cool
 upload	folder	000container	tests/files/folder_2/nested_folder_2	nested_folder_2	cool
-upload	folder	000container	tests/files/folder_2/nested_folder_2	""		
-sas	container	000container		
+upload	folder	000container	tests/files/folder_2/nested_folder_2
+sas	container	000container
 sas	container	000container	8	tests/files/sas/sas_test.txt
-sas	container	000container		tests/files/sas/sas_test_1.txt	
-sas	container	000container	4	
-sas	file	000container	file_1.txt		
+sas	container	000container		tests/files/sas/sas_test_1.txt
+sas	container	000container	4
+sas	file	000container	file_1.txt
 sas	file	000container	nested/file_1.txt	8	tests/files/sas/sas_test.txt
 sas	file	000container	file_2.txt		tests/files/sas/sas_test_1.txt
-sas	file	000container	nested/file_2.txt	4	
-sas	folder	000container	nested_folder_2		
+sas	file	000container	nested/file_2.txt	4
+sas	folder	000container	nested_folder_2
 sas	folder	000container	nested/	8	sas_test.txt
 sas	folder	000container	nested_folder/nested		tests/files/sas/sas_test_1.txt
-sas	folder	000container	folder_2/nested_folder_2	4	
+sas	folder	000container	folder_2/nested_folder_2	4
 move	file	000container	0000container	folder_test_1.txt	move_files
 move	file	000container	000container	nested_folder_2/nested_folder_test_1.txt	''	cool
 move	file	000container	0000container	nested_folder/nested_file_1.txt	move_files	cool
@@ -30,10 +30,10 @@ move	folder	0000container	0000container	nested_1	''	hot
 download	container	0000container	tests/files/download
 download	container	0000container
 download	file	0000container	nested_folder_test_1.txt	tests/files/download
-download	file	0000container	move_folder/file_1.txt	""
+download	file	0000container	move_folder/file_1.txt
 download	file	0000container	move_folder/file_2.txt	tests/files/download
 download	folder	0000container	move_folder	tests/files/download
-download	folder	0000container	move_folder	""
+download	folder	0000container	move_folder
 download	folder	0000container	renamed/nested/double_nested	tests/files/download
 tier	container	0000container	cool
 tier	container	0000container	hot
@@ -47,7 +47,7 @@ tier	folder	0000container	renamed/nested	cool
 tier	folder	0000container	renamed/nested/double_nested	hot
 delete	file	0000container	file_1.txt
 delete	file	0000container	move_folder/file_1.txt	2
-delete	file	0000container	move_files/files/nested_file_1.txt	5
+delete	file	0000container	move_files/nested_file_1.txt	5
 delete	folder	0000container	move_files
 delete	folder	0000container	renamed/nested/double_nested/	2
 delete	folder	0000container	move_folder/	5

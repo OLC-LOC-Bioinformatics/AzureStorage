@@ -1,4 +1,3 @@
 00container	nested_1/file_1.txt	
 00container	nested_1/renamed/nested/double_nested_file_2.txt	2
 00container	move_folder/file_1.txt	5
-00container	invalid_folder/file_1.txt
