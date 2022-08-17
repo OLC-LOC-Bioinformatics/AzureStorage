@@ -1,13 +1,29 @@
 #!/usr/bin/env python
-from azure_storage.methods import arg_dict_cleanup, create_batch_dict, create_parent_parser, parse_batch_file, \
+from azure_storage.methods import \
+    arg_dict_cleanup, \
+    create_batch_dict, \
+    create_parent_parser, \
+    parse_batch_file, \
     setup_arguments
 from azure_storage.azure_upload import AzureUpload
-from azure_storage.azure_sas import AzureContainerSAS, AzureSAS
-from azure_storage.azure_move import AzureContainerMove, AzureMove
-from azure_storage.azure_download import AzureContainerDownload, AzureDownload
-from azure_storage.azure_tier import AzureContainerTier, AzureTier
-from azure_storage.azure_delete import AzureContainerDelete, AzureDelete
-from argparse import ArgumentParser, RawTextHelpFormatter
+from azure_storage.azure_sas import \
+    AzureContainerSAS, \
+    AzureSAS
+from azure_storage.azure_move import \
+    AzureContainerMove, \
+    AzureMove
+from azure_storage.azure_download import \
+    AzureContainerDownload, \
+    AzureDownload
+from azure_storage.azure_tier import \
+    AzureContainerTier, \
+    AzureTier
+from azure_storage.azure_delete import \
+    AzureContainerDelete, \
+    AzureDelete
+from argparse import \
+    ArgumentParser, \
+    RawTextHelpFormatter
 import coloredlogs
 import logging
 import sys
@@ -22,8 +38,10 @@ def file_upload(args, batch_dict=None):
     """
     # If batch_dict has not been supplied by the batch function, extract the batch information from the file
     if not batch_dict:
-        batch_dict = create_batch_dict(batch_file=args.batch_file,
-                                       headers=['container', 'file', 'reset_path', 'storage_tier'])
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'file', 'reset_path', 'storage_tier']
+        )
     # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
     # e.g. {1 : {container_name: $CONTAINER_NAME, file: $FILE_NAME...}, 2: {container_name: ...}, ...}
     for key, arg_dict in batch_dict.items():
@@ -36,7 +54,6 @@ def file_upload(args, batch_dict=None):
                 object_name=arg_dict['file'],
                 account_name=args.account_name,
                 container_name=arg_dict['container'],
-                passphrase=args.passphrase,
                 path=arg_dict['reset_path'],
                 storage_tier=arg_dict['storage_tier'],
                 category='file'
@@ -56,8 +73,10 @@ def folder_upload(args, batch_dict=None):
     """
     # If batch_dict has not been supplied by the batch function, extract the batch information from the file
     if not batch_dict:
-        batch_dict = create_batch_dict(batch_file=args.batch_file,
-                                       headers=['container', 'folder', 'reset_path', 'storage_tier'])
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'folder', 'reset_path', 'storage_tier']
+        )
     # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
     # e.g. {1 : {container_name: $CONTAINER_NAME, file: $FOLDER_NAME...}, 2: {container_name: ...}, ...}
     for key, arg_dict in batch_dict.items():
@@ -69,7 +88,6 @@ def folder_upload(args, batch_dict=None):
                 object_name=arg_dict['folder'],
                 account_name=args.account_name,
                 container_name=arg_dict['container'],
-                passphrase=args.passphrase,
                 path=arg_dict['reset_path'],
                 storage_tier=arg_dict['storage_tier'],
                 category='folder'
@@ -89,8 +107,10 @@ def container_sas(args, batch_dict=None):
     """
     # If batch_dict has not been supplied by the batch function, extract the batch information from the file
     if not batch_dict:
-        batch_dict = create_batch_dict(batch_file=args.batch_file,
-                                       headers=['container', 'expiry', 'output_file'])
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'expiry', 'output_file']
+        )
     # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
     # e.g. {1 : {container_name: $CONTAINER_NAME, expiry: $EXPIRY...}, 2: {container_name: ...}, ...}
     for key, arg_dict in batch_dict.items():
@@ -102,7 +122,6 @@ def container_sas(args, batch_dict=None):
                 container_name=arg_dict['container'],
                 output_file=arg_dict['output_file'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 expiry=arg_dict['expiry'],
                 verbosity=args.verbosity
             )
@@ -121,8 +140,10 @@ def file_sas(args, batch_dict=None):
     """
     # If batch_dict has not been supplied by the batch function, extract the batch information from the file
     if not batch_dict:
-        batch_dict = create_batch_dict(batch_file=args.batch_file,
-                                       headers=['container', 'file', 'expiry', 'output_file'])
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'file', 'expiry', 'output_file']
+        )
     # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
     # e.g. {1 : {container_name: $CONTAINER_NAME, file: $FILE...}, 2: {container_name: ...}, ...}
     for key, arg_dict in batch_dict.items():
@@ -135,7 +156,6 @@ def file_sas(args, batch_dict=None):
                 container_name=arg_dict['container'],
                 output_file=arg_dict['output_file'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 expiry=arg_dict['expiry'],
                 verbosity=args.verbosity,
                 category='file',
@@ -155,8 +175,10 @@ def folder_sas(args, batch_dict=None):
         """
     # If batch_dict has not been supplied by the batch function, extract the batch information from the file
     if not batch_dict:
-        batch_dict = create_batch_dict(batch_file=args.batch_file,
-                                       headers=['container', 'folder', 'expiry', 'output_file'])
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'folder', 'expiry', 'output_file']
+        )
     # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
     # e.g. {1 : {container_name: $CONTAINER_NAME, folder: $FOLDER...}, 2: {container_name: ...}, ...}
     for key, arg_dict in batch_dict.items():
@@ -169,7 +191,6 @@ def folder_sas(args, batch_dict=None):
                 container_name=arg_dict['container'],
                 output_file=arg_dict['output_file'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 expiry=arg_dict['expiry'],
                 verbosity=args.verbosity,
                 category='folder',
@@ -190,8 +211,10 @@ def container_move(args, batch_dict=None):
     """
     # If batch_dict has not been supplied by the batch function, extract the batch information from the file
     if not batch_dict:
-        batch_dict = create_batch_dict(batch_file=args.batch_file,
-                                       headers=['container', 'target', 'reset_path', 'storage_tier'])
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'target', 'reset_path', 'storage_tier']
+        )
     # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
     # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
     for key, arg_dict in batch_dict.items():
@@ -202,7 +225,6 @@ def container_move(args, batch_dict=None):
             move_container = AzureContainerMove(
                 container_name=arg_dict['container'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 target_container=arg_dict['target'],
                 path=arg_dict['reset_path'],
                 storage_tier=arg_dict['storage_tier']
@@ -222,8 +244,10 @@ def file_move(args, batch_dict=None):
     """
     # If batch_dict has not been supplied by the batch function, extract the batch information from the file
     if not batch_dict:
-        batch_dict = create_batch_dict(batch_file=args.batch_file,
-                                       headers=['container', 'target', 'file', 'reset_path', 'storage_tier'])
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'target', 'file', 'reset_path', 'storage_tier']
+        )
     # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
     # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
     for key, arg_dict in batch_dict.items():
@@ -235,7 +259,6 @@ def file_move(args, batch_dict=None):
                 object_name=arg_dict['file'],
                 container_name=arg_dict['container'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 target_container=arg_dict['target'],
                 path=arg_dict['reset_path'],
                 storage_tier=arg_dict['storage_tier'],
@@ -256,8 +279,10 @@ def folder_move(args, batch_dict=None):
         """
     # If batch_dict has not been supplied by the batch function, extract the batch information from the file
     if not batch_dict:
-        batch_dict = create_batch_dict(batch_file=args.batch_file,
-                                       headers=['container', 'target', 'folder', 'reset_path', 'storage_tier'])
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'target', 'folder', 'reset_path', 'storage_tier']
+        )
     # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
     # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
     for key, arg_dict in batch_dict.items():
@@ -269,7 +294,6 @@ def folder_move(args, batch_dict=None):
                 object_name=arg_dict['folder'],
                 container_name=arg_dict['container'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 target_container=arg_dict['target'],
                 path=arg_dict['reset_path'],
                 storage_tier=arg_dict['storage_tier'],
@@ -302,7 +326,6 @@ def container_download(args, batch_dict=None):
             download_container = AzureContainerDownload(
                 container_name=arg_dict['container'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 output_path=arg_dict['output_path']
             )
             # Run the container download
@@ -333,7 +356,6 @@ def file_download(args, batch_dict=None):
                 container_name=arg_dict['container'],
                 object_name=arg_dict['file'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 output_path=arg_dict['output_path'],
                 category='file'
             )
@@ -365,7 +387,6 @@ def folder_download(args, batch_dict=None):
                 container_name=arg_dict['container'],
                 object_name=arg_dict['folder'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 output_path=arg_dict['output_path'],
                 category='folder'
             )
@@ -396,7 +417,6 @@ def container_tier(args, batch_dict=None):
             tier_container = AzureContainerTier(
                 container_name=arg_dict['container'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 storage_tier=arg_dict['storage_tier']
             )
             # Run the container tier
@@ -427,7 +447,6 @@ def file_tier(args, batch_dict=None):
                 container_name=arg_dict['container'],
                 object_name=arg_dict['file'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 storage_tier=arg_dict['storage_tier'],
                 category='file'
             )
@@ -459,7 +478,6 @@ def folder_tier(args, batch_dict=None):
                 container_name=arg_dict['container'],
                 object_name=arg_dict['folder'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 storage_tier=arg_dict['storage_tier'],
                 category='folder'
             )
@@ -490,7 +508,6 @@ def container_delete(args, batch_dict=None):
             delete_container = AzureContainerDelete(
                 container_name=arg_dict['container'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
             )
             # Run the container delete
             delete_container.main()
@@ -520,7 +537,6 @@ def file_delete(args, batch_dict=None):
                 container_name=arg_dict['container'],
                 object_name=arg_dict['file'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 retention_time=arg_dict['retention_time'],
                 category='file'
             )
@@ -552,7 +568,6 @@ def folder_delete(args, batch_dict=None):
                 container_name=arg_dict['container'],
                 object_name=arg_dict['folder'],
                 account_name=args.account_name,
-                passphrase=args.passphrase,
                 retention_time=arg_dict['retention_time'],
                 category='folder'
             )

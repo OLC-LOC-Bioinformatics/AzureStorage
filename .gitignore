@@ -24,4 +24,12 @@ __pycache__/
 ##################
 coverage_reports/
 .coverage
+.coveragec
 codecov
+azure_storage.xml
+
+
+# credentials files #
+#####################
+azure_storage/*credentials.txt
+azure_storage/*credentials.key

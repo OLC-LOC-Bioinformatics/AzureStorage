@@ -1,6 +1,12 @@
 #!/usr/bin/env python
-from azure_storage.methods import client_prep, create_blob_client, create_parent_parser, setup_arguments
-from argparse import ArgumentParser, RawTextHelpFormatter
+from azure_storage.methods import \
+    client_prep, \
+    create_blob_client, \
+    create_parent_parser, \
+    setup_arguments
+from argparse import \
+    ArgumentParser, \
+    RawTextHelpFormatter
 import coloredlogs
 import logging
 import azure
@@ -12,27 +18,32 @@ class AzureUpload(object):
 
     def main(self):
         self.container_name, self.connect_str, self.blob_service_client, self.container_client = \
-            client_prep(container_name=self.container_name,
-                        passphrase=self.passphrase,
-                        account_name=self.account_name)
+            client_prep(
+                container_name=self.container_name,
+                account_name=self.account_name
+            )
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
         # Run the proper method depending on whether a file or a folder is requested
         if self.category == 'file':
             # If the container doesn't exist, run the container creation method, and re-run the upload
-            self.upload_file(object_name=self.object_name,
-                             blob_service_client=self.blob_service_client,
-                             container_name=self.container_name,
-                             account_name=self.account_name,
-                             path=self.path,
-                             storage_tier=self.storage_tier)
+            self.upload_file(
+                object_name=self.object_name,
+                blob_service_client=self.blob_service_client,
+                container_name=self.container_name,
+                account_name=self.account_name,
+                path=self.path,
+                storage_tier=self.storage_tier
+            )
         elif self.category == 'folder':
-            self.upload_folder(object_name=self.object_name,
-                               blob_service_client=self.blob_service_client,
-                               container_name=self.container_name,
-                               account_name=self.account_name,
-                               path=self.path,
-                               storage_tier=self.storage_tier)
+            self.upload_folder(
+                object_name=self.object_name,
+                blob_service_client=self.blob_service_client,
+                container_name=self.container_name,
+                account_name=self.account_name,
+                path=self.path,
+                storage_tier=self.storage_tier
+            )
 
     @staticmethod
     def upload_file(object_name, blob_service_client, container_name, account_name, path, storage_tier):
@@ -50,9 +61,11 @@ class AzureUpload(object):
         if path is not None:
             file_name = os.path.join(path, file_name)
         # Create a blob client for this file in the container in which it will be stored
-        blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                         container_name=container_name,
-                                         blob_file=file_name)
+        blob_client = create_blob_client(
+            blob_service_client=blob_service_client,
+            container_name=container_name,
+            blob_file=file_name
+        )
         # Attempt to upload the file to the specified container.
         try:
             # Read in the file data as binary
@@ -63,8 +76,8 @@ class AzureUpload(object):
                 blob_client.set_standard_blob_tier(standard_blob_tier=storage_tier)
         # If a file with that name already exists in that container, warn the user
         except azure.core.exceptions.ResourceExistsError:
-            logging.warning(f'The file {file_name} already exists in container {container_name} in '
-                            f'storage account {account_name}')
+            logging.warning(
+                f'The file {file_name} already exists in container {container_name} in storage account {account_name}')
             raise SystemExit
         # Despite the attempt to correct the container name, it may still be invalid
         except azure.core.exceptions.HttpResponseError as e:
@@ -72,8 +85,9 @@ class AzureUpload(object):
                 logging.warning(f'Could not create container {container_name}')
                 raise SystemExit
         except FileNotFoundError:
-            logging.error(f'Could not find the specified file {object_name} to upload. Please ensure that the '
-                          f'supplied name and path are correct.')
+            logging.error(
+                f'Could not find the specified file {object_name} to upload. Please ensure that the supplied name '
+                f'and path are correct.')
             raise SystemExit
 
     @staticmethod
@@ -118,9 +132,11 @@ class AzureUpload(object):
                 else:
                     target_file = os.path.join(rel_path, file_name)
                 # Create a blob client for this file using the supplied container name
-                blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                                 container_name=container_name,
-                                                 blob_file=target_file)
+                blob_client = create_blob_client(
+                    blob_service_client=blob_service_client,
+                    container_name=container_name,
+                    blob_file=target_file
+                )
                 # Set the local name and path of the file, so it can be opened
                 local_file = os.path.join(root, file_name)
                 # Attempt to upload the file to the specified container
@@ -133,10 +149,11 @@ class AzureUpload(object):
                         blob_client.set_standard_blob_tier(standard_blob_tier=storage_tier)
                 # Print a warning if a file with that name already exists in the specified container
                 except azure.core.exceptions.ResourceExistsError:
-                    logging.warning(f'The file {local_file} already exists in container {container_name} '
-                                    f'in storage account {account_name} as {target_file}')
+                    logging.warning(
+                        f'The file {local_file} already exists in container {container_name} in storage account '
+                        f'{account_name} as {target_file}')
 
-    def __init__(self, object_name, container_name, account_name, passphrase, path, storage_tier, category):
+    def __init__(self, object_name, container_name, account_name, path, storage_tier, category):
         # Set the name of the file/folder to upload
         self.object_name = object_name
         if category == 'file':
@@ -155,7 +172,6 @@ class AzureUpload(object):
             logging.error(f'Something is wrong. There is no {category} option available')
             raise SystemExit
         # Initialise necessary class variables
-        self.passphrase = passphrase
         self.account_name = account_name
         self.container_name = container_name
         self.path = path
@@ -172,13 +188,12 @@ def file_upload(args):
     Run the AzureUpload class for a file
     :param args: type ArgumentParser arguments
     """
-    logging.info(f'Uploading {args.file} to container {args.container_name} in Azure storage account '
-                 f'{args.account_name}')
+    logging.info(
+        f'Uploading {args.file} to container {args.container_name} in Azure storage account {args.account_name}')
     # Create the file_upload object
     file_uploader = AzureUpload(object_name=args.file,
                                 account_name=args.account_name,
                                 container_name=args.container_name,
-                                passphrase=args.passphrase,
                                 path=args.reset_path,
                                 storage_tier=args.storage_tier,
                                 category='file')
@@ -190,12 +205,12 @@ def folder_upload(args):
     Run the AzureUpload class for a folder
     :param args: type ArgumentParser arguments
     """
-    logging.info(f'Uploading folder (and its contents) {args.folder} to container {args.container_name} in Azure '
-                 f'storage account {args.account_name}')
+    logging.info(
+        f'Uploading folder (and its contents) {args.folder} to container {args.container_name} in Azure storage '
+        f'account {args.account_name}')
     folder_uploader = AzureUpload(object_name=args.folder,
                                   account_name=args.account_name,
                                   container_name=args.container_name,
-                                  passphrase=args.passphrase,
                                   path=args.reset_path,
                                   storage_tier=args.storage_tier,
                                   category='folder')
@@ -206,41 +221,53 @@ def cli():
     parser = ArgumentParser(description='Upload files or folders to Azure storage')
     # Create the parental parser, and the subparser
     subparsers, parent_parser = create_parent_parser(parser=parser)
-    parent_parser.add_argument('-r', '--reset_path',
-                               type=str,
-                               help='Set the path of the file/folder within a folder in the target container '
-                                    'e.g. sequence_data/220202-m05722. If you want to place it directly in the '
-                                    'container without any nesting, use or \'\'')
-    parent_parser.add_argument('-s', '--storage_tier',
-                               type=str,
-                               default='Hot',
-                               choices=['Hot', 'Cool', 'Archive'],
-                               metavar='STORAGE_TIER',
-                               help='Set the storage tier for the file/folder to be uploaded. Options are "Hot", '
-                                    '"Cool", and "Archive". Default is Hot')
+    parent_parser.add_argument(
+        '-r', '--reset_path',
+        type=str,
+        help='Set the path of the file/folder within a folder in the target container '
+             'e.g. sequence_data/220202-m05722. If you want to place it directly in the '
+             'container without any nesting, use or \'\''
+    )
+    parent_parser.add_argument(
+        '-s', '--storage_tier',
+        type=str,
+        default='Hot',
+        choices=['Hot', 'Cool', 'Archive'],
+        metavar='STORAGE_TIER',
+        help='Set the storage tier for the file/folder to be uploaded. Options are "Hot", '
+             '"Cool", and "Archive". Default is Hot'
+    )
     # File upload subparser
-    file_subparser = subparsers.add_parser(parents=[parent_parser],
-                                           name='file',
-                                           description='Upload a file to Azure storage',
-                                           formatter_class=RawTextHelpFormatter,
-                                           help='Upload a file to Azure storage')
-    file_subparser.add_argument('-f', '--file',
-                                type=str,
-                                required=True,
-                                help='Name and path of the file to upload to Azure storage.'
-                                     'e.g. /mnt/sequences/220202_M05722/2022-SEQ-0001_S1_L001_R1_001.fastq.gz')
+    file_subparser = subparsers.add_parser(
+        parents=[parent_parser],
+        name='file',
+        description='Upload a file to Azure storage',
+        formatter_class=RawTextHelpFormatter,
+        help='Upload a file to Azure storage'
+    )
+    file_subparser.add_argument(
+        '-f', '--file',
+        type=str,
+        required=True,
+        help='Name and path of the file to upload to Azure storage.'
+             'e.g. /mnt/sequences/220202_M05722/2022-SEQ-0001_S1_L001_R1_001.fastq.gz'
+    )
     file_subparser.set_defaults(func=file_upload)
     # Folder upload subparser
-    folder_subparser = subparsers.add_parser(parents=[parent_parser],
-                                             name='folder',
-                                             description='Upload a folder to Azure storage',
-                                             formatter_class=RawTextHelpFormatter,
-                                             help='Upload a folder to Azure storage')
-    folder_subparser.add_argument('-f', '--folder',
-                                  type=str,
-                                  required=True,
-                                  help='Name and path of the folder to upload to Azure storage.'
-                                       'e.g. /mnt/sequences/220202_M05722/')
+    folder_subparser = subparsers.add_parser(
+        parents=[parent_parser],
+        name='folder',
+        description='Upload a folder to Azure storage',
+        formatter_class=RawTextHelpFormatter,
+        help='Upload a folder to Azure storage'
+    )
+    folder_subparser.add_argument(
+        '-f', '--folder',
+        type=str,
+        required=True,
+        help='Name and path of the folder to upload to Azure storage.'
+             'e.g. /mnt/sequences/220202_M05722/'
+    )
     folder_subparser.set_defaults(func=folder_upload)
     # Set up the arguments, and run the appropriate subparser
     arguments = setup_arguments(parser=parser)

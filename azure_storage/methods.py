@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from azure.storage.blob import BlobSasPermissions, BlobServiceClient, generate_blob_sas, RetentionPolicy
+from cryptography.fernet import Fernet
 from argparse import ArgumentParser
 from io import StringIO
 import pandas as pd
@@ -8,7 +9,6 @@ import coloredlogs
 import datetime
 import logging
 import getpass
-import keyring
 import pathlib
 import pandas
 import azure
@@ -29,29 +29,30 @@ def create_parent_parser(parser, container=True):
     # Create a parental parser that can be inherited by subparsers
     parent_parser = ArgumentParser(add_help=False)
     if container:
-        parent_parser.add_argument('-c', '--container_name',
-                                   required=True,
-                                   type=str,
-                                   default=str(),
-                                   help='Name of the Azure storage container. Note that container names must be '
-                                        'lowercase, between 3 and 63 characters, start with a letter or number, and '
-                                        'can contain only letters, numbers, and the dash (-) character. Consecutive '
-                                        'dashes are not permitted.')
-    parent_parser.add_argument('-a', '--account_name',
-                               required=True,
-                               type=str,
-                               help='Name of the Azure storage account')
-    parent_parser.add_argument('-p', '--passphrase',
-                               default='AzureStorage',
-                               type=str,
-                               help='The passphrase to use when encrypting the azure storage-specific connection '
-                                    'string to the system keyring. Default is "AzureStorage".')
-    parent_parser.add_argument('-v', '--verbosity',
-                               choices=['debug', 'info', 'warning', 'error', 'critical'],
-                               metavar='VERBOSITY',
-                               default='info',
-                               help='Set the logging level. Options are debug, info, warning, error, and critical. '
-                                    'Default is info.')
+        parent_parser.add_argument(
+            '-c', '--container_name',
+            required=True,
+            type=str,
+            default=str(),
+            help='Name of the Azure storage container. Note that container names must be '
+                 'lowercase, between 3 and 63 characters, start with a letter or number, and '
+                 'can contain only letters, numbers, and the dash (-) character. Consecutive '
+                 'dashes are not permitted.'
+        )
+    parent_parser.add_argument(
+        '-a', '--account_name',
+        required=True,
+        type=str,
+        help='Name of the Azure storage account'
+    )
+    parent_parser.add_argument(
+        '-v', '--verbosity',
+        choices=['debug', 'info', 'warning', 'error', 'critical'],
+        metavar='VERBOSITY',
+        default='info',
+        help='Set the logging level. Options are debug, info, warning, error, and critical. '
+             'Default is info.'
+    )
     return subparsers, parent_parser
 
 
@@ -61,12 +62,19 @@ def setup_logging(arguments):
     :param arguments: type parsed ArgumentParser object
     """
     # Set up logging
-    coloredlogs.DEFAULT_LEVEL_STYLES = {'debug': {'bold': True, 'color': 'green'},
-                                        'info': {'bold': True, 'color': 'blue'},
-                                        'warning': {'bold': True, 'color': 'yellow'},
-                                        'error': {'bold': True, 'color': 'red'},
-                                        'critical': {'bold': True, 'background': 'red'}
-                                        }
+    coloredlogs.DEFAULT_LEVEL_STYLES = {
+        'debug': {
+            'bold': True, 'color': 'green'},
+        'info': {
+            'bold': True, 'color': 'blue'},
+        'warning': {
+            'bold': True, 'color': 'yellow'},
+        'error': {
+            'bold': True, 'color': 'red'},
+        'critical': {
+            'bold': True, 'background': 'red'}
+
+    }
     coloredlogs.DEFAULT_LOG_FORMAT = '%(asctime)s %(levelname)s %(message)s'
     coloredlogs.install(level=arguments.verbosity.upper())
 
@@ -103,44 +111,6 @@ def setup_arguments(parser):
     return arguments
 
 
-def set_account_name(passphrase, account_name=None):
-    """
-    Store the account name in the system keyring
-    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
-    :param account_name: type str: Name of the Azure storage account
-    """
-    # Only prompt the user for the account name if it was not provided
-    if account_name is None:
-        # Prompt the user for the account name
-        account_name = input('Please enter your account name\n').encode('utf-8').decode()
-    # Set the account name into the keyring. Treat it as a password, and use the passphrase as both the service ID,
-    # and the username
-    keyring.set_password(passphrase, passphrase, account_name)
-    return account_name
-
-
-def set_connection_string(passphrase, account_name):
-    """
-    Prompt the user for the connection string, and store it the system keyring
-    Uses logic from https://stackoverflow.com/a/31882203
-    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
-    :param account_name: type str: Name of the Azure storage account
-    :return: connect_str: String of the connection string
-    """
-    # Prompt the user for the connection string. Use decode to convert from bytes. Use getpass, so the plain text
-    # password isn't printed to the screen
-    connect_str = getpass.getpass(prompt='Please enter the connection string for your Azure storage account:\n')\
-        .encode('utf-8').decode()
-    # Ensure that the account name provided and the account name specified in the connection string match
-    confirm_account_match(account_name=account_name,
-                          connect_str=connect_str)
-    # Set the password in the keyring. Use the passphrase as the service ID, the account name as the username,
-    # and the connection string as the password
-    keyring.set_password(passphrase, account_name, connect_str)
-    logging.info('Successfully entered credentials into keyring')
-    return connect_str
-
-
 def confirm_account_match(account_name, connect_str):
     """
     Ensure that the account name provided matches the account name stored in the connection string
@@ -152,58 +122,22 @@ def confirm_account_match(account_name, connect_str):
         connect_str_account_name = connect_str.split(';')[1].split('AccountName=')[-1]
         # Ensure that the account name provided matches the account name found in the connection string
         if account_name != connect_str_account_name:
-            logging.error(f'The supplied account name {account_name} does not match the account name stored in the '
-                          f'connection string ({connect_str_account_name}). Please ensure that you are providing the '
-                          f'appropriate connection string for your account.')
+            logging.error(
+                f'The supplied account name {account_name} does not match the account name stored in the '
+                f'connection string ({connect_str_account_name}). Please ensure that you are providing the '
+                f'appropriate connection string for your account.'
+            )
             raise SystemExit
     # If splitting on 'AccountName=' fails, the connection string is either malformed or invalid
     except IndexError:
-        logging.error('Could not parse the account key from the connection string in the keyring. Please ensure that '
-                      'it has been entered, and the it conforms to the proper format: '
-                      'DefaultEndpointsProtocol=https;AccountName=[REDACTED];AccountKey=[REDACTED];'
-                      'EndpointSuffix=core.windows.net')
+        logging.error(
+            'Could not parse the account key from the connection string. Please ensure that '
+            'it has been entered, and the it conforms to the proper format: '
+            'DefaultEndpointsProtocol=https;AccountName=[REDACTED];AccountKey=[REDACTED];'
+            'EndpointSuffix=core.windows.net'
+        )
         raise SystemExit
     return True
-
-
-def extract_connection_string(passphrase, account_name):
-    """
-    Extract the connection string from the keyring using the account name and passphrase
-    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
-    :param account_name: type str: Name of the Azure storage account
-    :return: connect_str: String of the connection string
-    """
-    # Use the passphrase and the account name to extract the connection string from the keyring
-    connect_str = keyring.get_password(passphrase,
-                                       account_name)
-    # If the connection string can't be found in the keyring using the supplied passphrase, prompt the user for
-    # the passphrase, and store it
-    if not connect_str:
-        logging.warning(f'Connection string linked to the provided passphrase {passphrase} and account name '
-                        f'{account_name} was not found in the system keyring. You will now be prompted to enter it.')
-        connect_str = set_connection_string(passphrase=passphrase,
-                                            account_name=account_name)
-    # Confirm that the account name provided matches the one found in the connection string
-    confirm_account_match(account_name=account_name,
-                          connect_str=connect_str)
-    return connect_str
-
-
-def extract_account_name(passphrase):
-    """
-    Extract the account name from the system keyring
-    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
-    :return: account_name: Name of the Azure storage account
-    """
-    # Use the passphrase to extract the account name
-    account_name = keyring.get_password(passphrase,
-                                        passphrase)
-    # If the account name hasn't been entered into the keyring, prompt the user to enter it
-    if not account_name:
-        logging.warning(f'Account name linked to the provided passphrase {passphrase} was not found in the system '
-                        f'keyring. You will now be prompted to enter it.')
-        account_name = set_account_name(passphrase=passphrase)
-    return account_name
 
 
 def extract_account_key(connect_str):
@@ -220,33 +154,129 @@ def extract_account_key(connect_str):
         account_key = connect_str.split(';')[2].split('AccountKey=')[-1]
     except IndexError:
         logging.error(
-            'Could not parse the account key from the connection string in the keyring. Please ensure that it has been '
+            'Could not parse the account key from the connection string. Please ensure that it has been '
             'entered, and the it conforms to the proper format: '
             'DefaultEndpointsProtocol=https;AccountName=[REDACTED];AccountKey=[REDACTED];'
-            'EndpointSuffix=core.windows.net')
+            'EndpointSuffix=core.windows.net'
+        )
         raise SystemExit
     return account_key
 
 
-def delete_keyring_credentials(passphrase, account_name=None):
+def create_encryption_key_file(credentials_key):
     """
-    Delete the password associated with the passphrase and account name from the system keyring
-    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
-    :param account_name: type str: Name of the Azure storage account
-    :return: account_name: Name of the Azure storage account
+    Use Fernet to generate an encryption key to be used to encrypt Azure connection string
+    :param credentials_key: Name and path of the file in which the encryption key are be stored
     """
-    if not account_name:
-        # Prompt the user for the account name
-        account_name = input('Please enter your account name\n').encode('utf-8').decode()
-    try:
-        # Delete the password from the system keyring
-        keyring.delete_password(passphrase, account_name)
-    except keyring.errors.PasswordDeleteError:
-        logging.error(
-            f'Connection string associated with passphrase {passphrase} and account name {account_name} not found in '
-            f'system keyring. Please ensure that you supplied the correct arguments.')
+    # Key generation
+    key = Fernet.generate_key()
+    # Store the key in a file
+    with open(credentials_key, 'wb') as file_key:
+        file_key.write(key)
+
+
+def read_encryption_key(credentials_key):
+    """
+    Read in encryption key from file, and process it with Fernet
+    :param credentials_key: Name and path of the file in which the encryption key are be stored
+    :return: fernet: type cryptography.fernet.Fernet: Encryption key
+    """
+    # Open the key file
+    with open(credentials_key, 'rb') as file_key:
+        key = file_key.read()
+    # Use the generated key
+    fernet = Fernet(key)
+    return fernet
+
+
+def set_credential_files(account_name):
+    """
+    Determine the local path of this file, and use it to set the path of the files to store the encrypted Azure
+    credentials and the key to decrypt the file
+    :return: credentials_file: type str: Name and path of the file in which encrypted credentials are to be stored
+    :return: credentials_key: type str: Name and path of the file in which the encryption key is to be stored
+    """
+    # Extract the local path of the methods.py file, so the credentials files can be created in the same location
+    file_path = os.path.dirname(os.path.realpath(__file__))
+    # Set the names of the credentials storing file and the key file
+    credentials_file = os.path.join(file_path, f'{account_name}_credentials.txt')
+    credentials_key = os.path.join(file_path, f'{account_name}_credentials.key')
+    return credentials_file, credentials_key
+
+
+def encrypt_credentials(account_name):
+    """
+    Prompt user for Azure connection string. Store string in Fernet encrypted file
+    :return: connect_str: type str: Decrypted connection string
+    """
+    connect_str = getpass.getpass(
+        prompt=f'Please enter the connection string for your Azure storage account {account_name}\n') \
+        .encode('utf-8').decode()
+    # Confirm that the account name provided matches the one found in the connection string
+    confirm_account_match(
+        account_name=account_name,
+        connect_str=connect_str
+    )
+    # Set the names of the credentials storing file and the key file
+    credentials_file, credentials_key = set_credential_files(account_name)
+    # Write the credentials to file
+    with open(credentials_file, 'w') as credentials:
+        credentials.write(f'{connect_str}')
+    # Create an encryption key to encrypt the file
+    create_encryption_key_file(credentials_key=credentials_key)
+    fernet = read_encryption_key(credentials_key=credentials_key)
+    # Open the original file to encrypt
+    with open(credentials_file, 'rb') as file:
+        original = file.read()
+    # Encrypt the file
+    encrypted = fernet.encrypt(original)
+    # Open the file in write mode and write the encrypted data
+    with open(credentials_file, 'wb') as encrypted_file:
+        encrypted_file.write(encrypted)
+    return connect_str
+
+
+def decrypt_credentials(account_name):
+    """
+    Decrypt the credentials from file
+    :return: connect_str: type str: Decrypted connection string
+    """
+    # Set the names of the credentials storing file and the key file
+    credentials_file, credentials_key = set_credential_files(account_name=account_name)
+    if not os.path.isfile(credentials_file):
+        logging.warning(
+            f'Credentials for the provided account name {account_name} could not be located. '
+            f'You will now be prompted to enter your connection string.')
+        encrypt_credentials(account_name=account_name)
+    # Read in and decrypt the encryption key
+    fernet = read_encryption_key(credentials_key=credentials_key)
+    # Open the encrypted file
+    with open(credentials_file, 'rb') as enc_file:
+        encrypted = enc_file.read()
+    # Decrypt the file to extract the connection string
+    connect_str = fernet.decrypt(encrypted).decode()
+    # Confirm that the account name provided matches the one found in the connection string
+    confirm_account_match(
+        account_name=account_name,
+        connect_str=connect_str
+    )
+    return connect_str
+
+
+def delete_credentials_files(account_name):
+    """
+    Delete the credentials key and the encrypted credentials files
+    """
+    # Set the names of the credentials storing file and the key file
+    credentials_file, credentials_key = set_credential_files(account_name=account_name)
+    # Ensure that the file exists before trying to delete
+    if os.path.isfile(credentials_file):
+        os.remove(credentials_file)
+    else:
+        logging.error(f'Could not located credentials files associated with account {account_name}')
         raise SystemExit
-    return account_name
+    if os.path.isfile(credentials_key):
+        os.remove(credentials_key)
 
 
 def validate_container_name(container_name, object_type='container'):
@@ -264,7 +294,8 @@ def validate_container_name(container_name, object_type='container'):
             f'between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and '
             f'the dash (-) character. Every dash (-) character must be immediately preceded and followed by a letter '
             f'or number; consecutive dashes are not permitted in {object_type} names. All letters in a {object_type} '
-            f'name must be lowercase.')
+            f'name must be lowercase.'
+        )
         logging.info(f'Attempting to fix the {object_type} name')
         # Swap out dashes for underscores, as they will be removed in the following regex
         container_name = container_name.replace('-', '_')
@@ -292,7 +323,8 @@ def validate_container_name(container_name, object_type='container'):
     while len(container_name) < 3:
         logging.warning(
             f'{object_type.capitalize()} name {container_name} was too short (only {len(container_name)} characters). '
-            f'Using {container_name + container_name} instead')
+            f'Using {container_name + container_name} instead'
+        )
         container_name = container_name + container_name
     # Use the validated container name
     logging.info(f'Using {container_name} as the {object_type} name')
@@ -309,8 +341,8 @@ def create_blob_service_client(connect_str):
         blob_service_client = BlobServiceClient.from_connection_string(connect_str)
         return blob_service_client
     except ValueError:
-        logging.error('Your connection string was rejected. Please ensure that you entered it properly, and that it '
-                      'is valid')
+        logging.error(
+            'Your connection string was rejected. Please ensure that you entered it properly, and that it is valid')
         raise SystemExit
 
 
@@ -327,11 +359,15 @@ def create_container(blob_service_client, container_name):
         container_client = blob_service_client.create_container(container_name)
     except azure.core.exceptions.ResourceExistsError as e:
         if 'The specified container already exists.' in str(e):
-            container_client = create_container_client(blob_service_client=blob_service_client,
-                                                       container_name=container_name)
+            container_client = create_container_client(
+                blob_service_client=blob_service_client,
+                container_name=container_name
+            )
         elif 'The specified container is being deleted. Try operation later.' in str(e):
-            logging.error(f'Could not create the requested container {container_name}. As it has recently been '
-                          f'deleted, please try again in a few moments')
+            logging.error(
+                f'Could not create the requested container {container_name}. As it has recently been '
+                f'deleted, please try again in a few moments'
+            )
             raise SystemExit
         else:
             logging.error(f'Could not create container {container_name}')
@@ -352,8 +388,10 @@ def create_container_client(blob_service_client, container_name, create=True):
     container_client = blob_service_client.get_container_client(container_name)
     # Create the container if it does not exist
     if not container_client.exists() and create:
-        container_client = create_container(blob_service_client=blob_service_client,
-                                            container_name=container_name)
+        container_client = create_container(
+            blob_service_client=blob_service_client,
+            container_name=container_name
+        )
     return container_client
 
 
@@ -366,8 +404,10 @@ def create_blob_client(blob_service_client, container_name, blob_file):
     :return: blob_client: type azure.storage.blob.BlobServiceClient.BlobClient
     """
     # Create a blob client for the current blob
-    blob_client = blob_service_client.get_blob_client(container=container_name,
-                                                      blob=blob_file)
+    blob_client = blob_service_client.get_blob_client(
+        container=container_name,
+        blob=blob_file
+    )
     return blob_client
 
 
@@ -394,18 +434,19 @@ def create_blob_sas(blob_file, account_name, container_name, account_key, expiry
         start=datetime.datetime.utcnow() - datetime.timedelta(minutes=15),
         expiry=datetime.datetime.utcnow() + datetime.timedelta(days=expiry))
     # Create the SAS URL, and add it to the dictionary with the file_name as the key
-    sas_urls[file_name] = create_sas_url(account_name=account_name,
-                                         container_name=container_name,
-                                         blob_name=blob_file.name,
-                                         sas_token=sas_token)
+    sas_urls[file_name] = create_sas_url(
+        account_name=account_name,
+        container_name=container_name,
+        blob_name=blob_file.name,
+        sas_token=sas_token
+    )
     return sas_urls
 
 
-def client_prep(container_name, passphrase, account_name, create=True):
+def client_prep(container_name, account_name, create=True):
     """
     Validate the container name, and prepare the necessary clients
     :param container_name: type str: Name of the container of interest
-    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
     :param account_name: type str: Name of the Azure storage account
     :param create: type bool: Boolean whether to create a container if it doesn't exist
     :return: container_name: Validated container name
@@ -415,24 +456,24 @@ def client_prep(container_name, passphrase, account_name, create=True):
     """
     # Validate the container name
     container_name = validate_container_name(container_name=container_name)
-    # Extract the connection string from the system keyring
-    connect_str = extract_connection_string(passphrase=passphrase,
-                                            account_name=account_name)
+    # Extract the connection string
+    connect_str = decrypt_credentials(account_name=account_name)
     # Create the blob service client using the connection string
     blob_service_client = create_blob_service_client(connect_str=connect_str)
     # Create the container client for the desired container with the blob service client
-    container_client = create_container_client(blob_service_client=blob_service_client,
-                                               container_name=container_name,
-                                               create=create)
+    container_client = create_container_client(
+        blob_service_client=blob_service_client,
+        container_name=container_name,
+        create=create
+    )
     return container_name, connect_str, blob_service_client, container_client
 
 
-def sas_prep(container_name, passphrase, account_name, create=True):
+def sas_prep(container_name, account_name, create=True):
     """
     Validate container names, extract connection strings, and account keys, and create necessary clients for
     SAS URL creation
     :param container_name: type str: Name of the container of interest
-    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
     :param account_name: type str: Name of the Azure storage account
     :param create: type bool: Boolean whether to create a container if it doesn't exist
     :return: container_name: Validated container name
@@ -443,17 +484,18 @@ def sas_prep(container_name, passphrase, account_name, create=True):
     """
     # Validate the container name
     container_name = validate_container_name(container_name=container_name)
-    # Retrieve the connection string from the system keyring
-    connect_str = extract_connection_string(passphrase=passphrase,
-                                            account_name=account_name)
+    # Retrieve the connection string
+    connect_str = decrypt_credentials(account_name=account_name)
     # Extract the account key from the connection string
     account_key = extract_account_key(connect_str=connect_str)
     # Create the blob service client
     blob_service_client = create_blob_service_client(connect_str=connect_str)
     # Create the container client from the blob service client
-    container_client = create_container_client(blob_service_client=blob_service_client,
-                                               container_name=container_name,
-                                               create=create)
+    container_client = create_container_client(
+        blob_service_client=blob_service_client,
+        container_name=container_name,
+        create=create
+    )
     return container_name, connect_str, account_key, blob_service_client, container_client
 
 
@@ -502,10 +544,9 @@ def set_blob_retention_policy(blob_service_client, days=8):
     return blob_service_client
 
 
-def move_prep(passphrase, account_name, container_name, target_container):
+def move_prep(account_name, container_name, target_container):
     """
     Prepare all the necessary clients for moving container/files/folders in Azure storage
-    :param passphrase: type str: Simple passphrase to use to store the connection string in the system keyring
     :param account_name: type str: Name of Azure storage account
     :param container_name: type str: Name of the container of interest
     :param target_container: type str: Name of the new container into which the container/file/folder is to be copied
@@ -515,23 +556,28 @@ def move_prep(passphrase, account_name, container_name, target_container):
     """
     # Validate the container names
     container_name = validate_container_name(container_name=container_name)
-    target_container = validate_container_name(container_name=target_container,
-                                               object_type='target container')
-    # Extract the connection string from the system keyring
-    connect_str = extract_connection_string(passphrase=passphrase,
-                                            account_name=account_name)
+    target_container = validate_container_name(
+        container_name=target_container,
+        object_type='target container'
+    )
+    # Retrieve the connection string
+    connect_str = decrypt_credentials(account_name=account_name)
     blob_service_client = create_blob_service_client(connect_str=connect_str)
-    source_container_client = create_container_client(blob_service_client=blob_service_client,
-                                                      container_name=container_name)
+    source_container_client = create_container_client(
+        blob_service_client=blob_service_client,
+        container_name=container_name
+    )
     # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
     logging.getLogger().setLevel(logging.WARNING)
-    target_container_client = create_container(blob_service_client=blob_service_client,
-                                               container_name=target_container)
+    target_container_client = create_container(
+        blob_service_client=blob_service_client,
+        container_name=target_container
+    )
     return container_name, target_container, blob_service_client, source_container_client, target_container_client
 
 
 def copy_blob(blob_file, blob_service_client, container_name, target_container, path, storage_tier,
-              object_name=None, category=None, common_path=None):
+              object_name=None, category=None, common_path=None, rename=None):
     """
     Copy a blob from one container to another
     :param blob_file: type iterable from azure.storage.blob.BlobServiceClient.ContainerClient.list_blobs
@@ -543,11 +589,14 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     :param object_name: type str: Name and path of file/folder to download from Azure storage
     :param category: type str: Category of object to be copied. Limited to file or folder
     :param common_path: type str: Calculated common path between the specified file/folder and the blob_file.name
+    :param rename: type str: Desired string to use to rename the file
     """
     # Create the blob client
-    blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                     container_name=container_name,
-                                     blob_file=blob_file)
+    blob_client = create_blob_client(
+        blob_service_client=blob_service_client,
+        container_name=container_name,
+        blob_file=blob_file
+    )
     # Extract the folder structure of the blob e.g. 220202-m05722/InterOp
     folder_structure = list(os.path.split(os.path.dirname(blob_file.name)))
     # Add the nested folder to the path as requested
@@ -556,7 +605,10 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     file_name = os.path.basename(blob_file.name)
     # Finally, set the name and the path of the output file
     if category is None:
-        target_file = os.path.join(path, file_name)
+        if rename is not None:
+            target_file = os.path.join(path, rename)
+        else:
+            target_file = os.path.join(path, file_name)
     # If a folder is being moved, join the path, the common path between the blob file and the supplied folder name
     # with the file name
     else:
@@ -643,9 +695,11 @@ def delete_file(container_client, object_name, blob_service_client, container_na
             # Update the blob presence variable
             present = True
             # Create the blob client
-            blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                             container_name=container_name,
-                                             blob_file=blob_file)
+            blob_client = create_blob_client(
+                blob_service_client=blob_service_client,
+                container_name=container_name,
+                blob_file=blob_file
+            )
             # Soft delete the blob
             blob_client.delete_blob()
     # Send a warning to the user that the blob could not be found
@@ -668,16 +722,20 @@ def delete_folder(container_client, object_name, blob_service_client, container_
     # Create a boolean to determine if the blob has been located
     present = False
     for blob_file in generator:
-        common_path = extract_common_path(object_name=object_name,
-                                          blob_file=blob_file)
+        common_path = extract_common_path(
+            object_name=object_name,
+            blob_file=blob_file
+        )
         # Only copy the file if there is a common path between the object path and the blob path (they match)
         if common_path is not None:
             # Update the folder presence boolean
             present = True
             # Create the blob client
-            blob_client = create_blob_client(blob_service_client=blob_service_client,
-                                             container_name=container_name,
-                                             blob_file=blob_file)
+            blob_client = create_blob_client(
+                blob_service_client=blob_service_client,
+                container_name=container_name,
+                blob_file=blob_file
+            )
             # Soft delete the blob
             blob_client.delete_blob()
     # Log an error that the folder could not be found
@@ -685,7 +743,8 @@ def delete_folder(container_client, object_name, blob_service_client, container_
         logging.error(
             f'There was an error deleting folder {object_name} in container {container_name}, '
             f'in Azure storage account {account_name}. Please ensure that all arguments have been '
-            f'entered correctly')
+            f'entered correctly'
+        )
         raise SystemExit
 
 
@@ -808,15 +867,19 @@ def parse_batch_file(line):
         command = line.split('\t')[0]
         subcommand = line.split('\t')[1]
     except IndexError:
-        logging.error(f'Could not extract the desired command and subcommand from your file. Please review the '
-                      f'following line {line}')
+        logging.error(
+            f'Could not extract the desired command and subcommand from your file. Please review the '
+            f'following line {line}'
+        )
         raise SystemExit
     # Use the extracted command and subcommand to determine the appropriate headers
     try:
         headers = header_dict[command][subcommand]
     except KeyError:
-        logging.error(f'Could not find the requested command {command} and subcommand {subcommand} in the list of '
-                      f'commands. Please ensure that you created your batch file correctly')
+        logging.error(
+            f'Could not find the requested command {command} and subcommand {subcommand} in the list of '
+            f'commands. Please ensure that you created your batch file correctly'
+        )
         raise SystemExit
     # Use StringIO to convert the string into a format that can be read by pandas.read_csv
     input_string = StringIO(line.rstrip())

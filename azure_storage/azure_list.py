@@ -1,7 +1,13 @@
 #!/usr/bin/env python
-from azure_storage.methods import create_blob_service_client, client_prep, create_parent_parser, \
-    extract_connection_string, setup_arguments
-from argparse import ArgumentParser, RawTextHelpFormatter
+from azure_storage.methods import \
+    create_blob_service_client, \
+    client_prep, \
+    create_parent_parser, \
+    decrypt_credentials, \
+    setup_arguments
+from argparse import \
+    ArgumentParser, \
+    RawTextHelpFormatter
 from termcolor import colored
 import coloredlogs
 import logging
@@ -16,15 +22,18 @@ class AzureContainerList(object):
     def main(self):
         # Hide the INFO-level messages sent to the logger from Azure by increasing the logging level to WARNING
         logging.getLogger().setLevel(logging.WARNING)
-        # Extract the connection string from the system keyring
-        self.connect_str = extract_connection_string(passphrase=self.passphrase,
-                                                     account_name=self.account_name)
+        # Extract the connection string
+        self.connect_str = decrypt_credentials(
+            account_name=self.account_name
+        )
         # Create the blob service client using the connection string
         self.blob_service_client = create_blob_service_client(connect_str=self.connect_str)
-        containers = self.list_containers(blob_service_client=self.blob_service_client,
-                                          expression=self.expression,
-                                          print_container=self.print_container,
-                                          output_file=self.output_file)
+        containers = self.list_containers(
+            blob_service_client=self.blob_service_client,
+            expression=self.expression,
+            print_container=self.print_container,
+            output_file=self.output_file
+        )
         return containers
 
     @staticmethod
@@ -78,10 +87,9 @@ class AzureContainerList(object):
             raise SystemExit
         return container_matches
 
-    def __init__(self, expression, account_name, output_file, passphrase, print_container=True):
+    def __init__(self, expression, account_name, output_file, print_container=True):
         self.expression = expression if expression else '*'
         self.account_name = account_name
-        self.passphrase = passphrase
         # Ensure that the output file can be used
         if output_file:
             # Output file
@@ -123,14 +131,17 @@ class AzureList(object):
         # container client
         if self.container_name and not re.match(r'.*\W', self.container_name.replace('-', '_')):
             self.container_name, self.connect_str, self.blob_service_client, container_client = \
-                client_prep(container_name=self.container_name,
-                            passphrase=self.passphrase,
-                            account_name=self.account_name)
+                client_prep(
+                    container_name=self.container_name,
+                    account_name=self.account_name
+                )
             # List all the files that match the expression
-            self.list_files(container_client=container_client,
-                            expression=self.expression,
-                            output_file=self.output_file,
-                            container_name=self.container_name)
+            self.list_files(
+                container_client=container_client,
+                expression=self.expression,
+                output_file=self.output_file,
+                container_name=self.container_name
+            )
         # If the container name wasn't provided, or looks like a regular expression, use the AzureContainerList class
         # to find containers that match the provided expression
         else:
@@ -138,13 +149,11 @@ class AzureList(object):
                 expression=self.container_name,
                 account_name=self.account_name,
                 output_file=str(),
-                passphrase=self.passphrase,
                 print_container=False
             )
             containers = list_containers.main()
-            # Extract the connection string from the system keyring
-            self.connect_str = extract_connection_string(passphrase=self.passphrase,
-                                                         account_name=self.account_name)
+            # Extract the connection string
+            self.connect_str = decrypt_credentials(account_name=self.account_name)
             # Create the blob service client using the connection string
             self.blob_service_client = create_blob_service_client(connect_str=self.connect_str)
             # List all the files in each of the containers that match the provided expression
@@ -152,10 +161,12 @@ class AzureList(object):
                 # Create a container client for the container
                 container_client = self.blob_service_client.get_container_client(container.name)
                 # Run the list_files method to list and optionally filter the files
-                self.list_files(container_client=container_client,
-                                expression=self.expression,
-                                output_file=self.output_file,
-                                container_name=container.name)
+                self.list_files(
+                    container_client=container_client,
+                    expression=self.expression,
+                    output_file=self.output_file,
+                    container_name=container.name
+                )
 
     @staticmethod
     def list_files(container_client, expression, output_file, container_name):
@@ -250,7 +261,7 @@ class AzureList(object):
         except KeyboardInterrupt:
             raise SystemExit
 
-    def __init__(self, container_name, expression, output_file, account_name, passphrase):
+    def __init__(self, container_name, expression, output_file, account_name):
         # If the container name wasn't provided, set it to *
         self.container_name = container_name if container_name else '*'
         self.expression = expression if expression else '*'
@@ -280,7 +291,6 @@ class AzureList(object):
                         raise SystemExit
         else:
             self.output_file = str()
-        self.passphrase = passphrase
         self.connect_str = str()
         self.blob_service_client = None
 
@@ -299,7 +309,6 @@ def container_search(args):
         expression=args.expression,
         account_name=args.account_name,
         output_file=args.output_file,
-        passphrase=args.passphrase
     )
     list_containers.main()
 
@@ -320,54 +329,65 @@ def azure_search(args):
         expression=args.expression,
         account_name=args.account_name,
         output_file=args.output_file,
-        passphrase=args.passphrase
     )
     list_files.main()
 
 
 def cli():
     parser = ArgumentParser(description='Explore your Azure storage account')
-    subparsers, parent_parser = create_parent_parser(parser=parser,
-                                                     container=False)
-    parent_parser.add_argument('expression',
-                               nargs='?',  # This allows the argument to be optional so things behave like actual ls.
-                               default=None,
-                               type=str,
-                               help='Expression to search. This command supports regular expressions. '
-                                    'e.g. 1912* will return all containers starting with 1912, including 191216-dar '
-                                    'Note that since the regular expression is being entered on the command line, '
-                                    'you may need to escape certain characters e.g. ! should be \\!')
-    parent_parser.add_argument('-o', '--output_file',
-                               default=str(),
-                               help='Optionally provide the name and path of file in which the outputs '
-                                    'are to be saved.')
-    container_subparser = subparsers.add_parser(parents=[parent_parser],
-                                                name='container',
-                                                description='Filter and list containers in your Azure storage account',
-                                                formatter_class=RawTextHelpFormatter,
-                                                help='Filter and list containers in your Azure storage account')
+    subparsers, parent_parser = create_parent_parser(
+        parser=parser,
+        container=False
+    )
+    parent_parser.add_argument(
+        'expression',
+        nargs='?',  # This allows the argument to be optional so things behave like actual ls.
+        default=None,
+        type=str,
+        help='Expression to search. This command supports regular expressions. '
+             'e.g. 1912* will return all containers starting with 1912, including 191216-dar '
+             'Note that since the regular expression is being entered on the command line, '
+             'you may need to escape certain characters e.g. ! should be \\!'
+    )
+    parent_parser.add_argument(
+        '-o', '--output_file',
+        default=str(),
+        help='Optionally provide the name and path of file in which the outputs '
+             'are to be saved.'
+    )
+    container_subparser = subparsers.add_parser(
+        parents=[parent_parser],
+        name='container',
+        description='Filter and list containers in your Azure storage account',
+        formatter_class=RawTextHelpFormatter,
+        help='Filter and list containers in your Azure storage account'
+    )
     container_subparser.set_defaults(func=container_search)
-    ls_subparser = subparsers.add_parser(parents=[parent_parser],
-                                         name='search',
-                                         description='Filter files in a container (or containers) in Azure storage',
-                                         formatter_class=RawTextHelpFormatter,
-                                         help='Filter files in a container (or containers) in Azure storage')
-    ls_subparser.add_argument('-c', '--container_name',
-                              nargs='?',
-                              type=str,
-                              default=str(),
-                              help='Name of the Azure storage container. This command supports regular expressions '
-                                   'e.g. 1912* will return all containers starting with 1912.'
-                                   'Note that since the regular expression is being entered on the command line, '
-                                   'you may need to escape certain characters e.g. ! should be \\! '
-                                   'You can make your queries as complex as you wish: '
-                                   '1912\\d{2}-\\D{3}\(\?\!*output\) will only return '
-                                   'containers that start with 1912, and have two additional digits. If '
-                                   'the word output is present, any matches are ignored. There also '
-                                   'have to be exactly three letters following a dash and the first six numbers '
-                                   'e.g. 191216-dar and 191227-dar will be returned but not 191216-dar-outputs '
-                                   '191202-test, 191216dar, 1912162-dar, 191203-m05722, 191114-gta, '
-                                   'or 200105-dar (and many others)')
+    ls_subparser = subparsers.add_parser(
+        parents=[parent_parser],
+        name='search',
+        description='Filter files in a container (or containers) in Azure storage',
+        formatter_class=RawTextHelpFormatter,
+        help='Filter files in a container (or containers) in Azure storage'
+    )
+    ls_subparser.add_argument(
+        '-c', '--container_name',
+        nargs='?',
+        type=str,
+        default=str(),
+        help='Name of the Azure storage container. This command supports regular expressions '
+             'e.g. 1912* will return all containers starting with 1912.'
+             'Note that since the regular expression is being entered on the command line, '
+             'you may need to escape certain characters e.g. ! should be \\! '
+             'You can make your queries as complex as you wish: '
+             '1912\\d{2}-\\D{3}\(\?\!*output\) will only return '
+             'containers that start with 1912, and have two additional digits. If '
+             'the word output is present, any matches are ignored. There also '
+             'have to be exactly three letters following a dash and the first six numbers '
+             'e.g. 191216-dar and 191227-dar will be returned but not 191216-dar-outputs '
+             '191202-test, 191216dar, 1912162-dar, 191203-m05722, 191114-gta, '
+             'or 200105-dar (and many others)'
+    )
     ls_subparser.set_defaults(func=azure_search)
     # Set up the arguments, and run the appropriate subparser
     arguments = setup_arguments(parser=parser)
