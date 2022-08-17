@@ -219,10 +219,11 @@ def extract_account_key(connect_str):
     try:
         account_key = connect_str.split(';')[2].split('AccountKey=')[-1]
     except IndexError:
-        logging.error('Could not parse the account key from the connection string in the keyring. Please ensure that '
-                      'it has been entered, and the it conforms to the proper format: '
-                      'DefaultEndpointsProtocol=https;AccountName=[REDACTED];AccountKey=[REDACTED];'
-                      'EndpointSuffix=core.windows.net')
+        logging.error(
+            'Could not parse the account key from the connection string in the keyring. Please ensure that it has been '
+            'entered, and the it conforms to the proper format: '
+            'DefaultEndpointsProtocol=https;AccountName=[REDACTED];AccountKey=[REDACTED];'
+            'EndpointSuffix=core.windows.net')
         raise SystemExit
     return account_key
 
@@ -241,8 +242,9 @@ def delete_keyring_credentials(passphrase, account_name=None):
         # Delete the password from the system keyring
         keyring.delete_password(passphrase, account_name)
     except keyring.errors.PasswordDeleteError:
-        logging.error(f'Connection string associated with passphrase {passphrase} and account name {account_name} '
-                      f'not found in system keyring. Please ensure that you supplied the correct arguments.')
+        logging.error(
+            f'Connection string associated with passphrase {passphrase} and account name {account_name} not found in '
+            f'system keyring. Please ensure that you supplied the correct arguments.')
         raise SystemExit
     return account_name
 
@@ -257,11 +259,12 @@ def validate_container_name(container_name, object_type='container'):
     :return: container_name: String of sanitised container name
     """
     if not re.match('^[a-z0-9](?!.*--)[a-z0-9-]{1,61}[a-z0-9]$', container_name):
-        logging.warning(f'{object_type.capitalize()} name, {container_name} is invalid. {object_type.capitalize()} '
-                        f'names must be between 3 and 63 characters, start with a letter or number, and can contain '
-                        f'only letters, numbers, and the dash (-) character. Every dash (-) character must be '
-                        f'immediately preceded and followed by a letter or number; consecutive dashes are not '
-                        f'permitted in {object_type} names. All letters in a {object_type} name must be lowercase.')
+        logging.warning(
+            f'{object_type.capitalize()} name, {container_name} is invalid. {object_type.capitalize()} names must be '
+            f'between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and '
+            f'the dash (-) character. Every dash (-) character must be immediately preceded and followed by a letter '
+            f'or number; consecutive dashes are not permitted in {object_type} names. All letters in a {object_type} '
+            f'name must be lowercase.')
         logging.info(f'Attempting to fix the {object_type} name')
         # Swap out dashes for underscores, as they will be removed in the following regex
         container_name = container_name.replace('-', '_')
@@ -277,18 +280,19 @@ def validate_container_name(container_name, object_type='container'):
         container_name = re.sub(r'-+$', '', container_name)
     # Ensure that the container name isn't length zero, or the while loop below will be infinite
     if len(container_name) == 0:
-        logging.error(f'Attempting to fix the {object_type} name left zero valid characters! '
-                      'Please enter a new name.')
+        logging.error(
+            f'Attempting to fix the {object_type} name left zero valid characters! Please enter a new name.')
         raise SystemExit
     # If the container name is too long, slice it to be 63 characters
     if len(container_name) >= 63:
-        logging.warning(f'{object_type.capitalize()} name {container_name} was too long. Using {container_name[:62]} '
-                        f'instead')
+        logging.warning(
+            f'{object_type.capitalize()} name {container_name} was too long. Using {container_name[:62]} instead')
         container_name = container_name[:62]
     # If the container name is too short, keep adding the container name to itself to bump up the length
     while len(container_name) < 3:
-        logging.warning(f'{object_type.capitalize()} name {container_name} was too short (only {len(container_name)} '
-                        f'characters). Using {container_name + container_name} instead')
+        logging.warning(
+            f'{object_type.capitalize()} name {container_name} was too short (only {len(container_name)} characters). '
+            f'Using {container_name + container_name} instead')
         container_name = container_name + container_name
     # Use the validated container name
     logging.info(f'Using {container_name} as the {object_type} name')
