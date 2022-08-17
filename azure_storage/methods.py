@@ -828,7 +828,8 @@ def parse_batch_file(line):
             sep='\t',
             names=headers
         ).transpose().to_dict()
-    except pandas.errors.ParserError:
+    except pandas.errors.ParserError as e:
+        logging.error(f'Pandas error parsing data: {e}')
         raise SystemExit
     # Return the command, subcommand, and parsed dictionary
     return command, subcommand, batch_dict

@@ -1,5 +1,4 @@
 0container	tests/files/folder	nested_folder	
 0container	tests/files/folder_2	''	cool
 0container	tests/files/folder_2/nested_folder_2	nested_folder	cool
-0container	tests/files/folder_2/nested_folder_2	""		
-0container	tests/files/folder_3	nested	
+0container	tests/files/folder_2/nested_folder_2	""
