@@ -18,7 +18,7 @@ import os
 connect_str = \
         'DefaultEndpointsProtocol=https;AccountName=testcredentials;AccountKey=xxx;EndpointSuffix=core.windows.net'
 account_name = 'testcredentials'
-azure_account = str()
+azure_account = 'carlingst01'
 credentials_file = str()
 credentials_key = str()
 
