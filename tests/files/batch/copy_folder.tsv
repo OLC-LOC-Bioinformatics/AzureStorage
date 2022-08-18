@@ -1,0 +1,3 @@
+0container	00000000000container	nested/	move_folder
+0container	0container	nested_folder/	renamed_copy	cool
+0container	00000000000container	folder_2	move_folder	cool

@@ -248,7 +248,7 @@ def file_copy(args, batch_dict=None):
     if not batch_dict:
         batch_dict = create_batch_dict(
             batch_file=args.batch_file,
-            headers=['container', 'target', 'file', 'reset_path', 'storage_tier']
+            headers=['container', 'target', 'file', 'reset_path', 'storage_tier', 'name']
         )
     # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
     # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
@@ -266,7 +266,7 @@ def file_copy(args, batch_dict=None):
                 storage_tier=arg_dict['storage_tier'],
                 category='file',
                 copy=True,
-                rename=arg_dict['name']
+                name=arg_dict['name']
             )
             # Run the file copy
             copy_file.main()
@@ -710,6 +710,11 @@ def batch(args):
             'container': container_sas,
             'file': file_sas,
             'folder': folder_sas
+        },
+        'copy': {
+            'container': container_copy,
+            'file': file_copy,
+            'folder': folder_copy
         },
         'move': {
             'container': container_move,

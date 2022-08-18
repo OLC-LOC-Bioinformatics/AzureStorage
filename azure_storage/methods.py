@@ -605,8 +605,14 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     file_name = os.path.basename(blob_file.name)
     # Finally, set the name and the path of the output file
     if category is None:
-        if rename is not None:
-            target_file = os.path.join(path, rename)
+        if rename and type(rename) is not float:
+            try:
+                target_file = os.path.join(path, rename)
+            except TypeError:
+                logging.error(
+                    f'Please ensure that you have provided an acceptable string to rename the file {rename} '
+                    f'will not work.')
+                raise SystemExit
         else:
             target_file = os.path.join(path, file_name)
     # If a folder is being moved, join the path, the common path between the blob file and the supplied folder name

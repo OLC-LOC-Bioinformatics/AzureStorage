@@ -1,0 +1,4 @@
+0container	00000000000container	folder_test_1.txt	move_files	hot	folder_test_1_copy.txt
+0container	0container	nested_folder_2/nested_folder_test_1.txt	''	cool	''
+0container	0container	file_1.txt	''	hot	file_1_copy.txt
+0container	00000000000container	nested_folder/nested_file_1.txt	move_files	cool	''
