@@ -1,6 +1,15 @@
-from azure_storage.methods import confirm_account_match, create_blob_service_client, create_container, \
-    extract_account_name, extract_connection_string, setup_logging, validate_container_name
-from azure_storage.azure_upload import AzureUpload, cli, file_upload, folder_upload
+from azure_storage.methods import \
+    confirm_account_match, \
+    create_blob_service_client, \
+    create_container, \
+    decrypt_credentials, \
+    setup_logging, \
+    validate_container_name
+from azure_storage.azure_upload import \
+    AzureUpload, \
+    cli, \
+    file_upload, \
+    folder_upload
 from unittest.mock import patch
 import argparse
 import pytest
@@ -17,11 +26,9 @@ long_container = ''.join(random.choice(letters) for i in range(65))
 def setup():
     class Variables:
         def __init__(self):
-            # Extract the account name and connection string from the system keyring prior to running tests
-            self.passphrase = 'AzureStorage'
-            self.account_name = extract_account_name(passphrase=self.passphrase)
-            self.connection_string = extract_connection_string(passphrase=self.passphrase,
-                                                               account_name=self.account_name)
+            # Extract the connection string prior to running tests
+            self.account_name = 'carlingst01'
+            self.connection_string = decrypt_credentials(account_name=self.account_name)
             self.container_name = '00000container'
             self.test_path = os.path.abspath(os.path.dirname(__file__))
             self.file_path = os.path.join(self.test_path, 'files')
@@ -40,8 +47,10 @@ def test_connection_string(variables):
 
 
 def test_account_match(variables):
-    assert confirm_account_match(account_name=variables.account_name,
-                                 connect_str=variables.connection_string)
+    assert confirm_account_match(
+        account_name=variables.account_name,
+        connect_str=variables.connection_string
+    )
 
 
 @pytest.mark.parametrize('test_input,expected',
@@ -82,17 +91,21 @@ def test_missing_container(variables):
 
 def test_upload_file_nonexistent_container(variables):
     with pytest.raises(SystemExit):
-        AzureUpload.upload_file(object_name=os.path.join(variables.file_path, 'file_1.txt'),
-                                blob_service_client=variables.blob_service_client,
-                                container_name=variables.container_name,
-                                account_name=variables.account_name,
-                                path=None,
-                                storage_tier=variables.storage_tier)
+        AzureUpload.upload_file(
+            object_name=os.path.join(variables.file_path, 'file_1.txt'),
+            blob_service_client=variables.blob_service_client,
+            container_name=variables.container_name,
+            account_name=variables.account_name,
+            path=None,
+            storage_tier=variables.storage_tier
+        )
 
 
 def test_create_container(variables):
-    variables.container_client = create_container(blob_service_client=variables.blob_service_client,
-                                                  container_name=variables.container_name)
+    variables.container_client = create_container(
+        blob_service_client=variables.blob_service_client,
+        container_name=variables.container_name
+    )
 
 
 def test_container_presence(variables):
@@ -106,12 +119,14 @@ def test_container_presence(variables):
                           ('folder/nested_file_1.txt', ''),
                           ('folder/nested_file_2.txt', 'nested_folder')])
 def test_upload_file(variables, file_name, path):
-    AzureUpload.upload_file(object_name=os.path.join(variables.file_path, file_name),
-                            blob_service_client=variables.blob_service_client,
-                            container_name=variables.container_name,
-                            account_name=variables.account_name,
-                            path=path,
-                            storage_tier=variables.storage_tier)
+    AzureUpload.upload_file(
+        object_name=os.path.join(variables.file_path, file_name),
+        blob_service_client=variables.blob_service_client,
+        container_name=variables.container_name,
+        account_name=variables.account_name,
+        path=path,
+        storage_tier=variables.storage_tier
+    )
     blobs = variables.container_client.list_blobs()
     assert os.path.join(path, os.path.basename(file_name)) in [blob.name for blob in blobs]
 
@@ -123,32 +138,38 @@ def test_upload_file(variables, file_name, path):
                           ('folder/nested_file_2.txt', 'nested_folder')])
 def test_upload_file_exists(variables, file_name, path):
     with pytest.raises(SystemExit):
-        AzureUpload.upload_file(object_name=os.path.join(variables.file_path, file_name),
-                                blob_service_client=variables.blob_service_client,
-                                container_name=variables.container_name,
-                                account_name=variables.account_name,
-                                path=path,
-                                storage_tier=variables.storage_tier)
+        AzureUpload.upload_file(
+            object_name=os.path.join(variables.file_path, file_name),
+            blob_service_client=variables.blob_service_client,
+            container_name=variables.container_name,
+            account_name=variables.account_name,
+            path=path,
+            storage_tier=variables.storage_tier
+        )
 
 
 def test_upload_file_nonexistent(variables):
     with pytest.raises(SystemExit):
-        AzureUpload.upload_file(object_name=os.path.join(variables.file_path, 'file_3.txt'),
-                                blob_service_client=variables.blob_service_client,
-                                container_name=variables.container_name,
-                                account_name=variables.account_name,
-                                path='',
-                                storage_tier=variables.storage_tier)
+        AzureUpload.upload_file(
+            object_name=os.path.join(variables.file_path, 'file_3.txt'),
+            blob_service_client=variables.blob_service_client,
+            container_name=variables.container_name,
+            account_name=variables.account_name,
+            path='',
+            storage_tier=variables.storage_tier
+        )
 
 
 def test_upload_file_none_path(variables):
     file_name = os.path.join(variables.file_path, 'folder/nested_file_2.txt')
-    AzureUpload.upload_file(object_name=file_name,
-                            blob_service_client=variables.blob_service_client,
-                            container_name=variables.container_name,
-                            account_name=variables.account_name,
-                            path=None,
-                            storage_tier=variables.storage_tier)
+    AzureUpload.upload_file(
+        object_name=file_name,
+        blob_service_client=variables.blob_service_client,
+        container_name=variables.container_name,
+        account_name=variables.account_name,
+        path=None,
+        storage_tier=variables.storage_tier
+    )
     blobs = variables.container_client.list_blobs()
     assert os.path.basename(file_name) in [blob.name for blob in blobs]
 
@@ -162,12 +183,14 @@ def test_upload_file_none_path(variables):
                           ('folder/nested/double_nested/triple_nested_file.txt', 'cool/nested')])
 def test_upload_file_cool(variables, file_name, path):
     storage_tier = 'Cool'
-    AzureUpload.upload_file(object_name=os.path.join(variables.file_path, file_name),
-                            blob_service_client=variables.blob_service_client,
-                            container_name=variables.container_name,
-                            account_name=variables.account_name,
-                            path=path,
-                            storage_tier=storage_tier)
+    AzureUpload.upload_file(
+        object_name=os.path.join(variables.file_path, file_name),
+        blob_service_client=variables.blob_service_client,
+        container_name=variables.container_name,
+        account_name=variables.account_name,
+        path=path,
+        storage_tier=storage_tier
+    )
     blobs = variables.container_client.list_blobs()
     for blob in blobs:
         if blob.name == os.path.join(path, file_name):
@@ -176,13 +199,14 @@ def test_upload_file_cool(variables, file_name, path):
 
 def test_upload_file_invalid_category(variables):
     with pytest.raises(SystemExit):
-        file_uploader = AzureUpload(object_name=os.path.join(variables.file_path, 'file_1.txt'),
-                                    account_name=variables.account_name,
-                                    container_name=variables.container_name,
-                                    passphrase=variables.passphrase,
-                                    path='cool',
-                                    storage_tier=variables.storage_tier,
-                                    category='container')
+        file_uploader = AzureUpload \
+            (object_name=os.path.join(variables.file_path, 'file_1.txt'),
+             account_name=variables.account_name,
+             container_name=variables.container_name,
+             path='cool',
+             storage_tier=variables.storage_tier,
+             category='container'
+             )
         file_uploader.main()
 
 
@@ -190,13 +214,14 @@ def test_upload_file_invalid_category(variables):
 def test_upload_file_integration(mock_args, variables):
     file_name = 'file_2.txt'
     path = str()
-    mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
-                                                account_name=variables.account_name,
-                                                container_name=variables.container_name,
-                                                verbosity='info',
-                                                file=os.path.join(variables.file_path, file_name),
-                                                reset_path=path,
-                                                storage_tier=variables.storage_tier)
+    mock_args.return_value = argparse.Namespace(
+        account_name=variables.account_name,
+        container_name=variables.container_name,
+        verbosity='info',
+        file=os.path.join(variables.file_path, file_name),
+        reset_path=path,
+        storage_tier=variables.storage_tier
+    )
     arguments = cli()
     file_upload(args=arguments)
     blobs = variables.container_client.list_blobs()
@@ -207,13 +232,14 @@ def test_upload_file_integration(mock_args, variables):
 def test_upload_file_integration_invalid_file(mock_args, variables):
     with pytest.raises(SystemExit):
         file_name = 'file_5.txt'
-        mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
-                                                    account_name=variables.account_name,
-                                                    container_name=variables.container_name,
-                                                    verbosity='info',
-                                                    file=os.path.join(variables.file_path, file_name),
-                                                    reset_path='',
-                                                    storage_tier=variables.storage_tier)
+        mock_args.return_value = argparse.Namespace(
+            account_name=variables.account_name,
+            container_name=variables.container_name,
+            verbosity='info',
+            file=os.path.join(variables.file_path, file_name),
+            reset_path='',
+            storage_tier=variables.storage_tier
+        )
         arguments = cli()
         file_upload(args=arguments)
 
@@ -224,12 +250,14 @@ def test_upload_file_integration_invalid_file(mock_args, variables):
                           ('folder_2/nested_folder_2', '', 'nested_folder_test_1.txt'),
                           ('folder_2/nested_folder_2', 'nested_folder_5', 'nested_folder_test_1.txt')])
 def test_upload_folder(variables, folder_name, path, check_file):
-    AzureUpload.upload_folder(object_name=os.path.join(variables.file_path, folder_name),
-                              blob_service_client=variables.blob_service_client,
-                              container_name=variables.container_name,
-                              account_name=variables.account_name,
-                              path=path,
-                              storage_tier=variables.storage_tier)
+    AzureUpload.upload_folder(
+        object_name=os.path.join(variables.file_path, folder_name),
+        blob_service_client=variables.blob_service_client,
+        container_name=variables.container_name,
+        account_name=variables.account_name,
+        path=path,
+        storage_tier=variables.storage_tier
+    )
     blobs = variables.container_client.list_blobs()
     assert os.path.join(path, os.path.basename(check_file)) in [blob.name for blob in blobs]
 
@@ -241,12 +269,14 @@ def test_upload_folder(variables, folder_name, path, check_file):
                           ('folder_2/nested_folder_2', 'cool_nested_folder_5', 'nested_folder_test_1.txt')])
 def test_upload_folder_cool(variables, folder_name, path, check_file):
     storage_tier = 'Cool'
-    AzureUpload.upload_folder(object_name=os.path.join(variables.file_path, folder_name),
-                              blob_service_client=variables.blob_service_client,
-                              container_name=variables.container_name,
-                              account_name=variables.account_name,
-                              path=path,
-                              storage_tier=storage_tier)
+    AzureUpload.upload_folder(
+        object_name=os.path.join(variables.file_path, folder_name),
+        blob_service_client=variables.blob_service_client,
+        container_name=variables.container_name,
+        account_name=variables.account_name,
+        path=path,
+        storage_tier=storage_tier
+    )
     blobs = variables.container_client.list_blobs()
     for blob in blobs:
         if blob.name == os.path.join(path, check_file):
@@ -257,12 +287,14 @@ def test_upload_folder_cool(variables, folder_name, path, check_file):
                          [('folder_2/nested_folder_2', 'nested_folder_test_1.txt'),
                           ('folder_2/nested_folder_2', 'nested_folder_test_1.txt')])
 def test_upload_folder_none_path(variables, folder_name, check_file):
-    AzureUpload.upload_folder(object_name=os.path.join(variables.file_path, folder_name),
-                              blob_service_client=variables.blob_service_client,
-                              container_name=variables.container_name,
-                              account_name=variables.account_name,
-                              path=None,
-                              storage_tier=variables.storage_tier)
+    AzureUpload.upload_folder(
+        object_name=os.path.join(variables.file_path, folder_name),
+        blob_service_client=variables.blob_service_client,
+        container_name=variables.container_name,
+        account_name=variables.account_name,
+        path=None,
+        storage_tier=variables.storage_tier
+    )
     blobs = variables.container_client.list_blobs()
     assert check_file in [blob.name for blob in blobs]
 
@@ -271,13 +303,14 @@ def test_upload_folder_none_path(variables, folder_name, check_file):
 def test_upload_folder_integration(mock_args, variables):
     folder_name = 'folder/nested/double_nested'
     path = 'single_nested'
-    mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
-                                                account_name=variables.account_name,
-                                                container_name=variables.container_name,
-                                                verbosity='info',
-                                                folder=os.path.join(variables.file_path, folder_name),
-                                                reset_path=path,
-                                                storage_tier=variables.storage_tier)
+    mock_args.return_value = argparse.Namespace(
+        account_name=variables.account_name,
+        container_name=variables.container_name,
+        verbosity='info',
+        folder=os.path.join(variables.file_path, folder_name),
+        reset_path=path,
+        storage_tier=variables.storage_tier
+    )
     arguments = cli()
     folder_upload(args=arguments)
     blobs = variables.container_client.list_blobs()
@@ -289,13 +322,14 @@ def test_upload_folder_integration_invalid(mock_args, variables):
     with pytest.raises(SystemExit):
         folder_name = 'folder/nested/double_nested/triple_nested'
         path = 'triple_nested'
-        mock_args.return_value = argparse.Namespace(passphrase=variables.passphrase,
-                                                    account_name=variables.account_name,
-                                                    container_name=variables.container_name,
-                                                    verbosity='info',
-                                                    folder=os.path.join(variables.file_path, folder_name),
-                                                    reset_path=path,
-                                                    storage_tier=variables.storage_tier)
+        mock_args.return_value = argparse.Namespace(
+            account_name=variables.account_name,
+            container_name=variables.container_name,
+            verbosity='info',
+            folder=os.path.join(variables.file_path, folder_name),
+            reset_path=path,
+            storage_tier=variables.storage_tier
+        )
         arguments = cli()
         folder_upload(args=arguments)
 

@@ -19,6 +19,12 @@ sas	folder	000container	nested_folder_2
 sas	folder	000container	nested/	8	sas_test.txt
 sas	folder	000container	nested_folder/nested		tests/files/sas/sas_test_1.txt
 sas	folder	000container	folder_2/nested_folder_2	4
+copy	file	000container	000000000000container	folder_test_1.txt	move_files	''	hot	folder_test_1_copy.txt
+copy	file	000container	000000000000container	nested_folder_2/nested_folder_tests_1.txt	''	cool
+copy	file	000container	000container	folder_test_1.txt	''	cool	folder_test_1.txt
+copy	folder	000container	000000000000container	nested/	move_folder_copy
+copy	folder	000container	000container	nested_folder/	renamed_copy	cool
+copy	container	000container	0000000000000container
 move	file	000container	0000container	folder_test_1.txt	move_files
 move	file	000container	000container	nested_folder_2/nested_folder_test_1.txt	''	cool
 move	file	000container	0000container	nested_folder/nested_file_1.txt	move_files	cool
@@ -52,3 +58,6 @@ delete	folder	0000container	move_files
 delete	folder	0000container	renamed/nested/double_nested/	2
 delete	folder	0000container	move_folder/	5
 delete	container	0000container
+delete	container	00000000000container
+delete	container	000000000000container
+delete	container	0000000000000container

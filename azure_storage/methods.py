@@ -841,6 +841,11 @@ def parse_batch_file(line):
             'file': ['command', 'subcommand', 'container', 'file', 'expiry', 'output_file'],
             'folder': ['command', 'subcommand', 'container', 'folder', 'expiry', 'output_file']
         },
+        'copy': {
+            'container': ['command', 'subcommand', 'container', 'target', 'reset_path', 'storage_tier'],
+            'file': ['command', 'subcommand', 'container', 'target', 'file', 'reset_path', 'storage_tier', 'name'],
+            'folder': ['command', 'subcommand', 'container', 'target', 'folder', 'reset_path', 'storage_tier']
+        },
         'move': {
             'container': ['command', 'subcommand', 'container', 'target', 'reset_path', 'storage_tier'],
             'file': ['command', 'subcommand', 'container', 'target', 'file', 'reset_path', 'storage_tier'],

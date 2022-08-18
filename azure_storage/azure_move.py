@@ -124,7 +124,6 @@ class AzureMove(object):
                 path=self.path,
                 category=self.category,
                 storage_tier=self.storage_tier,
-                rename=self.name
             )
             if not self.copy:
                 delete_folder(
@@ -139,8 +138,8 @@ class AzureMove(object):
             raise SystemExit
 
     @staticmethod
-    def move_file(source_container_client, object_name, rename, blob_service_client, container_name,
-                  target_container, path, storage_tier):
+    def move_file(source_container_client, object_name, blob_service_client, container_name,
+                  target_container, path, storage_tier, rename=None):
         """
         Move the specified file to the desired container in Azure storage
         :param source_container_client: type azure.storage.blob.BlobServiceClient.ContainerClient for source container

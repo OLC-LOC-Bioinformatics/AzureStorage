@@ -202,6 +202,116 @@ def folder_sas(args, batch_dict=None):
             pass
 
 
+def container_copy(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureContainerMove class
+    with the copy=True argument for each container
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'target', 'reset_path', 'storage_tier']
+        )
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        try:
+            # Create the copy_container object
+            copy_container = AzureContainerMove(
+                container_name=arg_dict['container'],
+                account_name=args.account_name,
+                target_container=arg_dict['target'],
+                path=arg_dict['reset_path'],
+                storage_tier=arg_dict['storage_tier'],
+                copy=True
+            )
+            # Run the container copy
+            copy_container.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
+
+
+def file_copy(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureMove class for each file
+    with the copy=True and rename arguments
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+    """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'target', 'file', 'reset_path', 'storage_tier']
+        )
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        try:
+            # Create the copy_file object
+            copy_file = AzureMove(
+                object_name=arg_dict['file'],
+                container_name=arg_dict['container'],
+                account_name=args.account_name,
+                target_container=arg_dict['target'],
+                path=arg_dict['reset_path'],
+                storage_tier=arg_dict['storage_tier'],
+                category='file',
+                copy=True,
+                rename=arg_dict['name']
+            )
+            # Run the file copy
+            copy_file.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
+
+
+def folder_copy(args, batch_dict=None):
+    """
+    Read in the batch file, clean up the arguments to work with code base, run the AzureMove class for each folder
+    with the copy=True argument
+    :param args: type ArgumentParser arguments
+    :param batch_dict: type Pandas dataframe.transpose().to_dict()
+        """
+    # If batch_dict has not been supplied by the batch function, extract the batch information from the file
+    if not batch_dict:
+        batch_dict = create_batch_dict(
+            batch_file=args.batch_file,
+            headers=['container', 'target', 'folder', 'reset_path', 'storage_tier']
+        )
+    # The format of the dictionary is: {primary key: {header: value, ...}, primary key: {header:value, ...}, ....}
+    # e.g. {1 : {container_name: $CONTAINER_NAME, target: $TARGET...}, 2: {container_name: ...}, ...}
+    for key, arg_dict in batch_dict.items():
+        # Clean up the arguments, as some are optional, or not interpreted correctly
+        arg_dict = arg_dict_cleanup(arg_dict=arg_dict)
+        try:
+            # Create the copy_folder object
+            copy_folder = AzureMove(
+                object_name=arg_dict['folder'],
+                container_name=arg_dict['container'],
+                account_name=args.account_name,
+                target_container=arg_dict['target'],
+                path=arg_dict['reset_path'],
+                storage_tier=arg_dict['storage_tier'],
+                category='folder',
+                copy=True
+            )
+            # Run the folder copy
+            copy_folder.main()
+        # Don't crash on SystemExits
+        except SystemExit:
+            pass
+
+
 def container_move(args, batch_dict=None):
     """
     Read in the batch file, clean up the arguments to work with code base, run the AzureContainerMove class
@@ -748,6 +858,67 @@ def cli():
              'container name, folder name and path, expiry (optional), output file (optional)'
     )
     sas_url_folder_subparser.set_defaults(func=folder_sas)
+    # Copy subparser
+    copy = subparsers.add_parser(
+        parents=[],
+        name='copy',
+        description='Copy containers/files/folders in Azure storage',
+        formatter_class=RawTextHelpFormatter,
+        help='Copy containers/files/folders in Azure storage'
+    )
+    copy_subparsers = copy.add_subparsers(
+        title='Copy functionality',
+        dest='copy'
+    )
+    # Container copy subparser
+    copy_container_subparser = copy_subparsers.add_parser(
+        parents=[parent_parser],
+        name='container',
+        description='Copy containers in Azure storage',
+        formatter_class=RawTextHelpFormatter,
+        help='Copy containers in Azure storage'
+    )
+    copy_container_subparser.add_argument(
+        '-b', '--batch_file',
+        required=True,
+        type=str,
+        help='Tab-separated file with the following fields:\n '
+             'container name, target container, destination path (optional), storage tier (optional)'
+    )
+    copy_container_subparser.set_defaults(func=container_copy)
+    # File copy subparser
+    copy_file_subparser = copy_subparsers.add_parser(
+        parents=[parent_parser],
+        name='file',
+        description='Copy files in Azure storage',
+        formatter_class=RawTextHelpFormatter,
+        help='Copy files in Azure storage'
+    )
+    copy_file_subparser.add_argument(
+        '-b', '--batch_file',
+        required=True,
+        type=str,
+        help='Tab-separated file with the following fields:\n '
+             'container name, target container, file name, destination path (optional), storage tier (optional), '
+             'renamed file (optional)'
+    )
+    copy_file_subparser.set_defaults(func=file_copy)
+    # Folder copy subparser
+    copy_folder_subparser = copy_subparsers.add_parser(
+        parents=[parent_parser],
+        name='folder',
+        description='Copy folders in Azure storage',
+        formatter_class=RawTextHelpFormatter,
+        help='Copy folders in Azure storage'
+    )
+    copy_folder_subparser.add_argument(
+        '-b', '--batch_file',
+        required=True,
+        type=str,
+        help='Tab-separated file with the following fields:\n '
+             'container name, target container, folder name, destination path (optional), storage tier (optional)'
+    )
+    copy_folder_subparser.set_defaults(func=folder_copy)
     # Move subparser
     move = subparsers.add_parser(
         parents=[],
@@ -1008,6 +1179,11 @@ def cli():
              'sas, container, container name, expiry (optional), output file (optional)\n'
              'sas, file, container name, file name and path, expiry (optional), output file (optional)\n'
              'sas, folder, container name, folder name and path, expiry (optional), output file (optional)\n'
+             'copy, container, container name, target container, destination path (optional), storage tier (optional)\n'
+             'copy, file, container name, target container, file name, destination path (optional), '
+             'storage tier (optional), renamed file (optional)\n'
+             'copy, folder, container name, target container, folder name, destination path (optional), '
+             'storage tier (optional)\n'
              'move, container, container name, target container, destination path (optional), storage tier (optional)\n'
              'move, file, container name, target container, file name, destination path (optional), '
              'storage tier (optional)\n'
