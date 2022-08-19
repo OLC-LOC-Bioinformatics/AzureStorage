@@ -3,18 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/move/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://OLC-LOC-Bioinformatics.github.io/AzureStorage/copy/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>Move - OLC Bioinformatics Azure Storage</title>
+    <title>Copy - OLC Bioinformatics Azure Storage</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
     
       <script>
         // Current page data
-        var mkdocs_page_name = "Move";
-        var mkdocs_page_input_path = "move.md";
-        var mkdocs_page_url = "/AzureStorage/move/";
+        var mkdocs_page_name = "Copy";
+        var mkdocs_page_input_path = "copy.md";
+        var mkdocs_page_url = "/AzureStorage/copy/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -60,16 +60,12 @@
                 <li class="toctree-l1"><a class="reference internal" href="../sas_url/">SAS URL</a>
                 </li>
               </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../copy/">Copy</a>
-                </li>
-              </ul>
               <ul class="current">
-                <li class="toctree-l1 current"><a class="reference internal current" href="./">Move</a>
+                <li class="toctree-l1 current"><a class="reference internal current" href="./">Copy</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#general-usage">General usage</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#azuremove-container">AzureMove container</a>
+    <li class="toctree-l2"><a class="reference internal" href="#azurecopy-container">AzureCopy container</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-arguments">Required arguments:</a>
     </li>
@@ -81,7 +77,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#azuremove-file">AzureMove file</a>
+    <li class="toctree-l2"><a class="reference internal" href="#azurecopy-file">AzureCopy file</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-arguments_1">Required arguments:</a>
     </li>
@@ -93,7 +89,7 @@
     </li>
         </ul>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#azuremove-folder">AzureMove folder</a>
+    <li class="toctree-l2"><a class="reference internal" href="#azurecopy-folder">AzureCopy folder</a>
         <ul>
     <li class="toctree-l3"><a class="reference internal" href="#required-arguments_2">Required arguments:</a>
     </li>
@@ -106,6 +102,10 @@
         </ul>
     </li>
     </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../move/">Move</a>
                 </li>
               </ul>
               <ul>
@@ -141,9 +141,9 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li><li>Move</li>
+    <li><a href=".." class="icon icon-home" alt="Docs"></a> &raquo;</li><li>Copy</li>
     <li class="wy-breadcrumbs-aside">
-        <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/main/docs/move.md"
+        <a href="https://github.com/OLC-LOC-Bioinformatics/AzureStorage/edit/main/docs/copy.md"
           class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
@@ -153,27 +153,27 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h2 id="azuremove">AzureMove</h2>
-<p>Move containers, files, or folders within your Azure storage account.</p>
-<p>Choose either the <a href="#azuremove-container"><code>container</code></a>, <a href="#azuremove-file"><code>file</code></a>, or  <a href="#azuremove-folder"><code>folder</code></a> functionality</p>
+                <h2 id="azurecopy">AzureCopy</h2>
+<p>Copy containers, files, or folders within your Azure storage account.</p>
+<p>Choose either the <a href="#azurecopy-container"><code>container</code></a>, <a href="#azurecopy-file"><code>file</code></a>, or  <a href="#azurecopy-folder"><code>folder</code></a> functionality</p>
 <h4 id="general-usage">General usage</h4>
-<pre><code>usage: AzureMove [-h] {container,file,folder} ...
+<pre><code>usage: AzureCopy [-h] {container,file,folder} ...
 
-Move containers, files, or folders in Azure storage
+Copy containers, files, or folders in Azure storage
 
 optional arguments:
   -h, --help            show this help message and exit
 
 Available functionality:
   {container,file,folder}
-    container           Move a container in Azure storage
-    file                Move a file within Azure storage 
-    folder              Move a folder within Azure storage
+    container           Copy a container in Azure storage
+    file                Copy a file within Azure storage 
+    folder              Copy a folder within Azure storage
 
 </code></pre>
 
-<h3 id="azuremove-container">AzureMove container</h3>
-<p>Move a container within your Azure storage account</p>
+<h3 id="azurecopy-container">AzureCopy container</h3>
+<p>Copy a container within your Azure storage account</p>
 <h4 id="required-arguments">Required arguments:</h4>
 <ul>
 <li>container name</li>
@@ -181,24 +181,24 @@ Available functionality:
 </ul>
 <h4 id="optional-arguments">Optional arguments:</h4>
 <ul>
-<li>target container: name of the container into which the container is to be moved</li>
+<li>target container: name of the container into which the container is to be copied</li>
 <li>path to store the container: nest the container within the target container</li>
 <li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
 <li>storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot</li>
 </ul>
 <h4 id="example-commands">Example commands:</h4>
 <p>These commands will use <code>container-name</code> as the name of the container, <code>target-container</code> as the name of the target container, and <code>account_name</code> as the name of the storage account</p>
-<p>To perform a basic move (this also renames a container):</p>
-<p><code>AzureMove container -a account_name -c container-name -t target-container</code></p>
-<p>To move a container, and set the storage tier to <code>Cool</code></p>
-<p><code>AzureMove container -a account_name -c container-name -t target-container -s Cool</code></p>
-<p>To move a container and nest it into folder <code>outputs</code>:</p>
-<p><code>AzureMove container -a account_name -c container-name -t target-container -r outputs</code></p>
+<p>To perform a basic copy:</p>
+<p><code>AzureCopy container -a account_name -c container-name -t target-container</code></p>
+<p>To copy a container, and set the storage tier to <code>Cool</code></p>
+<p><code>AzureCopy container -a account_name -c container-name -t target-container -s Cool</code></p>
+<p>To copy a container and nest it into folder <code>outputs</code>:</p>
+<p><code>AzureCopy container -a account_name -c container-name -t target-container -r outputs</code></p>
 <h4 id="usage">Usage</h4>
-<pre><code>usage: AzureMove container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
+<pre><code>usage: AzureCopy container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
                            [-s STORAGE_TIER]
 
-Move a container in Azure storage
+Copy a container in Azure storage
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -209,15 +209,15 @@ optional arguments:
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
-                        The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container
+                        The target container to which the container/file/folder is to be copyd (this can be the same as the container_name if you want to copy a file/folder within a container
   -r RESET_PATH, --reset_path RESET_PATH
                         Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use or ''
   -s STORAGE_TIER, --storage_tier STORAGE_TIER
-                        Set the storage tier for the container/file/folder to be moved. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;. Default is Hot
+                        Set the storage tier for the container/file/folder to be copyd. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;. Default is Hot
 </code></pre>
 
-<h3 id="azuremove-file">AzureMove file</h3>
-<p>Move a file within your Azure storage account</p>
+<h3 id="azurecopy-file">AzureCopy file</h3>
+<p>Copy a file within your Azure storage account</p>
 <h4 id="required-arguments_1">Required arguments:</h4>
 <ul>
 <li>container name</li>
@@ -226,32 +226,41 @@ optional arguments:
 </ul>
 <h4 id="optional-arguments_1">Optional arguments:</h4>
 <ul>
-<li>target container: name of the container into which the container is to be moved</li>
+<li>target container: name of the container into which the container is to be copied (can be the same as <code>container name</code>)</li>
 <li>path to store the container: nest the container within the target container</li>
 <li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
 <li>storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot</li>
+<li>name: set the name of the copied file</li>
 </ul>
 <h4 id="example-commands_1">Example commands:</h4>
 <p>These commands will use <code>container-name</code> as the name of the container, <code>target-container</code> as the name of the target container, and <code>account_name</code> as the name of the storage account</p>
-<p>To move the file <code>file_name.gz</code></p>
-<p><code>AzureMove file -a account_name -c container-name -t target-container -f file_name.gz</code></p>
-<p>To move the file <code>file_name.gz</code>, and set the storage tier to <code>Cool</code></p>
-<p><code>AzureMove file -a account_name -c container-name -t target-container -f file_name.gz -s Cool</code></p>
-<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code></p>
-<p><code>AzureMove file -a account_name -c container-name -t target-container -f outputs/file_name.gz</code></p>
-<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code> to the root of the source container</p>
-<p><code>AzureMove file -a account_name -c container-name -t container-name -f outputs/file_name.gz -r ""</code></p>
-<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code> to folder <code>results</code> in the source container</p>
-<p><code>AzureMove file -a account_name -c container-name -t container-name -f outputs/file_name.gz -r results</code></p>
-<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code> to the root of the target container</p>
-<p><code>AzureMove file -a account_name -c container-name -t target-container -f outputs/file_name.gz -r ""</code></p>
-<p>To move the file <code>file_name.gz</code> nested in folder <code>outputs</code> to folder <code>results</code> in the target container</p>
-<p><code>AzureMove file -a account_name -c container-name -t target-container -f outputs/file_name.gz -r results</code></p>
+<p>To copy the file <code>file_name.gz</code></p>
+<p><code>AzureCopy file -a account_name -c container-name -t target-container -f file_name.gz</code></p>
+<p>To copy the file <code>file_name.gz</code> and rename it <code>copy.gz</code></p>
+<p><code>AzureCopy file -a account_name -c container-name -t target-container -f file_name.gz -n copy.gz</code></p>
+<p>To copy the file <code>file_name.gz</code>, and set the storage tier to <code>Cool</code></p>
+<p><code>AzureCopy file -a account_name -c container-name -t target-container -f file_name.gz -s Cool</code></p>
+<p>To copy the file <code>file_name.gz</code> nested in folder <code>outputs</code> (will remain nested in <code>outputs</code> in <code>target-container</code>)</p>
+<p><code>AzureCopy file -a account_name -c container-name -t target-container -f outputs/file_name.gz</code></p>
+<p>To copy the file <code>file_name.gz</code> nested in folder <code>outputs</code> and rename it <code>copy.gz</code> (will remain nested in <code>outputs</code> in <code>target-container</code>)</p>
+<p><code>AzureCopy file -a account_name -c container-name -t target-container -f outputs/file_name.gz</code> -n <code>copy.gz</code></p>
+<p>To copy the file <code>file_name.gz</code> nested in folder <code>outputs</code> to the root of the source container</p>
+<p><code>AzureCopy file -a account_name -c container-name -t container-name -f outputs/file_name.gz -r ""</code></p>
+<p>To copy the file <code>file_name.gz</code> nested in folder <code>outputs</code> to the root of the source container and rename it <code>copy.gz</code></p>
+<p><code>AzureCopy file -a account_name -c container-name -t container-name -f outputs/file_name.gz -r "" -n copy.gz</code></p>
+<p>To copy the file <code>file_name.gz</code> nested in folder <code>outputs</code> to folder <code>results</code> in the source container</p>
+<p><code>AzureCopy file -a account_name -c container-name -t container-name -f outputs/file_name.gz -r results</code></p>
+<p>To copy the file <code>file_name.gz</code> nested in folder <code>outputs</code> to folder <code>results</code> in the source container and rename it `copy.gz</p>
+<p><code>AzureCopy file -a account_name -c container-name -t container-name -f outputs/file_name.gz -r results -n copy.gz</code></p>
+<p>To copy the file <code>file_name.gz</code> nested in folder <code>outputs</code> to the root of the target container</p>
+<p><code>AzureCopy file -a account_name -c container-name -t target-container -f outputs/file_name.gz -r ""</code></p>
+<p>To copy the file <code>file_name.gz</code> nested in folder <code>outputs</code> to folder <code>results</code> in the target container</p>
+<p><code>AzureCopy file -a account_name -c container-name -t target-container -f outputs/file_name.gz -r results</code></p>
 <h4 id="usage_1">Usage</h4>
-<pre><code>usage: AzureMove file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
+<pre><code>usage: AzureCopy file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
                       [-s STORAGE_TIER] -f FILE
 
-Move a file within Azure storage
+Copy a file within Azure storage
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -262,16 +271,17 @@ optional arguments:
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
-                        The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container
+                        The target container to which the container/file/folder is to be copyd (this can be the same as the container_name if you want to copy a file/folder within a container
   -r RESET_PATH, --reset_path RESET_PATH
                         Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use or ''
   -s STORAGE_TIER, --storage_tier STORAGE_TIER
-                        Set the storage tier for the container/file/folder to be moved. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;. Default is Hot
-  -f FILE, --file FILE  Name of blob file to move in Azure storage. e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz
+                        Set the storage tier for the container/file/folder to be copyd. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;. Default is Hot
+  -f FILE, --file FILE  Name of blob file to copy in Azure storage. e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz
+  -n NAME, --name NAME  Name of duplicate file. Required if copying within the same container (and folder). Otherwise, the original name will be used.
 </code></pre>
 
-<h3 id="azuremove-folder">AzureMove folder</h3>
-<p>Move a folder within your Azure storage account</p>
+<h3 id="azurecopy-folder">AzureCopy folder</h3>
+<p>Copy a folder within your Azure storage account</p>
 <h4 id="required-arguments_2">Required arguments:</h4>
 <ul>
 <li>container name</li>
@@ -280,32 +290,32 @@ optional arguments:
 </ul>
 <h4 id="optional-arguments_2">Optional arguments:</h4>
 <ul>
-<li>target container: name of the container into which the container is to be moved</li>
+<li>target container: name of the container into which the container is to be copyd</li>
 <li>path to store the container: nest the container within the target container</li>
 <li>verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info</li>
 <li>storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot</li>
 </ul>
 <h4 id="example-commands_2">Example commands:</h4>
 <p>These commands will use <code>container-name</code> as the name of the container, <code>target-container</code> as the name of the target container, and <code>account_name</code> as the name of the storage account</p>
-<p>To move the folder <code>folder_name</code></p>
-<p><code>AzureMove folder -a account_name -c container-name -t target-container -f folder_name</code></p>
-<p>To move the folder <code>folder_name</code>, and set the storage tier to <code>Cool</code></p>
-<p><code>AzureMove folder -a account_name -c container-name -t target-container -f folder_name -s Cool</code></p>
-<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code></p>
-<p><code>AzureMove folder -a account_name -c container-name -t target-container -f outputs/folder_name</code></p>
-<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code> to the root of the source container</p>
-<p><code>AzureMove folder -a account_name -c container-name -t container-name -f outputs/folder_name -r ""</code></p>
-<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code> to folder <code>results</code> in the source container</p>
-<p><code>AzureMove folder -a account_name -c container-name -t container-name -f outputs/folder_name -r results</code></p>
-<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code> to the root of the target container</p>
-<p><code>AzureMove folder -a account_name -c container-name -t target-container -f outputs/folder_name -r ""</code></p>
-<p>To move the folder <code>folder_name</code> nested in folder <code>outputs</code> to folder <code>results</code> in the target container</p>
-<p><code>AzureMove folder -a account_name -c container-name -t target-container -f outputs/folder_name -r results</code></p>
+<p>To copy the folder <code>folder_name</code></p>
+<p><code>AzureCopy folder -a account_name -c container-name -t target-container -f folder_name</code></p>
+<p>To copy the folder <code>folder_name</code>, and set the storage tier to <code>Cool</code></p>
+<p><code>AzureCopy folder -a account_name -c container-name -t target-container -f folder_name -s Cool</code></p>
+<p>To copy the folder <code>folder_name</code> nested in folder <code>outputs</code></p>
+<p><code>AzureCopy folder -a account_name -c container-name -t target-container -f outputs/folder_name</code></p>
+<p>To copy the folder <code>folder_name</code> nested in folder <code>outputs</code> to the root of the source container</p>
+<p><code>AzureCopy folder -a account_name -c container-name -t container-name -f outputs/folder_name -r ""</code></p>
+<p>To copy the folder <code>folder_name</code> nested in folder <code>outputs</code> to folder <code>results</code> in the source container</p>
+<p><code>AzureCopy folder -a account_name -c container-name -t container-name -f outputs/folder_name -r results</code></p>
+<p>To copy the folder <code>folder_name</code> nested in folder <code>outputs</code> to the root of the target container</p>
+<p><code>AzureCopy folder -a account_name -c container-name -t target-container -f outputs/folder_name -r ""</code></p>
+<p>To copy the folder <code>folder_name</code> nested in folder <code>outputs</code> to folder <code>results</code> in the target container</p>
+<p><code>AzureCopy folder -a account_name -c container-name -t target-container -f outputs/folder_name -r results</code></p>
 <h4 id="usage_2">Usage</h4>
-<pre><code>usage: AzureMove folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
+<pre><code>usage: AzureCopy folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
                         [-s STORAGE_TIER] -f FOLDER
 
-Move a folder within Azure storage
+Copy a folder within Azure storage
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -316,20 +326,20 @@ optional arguments:
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
-                        The target container to which the container/file/folder is to be moved (this can be the same as the container_name if you want to move a file/folder within a container
+                        The target container to which the container/file/folder is to be copyd (this can be the same as the container_name if you want to copy a file/folder within a container
   -r RESET_PATH, --reset_path RESET_PATH
                         Set the path of the container/file/folder within a folder in the target container e.g. sequence_data/220202-m05722. If you want to place it directly in the container without any nesting, use or ''
   -s STORAGE_TIER, --storage_tier STORAGE_TIER
-                        Set the storage tier for the container/file/folder to be moved. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;. Default is Hot
+                        Set the storage tier for the container/file/folder to be copyd. Options are &quot;Hot&quot;, &quot;Cool&quot;, and &quot;Archive&quot;. Default is Hot
   -f FOLDER, --folder FOLDER
-                        Name of folder to move in Azure storage. e.g. InterOp
+                        Name of folder to copy in Azure storage. e.g. InterOp
 </code></pre>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="../copy/" class="btn btn-neutral float-left" title="Copy"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../download/" class="btn btn-neutral float-right" title="Download">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../sas_url/" class="btn btn-neutral float-left" title="SAS URL"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../move/" class="btn btn-neutral float-right" title="Move">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -356,10 +366,10 @@ optional arguments:
         </span>
     
     
-      <span><a href="../copy/" style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../sas_url/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../download/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../move/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
