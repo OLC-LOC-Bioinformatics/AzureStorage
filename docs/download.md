@@ -32,7 +32,6 @@ Download a container from your Azure storage account
 
 #### Optional arguments:
 - output path: local path where container is to be saved. Default is your current working directory
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example commands:
@@ -54,7 +53,7 @@ To download a container to the folder `/home/users/outputs`
 #### Usage
 
 ```
-usage: AzureDownload container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_PATH]
+usage: AzureDownload container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] [-o OUTPUT_PATH]
 
 Download a container from Azure storage
 
@@ -64,8 +63,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -o OUTPUT_PATH, --output_path OUTPUT_PATH
@@ -83,7 +80,6 @@ Download a file from your Azure storage account
 
 #### Optional arguments:
 - output path: local path where container is to be saved. Default is your current working directory
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example commands:
@@ -110,7 +106,7 @@ To download the file `file_name.gz` to the folder `/home/users/outputs`
 #### Usage
 
 ```
-usage: AzureDownload file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_PATH] -f FILE
+usage: AzureDownload file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] [-o OUTPUT_PATH] -f FILE
 
 Download a file from Azure storage
 
@@ -120,8 +116,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -o OUTPUT_PATH, --output_path OUTPUT_PATH
@@ -140,7 +134,6 @@ Download a folder from your Azure storage account
 
 #### Optional arguments:
 - output path: local path where container is to be saved. Default is your current working directory
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example commands:
@@ -166,7 +159,7 @@ To download the folder `folder_name` to the folder `/home/users/outputs`
 #### Usage 
 
 ```
-usage: AzureDownload folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_PATH] -f FOLDER
+usage: AzureDownload folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] [-o OUTPUT_PATH] -f FOLDER
 
 Download a folder from Azure storage
 
@@ -176,8 +169,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -o OUTPUT_PATH, --output_path OUTPUT_PATH

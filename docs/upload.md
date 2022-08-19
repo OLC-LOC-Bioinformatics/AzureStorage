@@ -29,7 +29,6 @@ Upload a single file to your Azure storage account.
 - name and path of file to upload
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 - path to store the file: change the folder structure of the file in Azure storage compared to your local system
 - storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot
@@ -73,7 +72,7 @@ To retain the path of the file:
 #### Usage
 
 ```
-usage: AzureUpload file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+usage: AzureUpload file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME
                         [-v {debug,info,warning,error,critical}] [-r RESET_PATH]
                         [-s {Hot,Cool,Archive}] -f FILE
 
@@ -85,8 +84,6 @@ optional arguments:
                          Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
                         Set the logging level. Default is info.
   -r RESET_PATH, --reset_path RESET_PATH
@@ -106,7 +103,6 @@ Upload a single folder (and its contents) to your Azure storage account. Note th
 - name and path of folder to upload
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 - path to store the file: change the folder structure of the file in Azure storage compared to your local system
 - storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot
@@ -151,7 +147,7 @@ To retain the path of the folder:
 #### Usage
 
 ```
-usage: AzureUpload folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+usage: AzureUpload folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME
                           [-v {debug,info,warning,error,critical}] [-r RESET_PATH]
                           [-s {Hot,Cool,Archive}] -f FOLDER
 
@@ -163,8 +159,6 @@ optional arguments:
                          Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v {debug,info,warning,error,critical}, --verbosity {debug,info,warning,error,critical}
                         Set the logging level. Default is info.
   -r RESET_PATH, --reset_path RESET_PATH

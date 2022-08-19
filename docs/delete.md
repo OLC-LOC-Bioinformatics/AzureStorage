@@ -30,7 +30,6 @@ Delete a container from your Azure storage account
 - account name
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example command:
@@ -44,7 +43,7 @@ To delete a container from your Azure storage account
 #### Usage
 
 ```
-usage: AzureDelete container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY]
+usage: AzureDelete container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY]
 
 Delete a container in Azure storage
 
@@ -54,8 +53,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
 ```
@@ -71,7 +68,6 @@ Delete a file from your Azure storage account
 
 #### Optional arguments:
 - retention time: time to retain deleted files. Default is 8 days
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example commands:
@@ -89,7 +85,7 @@ To delete the file `file_name.gz` nested in folder outputs from your Azure stora
 #### Usage
 
 ```
-usage: AzureDelete file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -f FILE [-r RETENTION_TIME]
+usage: AzureDelete file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -f FILE [-r RETENTION_TIME]
 
 Delete a file in Azure storage
 
@@ -99,8 +95,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -f FILE, --file FILE  Name of blob file to delete in Azure storage. e.g. 2022-SEQ-0001_S1_L001_R1_001.fastq.gz
@@ -119,7 +113,6 @@ Delete a folder from your Azure storage account
 
 #### Optional arguments:
 - retention time: time to retain deleted files in the folder. Default is 8 days
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example commands:
@@ -137,7 +130,7 @@ To delete the folder `folder_name` nested in folder outputs from your Azure stor
 #### Usage
 
 ```
-usage: AzureDelete folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -f FOLDER [-r RETENTION_TIME]
+usage: AzureDelete folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -f FOLDER [-r RETENTION_TIME]
 
 Delete a folder in Azure storage
 
@@ -147,8 +140,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -f FOLDER, --folder FOLDER

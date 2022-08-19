@@ -36,7 +36,6 @@ Create SAS URLs for all files in a container in your Azure storage account
 #### Optional arguments:
 - output file: file in which the SAS URLs are to be written. Default is `sas.txt` in your current working directory
 - expiry: the number of days the SAS URL with be valid. Minimum is 1, maximum is 365. Default is 10
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example commands:
@@ -61,7 +60,7 @@ To create SAS URLs, and save them to the file `sas_urls.txt` nested in folder `o
 
 #### Usage
 ```
-usage: AzureSAS container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE]
+usage: AzureSAS container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE]
 
 Create SAS URLs for all files in a container in Azure storage
 
@@ -71,8 +70,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -e EXPIRY, --expiry EXPIRY
@@ -93,7 +90,6 @@ Create a SAS URL for a file in a container in your Azure storage account
 #### Optional arguments:
 - output file: file in which the SAS URLs are to be written. Default is `sas.txt` in your current working directory
 - expiry: the number of days the SAS URL with be valid. Minimum is 1, maximum is 365. Default is 10
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example commands:
@@ -123,7 +119,7 @@ To create a SAS URL for file `file_name.gz`, and save it to the file `sas_urls.t
 #### Usage
 
 ```
-usage: AzureSAS file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE] -f FILE
+usage: AzureSAS file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE] -f FILE
 
 Create a SAS URL for a file in Azure storage
 
@@ -133,8 +129,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -e EXPIRY, --expiry EXPIRY
@@ -156,7 +150,6 @@ Create SAS URLs for all files in a folder in your Azure storage account
 #### Optional arguments:
 - output file: file in which the SAS URLs are to be written. Default is `sas.txt` in your current working directory
 - expiry: the number of days the SAS URL with be valid. Minimum is 1, maximum is 365. Default is 10
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example commands:
@@ -187,7 +180,7 @@ To create SAS URLs for all files in folder `folder_name`, and save them to the f
 #### Usage
 
 ```
-usage: AzureSAS folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE] -f FOLDER
+usage: AzureSAS folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] [-e EXPIRY] [-o OUTPUT_FILE] -f FOLDER
 
 Create SAS URLs for all files in a folder in Azure storage
 
@@ -197,8 +190,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -e EXPIRY, --expiry EXPIRY

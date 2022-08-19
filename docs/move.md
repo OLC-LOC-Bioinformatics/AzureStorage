@@ -33,7 +33,6 @@ Move a container within your Azure storage account
 #### Optional arguments:
 - target container: name of the container into which the container is to be moved
 - path to store the container: nest the container within the target container
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 - storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot
 
@@ -57,7 +56,7 @@ To move a container and nest it into folder `outputs`:
 #### Usage
 
 ```
-usage: AzureMove container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
+usage: AzureMove container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
                            [-s STORAGE_TIER]
 
 Move a container in Azure storage
@@ -68,8 +67,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
@@ -92,7 +89,6 @@ Move a file within your Azure storage account
 #### Optional arguments:
 - target container: name of the container into which the container is to be moved
 - path to store the container: nest the container within the target container
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 - storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot
 
@@ -131,7 +127,7 @@ To move the file `file_name.gz` nested in folder `outputs` to folder `results` i
 #### Usage
 
 ```
-usage: AzureMove file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
+usage: AzureMove file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
                       [-s STORAGE_TIER] -f FILE
 
 Move a file within Azure storage
@@ -142,8 +138,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -t TARGET_CONTAINER, --target_container TARGET_CONTAINER
@@ -167,7 +161,6 @@ Move a folder within your Azure storage account
 #### Optional arguments:
 - target container: name of the container into which the container is to be moved
 - path to store the container: nest the container within the target container
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 - storage tier: set the storage tier of the file in Azure storage. Options are Hot, Cool, Archive. Default is Hot
 
@@ -206,7 +199,7 @@ To move the folder `folder_name` nested in folder `outputs` to folder `results` 
 #### Usage
 
 ```
-usage: AzureMove folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
+usage: AzureMove folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-v VERBOSITY] -t TARGET_CONTAINER [-r RESET_PATH]
                         [-s STORAGE_TIER] -f FOLDER
 
 Move a folder within Azure storage
@@ -217,8 +210,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -t TARGET_CONTAINER, --target_container TARGET_CONTAINER

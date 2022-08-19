@@ -31,7 +31,6 @@ Set the storage tier of a container in your Azure storage account
 - storage tier
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example command:
@@ -46,7 +45,7 @@ To change the storage tier of a container to `Cool`
 
 ```
 usage: AzureTier container [-h] -c CONTAINER_NAME -a ACCOUNT_NAME
-                           [-p PASSPHRASE] [-v VERBOSITY] -s STORAGE_TIER
+                           [-v VERBOSITY] -s STORAGE_TIER
 
 Change the storage tier of a container in Azure storage
 
@@ -56,8 +55,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -s STORAGE_TIER, --storage_tier STORAGE_TIER
@@ -75,7 +72,6 @@ Set the storage tier of a file in your Azure storage account
 - storage tier
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example command:
@@ -89,7 +85,7 @@ To change the storage tier of the file `file_name.gz` to `Archive`
 #### Usage
 
 ```
-usage: AzureTier file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+usage: AzureTier file [-h] -c CONTAINER_NAME -a ACCOUNT_NAME
                       [-v VERBOSITY] -s STORAGE_TIER -f FILE
 
 Change the storage tier of a file in Azure storage
@@ -100,8 +96,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -s STORAGE_TIER, --storage_tier STORAGE_TIER
@@ -120,7 +114,6 @@ Set the storage tier of a folder in your Azure storage account
 - storage tier
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example command:
@@ -134,7 +127,7 @@ To change the storage tier of the folder `results/folder_name` to `Hot`
 #### Usage
 
 ```
-usage: AzureTier folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME [-p PASSPHRASE]
+usage: AzureTier folder [-h] -c CONTAINER_NAME -a ACCOUNT_NAME
                         [-v VERBOSITY] -s STORAGE_TIER -f FOLDER
 
 Change the storage tier of a folder in Azure storage
@@ -145,8 +138,6 @@ optional arguments:
                         Name of the Azure storage container. Note that container names must be lowercase, between 3 and 63 characters, start with a letter or number, and can contain only letters, numbers, and the dash (-) character. Consecutive dashes are not permitted.
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -s STORAGE_TIER, --storage_tier STORAGE_TIER

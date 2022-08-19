@@ -36,7 +36,7 @@ def cli():
     # Create the parental parser, and the subparser
     subparsers, parent_parser = create_parent_parser(
         parser=parser,
-                                                     container=False
+        container=False
     )
     # Credentials storing/modifying subparser
     store_subparser = subparsers.add_parser(

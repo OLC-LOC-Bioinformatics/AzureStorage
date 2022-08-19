@@ -1,6 +1,6 @@
 ## AzureCredentials
 
-AzureCredentials allows you to store, modify, or delete your Azure account name and connection string in the system keyring
+AzureCredentials allows you to store, modify, or delete your encrypted Azure connection string
 
 Choose either the [`store`](#azure-credentials-store) or [`delete`](#azure-credentials-delete) functionality
 
@@ -14,98 +14,79 @@ Choose either the [`store`](#azure-credentials-store) or [`delete`](#azure-crede
 ```
 usage: AzureCredentials [-h] {store,delete} ...
 
-Set, modify, or delete Azure storage credentials in the system keyring
+Set, modify, or delete Azure storage credentials
 
 optional arguments:
   -h, --help      show this help message and exit
 
 Available functionality:
   {store,delete}
-    store         Store or update Azure storage credentials in the system keyring
-    delete        Delete Azure storage credentials in the system keyring
+    store         Store or update Azure storage credentials
+    delete        Delete Azure storage credentials
 
 ```
 
 ### Azure credentials store
 
-Store or modify your account name and connection string in the system keyring
+Store or modify your account name and connection string
 
 #### Required arguments:
 - account name
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example commands:
 
-To store the account name `account_name` and your connection string in the system keyring
+To store the account name `account_name` and your connection string
 
 `AzureCredentials store -a account_name`
 
 NOTE: You will be prompted to enter your connection string by the script. Note that, as a security precaution, you will not see the text you entered.
 
-To store the account name `account_name` and your connection string in the system keyring using the passphrase `passphrase`
-
-`AzureCredentials store -a account_name -p passphrase`
-
-NOTE: You will be prompted to enter your connection string by the script. Note that, as a security precaution, you will not see the text you entered. 
-
 #### Usage
 ```
-usage: AzureCredentials store [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY]
+usage: AzureCredentials store [-h] -a ACCOUNT_NAME [-v VERBOSITY]
 
-Store or update Azure storage credentials in the system keyring
+Store or update Azure storage credentials
 
 optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
 ```
 
 ### Azure credentials delete
 
-Delete your account name and connection string from the system keyring
+Delete encrypted connection string
 
 #### Required arguments:
 - account name
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Example command:
 
-To delete the account name `account_name` and your connection string from the system keyring
+To delete connection string associated with the account name `account_name` 
 
 `AzureCredentials delete -a account_name`
 
 NOTE: You will be prompted to enter your connection string by the script. Note that, as a security precaution, you will not see the text you entered.
 
-To delete the account name `account_name` and your connection string from the system keyring stored using the passphrase `passphrase`
-
-`AzureCredentials delete -a account_name -p passphrase`
-
-NOTE: You will be prompted to enter your connection string by the script. Note that, as a security precaution, you will not see the text you entered.
-
-
 #### Usage
 
 ```
-usage: AzureCredentials delete [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY]
+usage: AzureCredentials delete [-h] -a ACCOUNT_NAME [-v VERBOSITY]
 
-Delete Azure storage credentials in the system keyring
+Delete Azure storage credentials
 
 optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
 ```

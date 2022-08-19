@@ -54,7 +54,6 @@ Automate the upload of multiple files to your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -68,7 +67,7 @@ For additional details on running file uploads, please see the [`AzureUpload fil
 #### Usage
 
 ```
-usage: AzureAutomate upload file [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate upload file [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Upload files to Azure storage
 
@@ -76,8 +75,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -95,7 +92,6 @@ Automate the upload of multiple folders to your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -109,7 +105,7 @@ For additional details on running folder uploads, please see the [`AzureUpload f
 #### Usage
 
 ```
-usage: AzureAutomate upload folder [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate upload folder [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Upload folders to Azure storage
 
@@ -117,8 +113,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -157,7 +151,6 @@ Automate the creation of SAS URLs for multiple containers in your Azure storage 
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -171,7 +164,7 @@ For additional details on creating SAS URLs for containers, please see the [`Azu
 #### Usage
 
 ```
-usage: AzureAutomate sas container [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate sas container [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Create SAS URLs for containers in Azure storage
 
@@ -179,8 +172,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -198,7 +189,6 @@ Automate the creation of SAS URLs for multiple files in your Azure storage accou
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -212,7 +202,7 @@ For additional details on creating SAS URLs for files, please see the [`AzureSAS
 #### Usage
 
 ```
-usage: AzureAutomate sas file [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate sas file [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Create SAS URLs for files in Azure storage
 
@@ -220,8 +210,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -239,7 +227,6 @@ Automate the creation of SAS URLs for multiple folders in your Azure storage acc
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -253,7 +240,7 @@ For additional details on creating SAS URLs for folders, please see the [`AzureS
 #### Usage
 
 ```
-usage: AzureAutomate sas folder [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate sas folder [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Create SAS URLs for folders in Azure storage
 
@@ -261,8 +248,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -301,7 +286,6 @@ Automate the moving of multiple containers in your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -315,7 +299,7 @@ For additional details on moving containers, please see the [`AzureMove containe
 #### Usage
 
 ```
-usage: AzureAutomate move container [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate move container [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Move containers in Azure storage
 
@@ -323,8 +307,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -342,7 +324,6 @@ Automate the moving of multiple files in your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -356,7 +337,7 @@ For additional details on moving files, please see the [`AzureMove file`](move.m
 #### Usage
 
 ```
-usage: AzureAutomate move file [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate move file [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Move files in Azure storage
 
@@ -364,8 +345,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -383,7 +362,6 @@ Automate the moving of multiple folders in your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -397,7 +375,7 @@ For additional details on moving folders, please see the [`AzureMove folder`](mo
 #### Usage
 
 ```
-usage: AzureAutomate move folder [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate move folder [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Move folders in Azure storage
 
@@ -405,8 +383,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -446,7 +422,6 @@ Automate the downloading of multiple containers from your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -460,7 +435,7 @@ For additional details on downloading containers, please see the [`AzureDownload
 #### Usage
 
 ```
-usage: AzureAutomate download container [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate download container [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Download containers from Azure storage
 
@@ -468,8 +443,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -487,7 +460,6 @@ Automate the downloading of multiple files from your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -501,7 +473,7 @@ For additional details on downloading files, please see the [`AzureDownload file
 #### Usage
 
 ```
-usage: AzureAutomate download file [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate download file [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Download files from Azure storage
 
@@ -509,8 +481,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -528,7 +498,6 @@ Automate the downloading of multiple folders from your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -542,7 +511,7 @@ For additional details on downloading folders, please see the [`AzureDownload fo
 #### Usage
 
 ```
-usage: AzureAutomate download folder [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate download folder [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Download folders from Azure storage
 
@@ -550,8 +519,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -590,7 +557,6 @@ Automate setting the storage tier for multiple containers in your Azure storage 
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -604,7 +570,7 @@ For additional details on setting the storage tier of containers, please see the
 #### Usage
 
 ```
-usage: AzureAutomate tier container [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate tier container [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Set the storage tier of containers in Azure storage
 
@@ -612,8 +578,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -632,7 +596,6 @@ Automate setting the storage tier for multiple files in your Azure storage accou
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -646,7 +609,7 @@ For additional details on setting the storage tier of files, please see the [`Az
 #### Usage
 
 ```
-usage: AzureAutomate tier file [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate tier file [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Set the storage tier of files in Azure storage
 
@@ -654,8 +617,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -673,7 +634,6 @@ Automate setting the storage tier for multiple folders in your Azure storage acc
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -687,7 +647,7 @@ For additional details on setting the storage tier of folders, please see the [`
 #### Usage
 
 ```
-usage: AzureAutomate tier folder [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate tier folder [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Set the storage tier of folders in Azure storage
 
@@ -695,8 +655,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -735,7 +693,6 @@ Automate deleting multiple containers in your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -749,7 +706,7 @@ For additional details on deleting containers, please see the [`AzureDelete cont
 #### Usage
 
 ```
-usage: AzureAutomate delete container [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate delete container [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Delete containers in Azure storage
 
@@ -757,8 +714,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -776,7 +731,6 @@ Automate deleting multiple files in your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -790,7 +744,7 @@ For additional details on deleting files, please see the [`AzureDelete file`](de
 #### Usage
 
 ```
-usage: AzureAutomate delete file [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate delete file [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Delete files in Azure storage
 
@@ -798,8 +752,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -818,7 +770,6 @@ Automate deleting multiple folders in your Azure storage account
 - name and path of batch file
 
 #### Optional arguments:
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### Batch file format
@@ -832,7 +783,7 @@ For additional details on deleting folders, please see the [`AzureDelete folder`
 #### Usage
 
 ```
-usage: AzureAutomate delete folder [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate delete folder [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Delete folders in Azure storage
 
@@ -840,8 +791,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE
@@ -864,7 +813,7 @@ Please review the [`AzureAutomate`](#azureautomate) documentation for all the po
 ### Usage
 
 ```
-usage: AzureAutomate batch [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] -b BATCH_FILE
+usage: AzureAutomate batch [-h] -a ACCOUNT_NAME [-v VERBOSITY] -b BATCH_FILE
 
 Perform multiple different operations in batch
 
@@ -872,8 +821,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -b BATCH_FILE, --batch_file BATCH_FILE

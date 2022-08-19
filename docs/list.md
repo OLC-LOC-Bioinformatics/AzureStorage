@@ -34,7 +34,6 @@ List and optionally filter containers in your Azure storage account
 #### AzureList container optional arguments
 - expression: expression to use to filter the containers. Regular expressions are supported. Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \\!
 - output_file: name and path of file in which the outputs are to be saved.
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### AzureList container example commands
@@ -72,7 +71,7 @@ To filter the list of containers to those that start with `19` and four addition
 #### AzureList container usage
 
 ```
-usage: AzureList container [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_FILE]
+usage: AzureList container [-h] -a ACCOUNT_NAME [-v VERBOSITY] [-o OUTPUT_FILE]
                            [expression]
 
 Filter and list containers in your Azure storage account
@@ -84,8 +83,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -o OUTPUT_FILE, --output_file OUTPUT_FILE
@@ -103,7 +100,6 @@ Filter files in a container (or containers) in Azure storage
 - container_name: name of the Azure storage container. Regular expressions are supported. Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \\!
 - expression: expression to use to filter the containers. Regular expressions are supported. Note that since the regular expression is being entered on the command line, you may need to escape certain characters e.g. ! should be \\!
 - output_file: name and path of file in which the outputs are to be saved.
-- passphrase used to store your connection string in the system keyring (default is AzureStorage)
 - verbosity: set the logging level. Options are debug,info,warning,error,critical. Default is info
 
 #### AzureList search example commands
@@ -141,7 +137,7 @@ To list all files in the container `container-name` that contain `.gz` (but not 
 #### AzureList search usage
 
 ```
-usage: AzureList search [-h] -a ACCOUNT_NAME [-p PASSPHRASE] [-v VERBOSITY] [-o OUTPUT_FILE]
+usage: AzureList search [-h] -a ACCOUNT_NAME [-v VERBOSITY] [-o OUTPUT_FILE]
                         [-c [CONTAINER_NAME]]
                         [expression]
 
@@ -154,8 +150,6 @@ optional arguments:
   -h, --help            show this help message and exit
   -a ACCOUNT_NAME, --account_name ACCOUNT_NAME
                         Name of the Azure storage account
-  -p PASSPHRASE, --passphrase PASSPHRASE
-                        The passphrase to use when encrypting the azure storage-specific connection string to the system keyring. Default is "AzureStorage".
   -v VERBOSITY, --verbosity VERBOSITY
                         Set the logging level. Options are debug, info, warning, error, and critical. Default is info.
   -o OUTPUT_FILE, --output_file OUTPUT_FILE
