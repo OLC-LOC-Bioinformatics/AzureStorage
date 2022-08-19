@@ -9,6 +9,7 @@ from azure_storage.azure_credentials import \
     cli, \
     delete_credentials, \
     store_credentials
+from azure_storage.version import __version__
 from unittest.mock import patch
 import argparse
 import pytest
@@ -44,13 +45,15 @@ def test_extract_account_key_invalid_str():
 
 
 @patch('getpass.getpass')
+def test_extract_credentials(getpass):
+    getpass.return_value = connect_str
+    assert decrypt_credentials(account_name=account_name).startswith('DefaultEndpointsProtocol')
+
+
+@patch('getpass.getpass')
 def test_set_credentials(getpass):
     getpass.return_value = connect_str
     assert encrypt_credentials(account_name=account_name) == connect_str
-
-
-def test_extract_credentials():
-    assert decrypt_credentials(account_name=account_name).startswith('DefaultEndpointsProtocol')
 
 
 @patch('getpass.getpass')
@@ -128,3 +131,7 @@ def test_set_connect_str_from_env_var(getpass):
     if connection_string:
         getpass.return_value = connection_string
         assert encrypt_credentials(account_name=azure_account) == connection_string
+
+
+def test_version():
+    assert type(__version__) is str

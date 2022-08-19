@@ -38,11 +38,30 @@ def file_copy(args):
     :param args: type ArgumentParser arguments
     """
     print_str = f'Copying file {args.file} from {args.container_name} to {args.target_container}'
+    if args.reset_path:
+        print_str += f'. Changing path to {args.reset_path}'
     if args.name:
-        print_str += f'and renaming it to {args.name} '
-    print_str += f'in Azure storage account {args.account_name}'
+        print_str += f' and renaming it to {args.name}'
+    print_str += f' in Azure storage account {args.account_name}'
     logging.info(print_str)
-
+    # Ensure that the source file and target file are different
+    if args.container_name == args.target_container:
+        source_file = os.path.join(args.container_name, args.file)
+        if args.name == os.path.basename(args.file):
+            logging.error(
+                f'Could not detect a difference between the source file: {source_file} and the target file: '
+                f'{source_file}. You may be simply overwriting the source file with itself.')
+            raise SystemExit
+        if not args.reset_path and not args.name or (os.path.dirname(args.file) == os.path.normpath(args.reset_path)):
+            source_file = os.path.join(args.container_name, args.file)
+            if args.reset_path is not None:
+                target_file = os.path.join(args.target_container, args.reset_path, os.path.basename(args.file))
+            else:
+                target_file = os.path.join(args.target_container, os.path.basename(args.file))
+            logging.error(
+                f'Could not detect a difference between the source file: {source_file} and the target file: '
+                f'{target_file}. You may be simply overwriting the source file with itself.')
+            raise SystemExit
     copy_file = AzureMove(
         object_name=args.file,
         container_name=args.container_name,
@@ -134,8 +153,8 @@ def cli():
     file_copy_subparser.add_argument(
         '-n', '--name',
         type=str,
-        help='Name of duplicate file. Required if copying within the same container, otherwise, the original name will '
-             'be used'
+        help='Name of duplicate file. Required if copying within the same container (and folder). '
+             'Otherwise, the original name will be used.'
     )
     file_copy_subparser.set_defaults(func=file_copy)
     # Folder copy subparser

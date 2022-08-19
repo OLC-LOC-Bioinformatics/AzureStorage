@@ -600,26 +600,30 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     # Extract the folder structure of the blob e.g. 220202-m05722/InterOp
     folder_structure = list(os.path.split(os.path.dirname(blob_file.name)))
     # Add the nested folder to the path as requested
-    target_path = os.path.join(path, os.path.join(*folder_structure))
+    if path is not None:
+        if category != 'container':
+            target_path = path
+        else:
+            target_path = os.path.join(path, *folder_structure)
+    else:
+        target_path = os.path.join(*folder_structure)
+
     # Set the name of file by removing any path information
     file_name = os.path.basename(blob_file.name)
     # Finally, set the name and the path of the output file
     if category is None:
         if rename and type(rename) is not float:
-            try:
-                target_file = os.path.join(path, rename)
-            except TypeError:
-                logging.error(
-                    f'Please ensure that you have provided an acceptable string to rename the file {rename} '
-                    f'will not work.')
-                raise SystemExit
+            target_file = os.path.join(target_path, rename)
         else:
-            target_file = os.path.join(path, file_name)
+            target_file = os.path.join(target_path, file_name)
     # If a folder is being moved, join the path, the common path between the blob file and the supplied folder name
     # with the file name
     else:
         if object_name is not None:
-            target_file = os.path.join(path, common_path, os.path.basename(blob_file.name))
+            if path is not None:
+                target_file = os.path.join(path, common_path, os.path.basename(blob_file.name))
+            else:
+                target_file = os.path.join(common_path, blob_file.name)
         # If a container is being moved, join the target path and the name of the directory of the blob_file to the
         # file name
         else:
@@ -640,6 +644,8 @@ def copy_blob(blob_file, blob_service_client, container_name, target_container, 
     for i in range(100):
         # Extract the properties of the target blob client
         target_blob_properties = target_blob_client.get_blob_properties()
+        logging.debug(f'Copy status of {blob_file.name} from {container_name} to {target_container} as {target_file}: '
+                      f'{target_blob_properties.copy.status}')
         # Break when the status is set to 'success'. The copy is successful
         if target_blob_properties.copy.status == 'success':
             # Copy finished

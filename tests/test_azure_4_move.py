@@ -27,11 +27,11 @@ def setup():
 
 def run_move_prep(variables):
     variables.container_name, variables.target_container, variables.blob_service_client, \
-    variables.source_container_client, variables.target_container_client = move_prep(
-        account_name=variables.account_name,
-        container_name=variables.container_name,
-        target_container=variables.target_container
-    )
+        variables.source_container_client, variables.target_container_client = move_prep(
+            account_name=variables.account_name,
+            container_name=variables.container_name,
+            target_container=variables.target_container
+        )
 
 
 def test_move_prep(variables):

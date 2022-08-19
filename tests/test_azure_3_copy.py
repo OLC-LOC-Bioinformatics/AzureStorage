@@ -193,8 +193,31 @@ def test_copy_file_integration(mock_args, variables):
     assert os.path.join(reset_path, rename) in [blob.name for blob in blobs]
 
 
+@pytest.mark.parametrize('file_name,path,rename',
+                         [('file_1.txt', '', ''),
+                          ('nested_folder/folder_test_1.txt', 'nested_folder', 'folder_test_1.txt'),
+                          ('nested_folder/folder_test_1.txt', 'nested_folder', ''),
+                          ('file_1.txt', None, '')])
 @patch('argparse.ArgumentParser.parse_args')
-def test_move_file_integration_cool(mock_args, variables):
+def test_copy_file_duplicate_integration(mock_args, variables, file_name, path, rename):
+    with pytest.raises(SystemExit):
+        mock_args.return_value = argparse.Namespace(
+            account_name=variables.account_name,
+            container_name=variables.container_name,
+            target_container=variables.container_name,
+            reset_path=path,
+            verbosity='info',
+            file=file_name,
+            storage_tier=variables.storage_tier,
+            name=rename,
+            copy=True,
+        )
+        arguments = cli()
+        file_copy(arguments)
+
+
+@patch('argparse.ArgumentParser.parse_args')
+def test_copy_file_integration_cool(mock_args, variables):
     file_name = 'nested_file_1.txt'
     reset_path = 'cool_file_integration'
     storage_tier = 'Cool'
