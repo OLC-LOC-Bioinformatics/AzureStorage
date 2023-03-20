@@ -81,8 +81,8 @@ def setup_logging(arguments):
 
 def setup_arguments(parser):
     """
-    Finalise setting up the ArgumentParser arguments into an object, and running subparser functions, or displaying the
-    help message
+    Finalise setting up the ArgumentParser arguments into an object, and running subparser
+    functions, or displaying the help message
     :param parser: type: ArgumentParser object
     :return: parsed ArgumentParser object
     """
