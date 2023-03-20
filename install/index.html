@@ -133,8 +133,8 @@ conda update -q conda
 </code></pre>
 
 <h3 id="azurestorage">AzureStorage</h3>
-<p>You can now install the AzureStorage package:</p>
-<p><code>conda install -c olc-bioinformatics azure-storage=0.0.2</code></p>
+<p>You can now install the AzureStorage package (this command creates a new conda environment with AzureStorage installed):</p>
+<p><code>conda create -n azurestorage -c olc-bioinformatics azure_storage=0.0.4</code></p>
 <h3 id="credentials">Credentials</h3>
 <p>You must store your Azure storage connection string before running any of the other scripts</p>
 <p><a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#:~:text=You%20can%20find%20your%20storage,primary%20and%20secondary%20access%20keys.">Find your connection string</a></p>
