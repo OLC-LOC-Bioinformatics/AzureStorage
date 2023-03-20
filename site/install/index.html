@@ -133,11 +133,19 @@ conda update -q conda
 </code></pre>
 
 <h3 id="azurestorage">AzureStorage</h3>
-<p>You can now install the AzureStorage package:</p>
-<p><code>conda install -c olc-bioinformatics azure-storage=0.0.2</code></p>
+<p>You can now install the AzureStorage package (this command creates a new conda environment with AzureStorage installed):</p>
+<p><code>conda create -n azurestorage -c olc-bioinformatics azure_storage=0.0.4</code></p>
 <h3 id="credentials">Credentials</h3>
 <p>You must store your Azure storage connection string before running any of the other scripts</p>
 <p><a href="https://docs.microsoft.com/en-us/azure/storage/common/storage-configure-connection-string#:~:text=You%20can%20find%20your%20storage,primary%20and%20secondary%20access%20keys.">Find your connection string</a></p>
+<ul>
+<li>In a browser, navigate to the <a href="portal.azure.com">azure portal</a></li>
+<li>Login using your corporate credentials</li>
+<li>From the Azure services (top of page), select 'Storage accounts'</li>
+<li>Click on your account Name (ask a bioinformatician for this info)</li>
+<li>From the options on the left, navigate down to and select "Access keys"</li>
+<li>You will be able to "show" and copy your access key from this page</li>
+</ul>
 <p><a href="https://www.zenko.io/blog/how-to-find-keys-and-account-info-for-aws-azure-and-google/#:~:text=Azure%20Account%20Name%C2%A0%3D%20the%20name%20of%20your%20Azure%20storage%20account%20located%20on%20the%20top%20of%20the%20Azure%20Portal%20(screenshot%20below%20%E2%80%93%20%E2%80%9Cscalitydemo%E2%80%9D%20is%20Azure%20Account%20Name).">Find your account key</a></p>
 <p>Once you know your account name and connection string, run:</p>
 <p><code>AzureCredentials store -a account_name</code></p>
