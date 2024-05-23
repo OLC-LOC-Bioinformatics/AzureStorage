@@ -9,7 +9,7 @@ function getScript(script, callback) {
   console.log('Loading script: ' + script);
   $.getScript(base_path + script).done(function () {
     callback();
-  }).fail(function (jqxhr, settings, exception) {
+  }).fail(function (jqxhr, settings, str(exc)eption) {
     console.log('Error: ' + exception);
   });
 }
@@ -43,9 +43,6 @@ function onJSONLoaded () {
     scriptsToLoad.push('lunr.stemmer.support.js');
     if (lang.length > 1) {
       scriptsToLoad.push('lunr.multi.js');
-    }
-    if (lang.includes("ja") || lang.includes("jp")) {
-      scriptsToLoad.push('tinyseg.js');
     }
     for (var i=0; i < lang.length; i++) {
       if (lang[i] != 'en') {
