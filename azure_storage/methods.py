@@ -105,7 +105,7 @@ def setup_arguments(parser):
             # Otherwise, use the basic help
             else:
                 parser.parse_args(['-h'])
-        # If the were no subparsers specified (the list of keys in the arguments is empty), use the basic help
+        # If there were no subparsers specified (the list of keys in the arguments is empty), use the basic help
         except IndexError:
             parser.parse_args(['-h'])
     return arguments
@@ -166,7 +166,7 @@ def extract_account_key(connect_str):
 def create_encryption_key_file(credentials_key):
     """
     Use Fernet to generate an encryption key to be used to encrypt Azure connection string
-    :param credentials_key: Name and path of the file in which the encryption key are be stored
+    :param credentials_key: Name and path of the file in which the encryption key will be stored
     """
     # Key generation
     key = Fernet.generate_key()
@@ -178,7 +178,7 @@ def create_encryption_key_file(credentials_key):
 def read_encryption_key(credentials_key):
     """
     Read in encryption key from file, and process it with Fernet
-    :param credentials_key: Name and path of the file in which the encryption key are be stored
+    :param credentials_key: Name and path of the file in which the encryption key will be stored
     :return: fernet: type cryptography.fernet.Fernet: Encryption key
     """
     # Open the key file
@@ -300,7 +300,7 @@ def validate_container_name(container_name, object_type='container'):
         # Swap out dashes for underscores, as they will be removed in the following regex
         container_name = container_name.replace('-', '_')
         # Use re to remove all non-word characters (including dashes)
-        container_name = re.sub(r'[^\w]', '', container_name)
+        container_name = re.sub(r'\W', '', container_name)
         # Replace multiple underscores with a single one. Uses logic from: https://stackoverflow.com/a/46701355
         # Also ensure that the container name is in lowercase
         container_name = re.sub(r'[^\w\s]|(_)(?=\1)', '', container_name).lower()
