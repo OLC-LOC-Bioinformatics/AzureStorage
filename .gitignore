@@ -33,3 +33,7 @@ azure_storage.xml
 #####################
 azure_storage/*credentials.txt
 azure_storage/*credentials.key
+
+# SAS files #
+#############
+sas.txt
