@@ -13,7 +13,7 @@ from setuptools import setup, find_packages
 __author__ = 'adamkoziol'
 
 # Find the version
-version_file_path = os.path.join('azure_batch', 'version.py')
+version_file_path = os.path.join('azure_storage', 'version.py')
 spec = importlib.util.spec_from_file_location("version", version_file_path)
 version_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(version_module)
