@@ -23,12 +23,6 @@ version = version_module.__dict__
 with open('README.md', 'r', encoding='utf-8') as f:
     long_description = f.read()
 
-# Open the requirements.txt file
-with open('requirements.txt', encoding='utf-8') as f:
-    # Read the file and split it into lines
-    # Each line should be a separate requirement
-    requirements = f.read().splitlines()
-
 setup(
     name="AzureStorage",
     version=version['__version__'],
@@ -54,7 +48,6 @@ setup(
     long_description=long_description,
     # The content type of the long description. Necessary for PyPI
     long_description_content_type='text/markdown',
-    install_requires=requirements,
     # Classifiers categorize the project for users.
     classifiers=[
         # Specifies the intended audience of the project
