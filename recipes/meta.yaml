@@ -11,7 +11,7 @@ build:
   script: python -m pip install --no-deps --ignore-installed .
 
 source:
-  url: https://github.com/OLC-LOC-Bioinformatics/AzureStorage/archive/{{ version }}.tar.gz
+  url: https://github.com/OLC-LOC-Bioinformatics/AzureStorage/archive/v{{ version }}.tar.gz
   fn: {{ name }}-{{ version }}.tar.gz
 
 requirements:
