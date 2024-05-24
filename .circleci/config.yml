@@ -28,6 +28,7 @@ jobs:
             # Add necessary channels for conda
             conda config --add channels olcbioinformatics
             conda config --add channels bioconda
+            conda config --add channels conda-forge
             # Set conda configuration options
             conda config --set always_yes yes --set changeps1 no
             # Install mamba
