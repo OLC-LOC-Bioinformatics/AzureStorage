@@ -31,7 +31,7 @@ jobs:
       run: |
         sed -i "s/{{ version }}/${VERSION#v}/g" recipes/meta.yaml
         sed -i "s|https://github.com/OLC-LOC-Bioinformatics/AzureStorage/archive/{{ version }}.tar.gz|https://github.com/OLC-LOC-Bioinformatics/AzureStorage/archive/$VERSION.tar.gz|g" recipes/meta.yaml
-        sed -i "s/{{ fn }}/azure_storage-${VERSION#v}.tar.gz/g" recipes/meta.yaml
+        sed -i "s/{{ fn }}/azure_storage-${VERSION}.tar.gz/g" recipes/meta.yaml
     - name: Build Conda package
       run: |
         conda build .
