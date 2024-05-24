@@ -15,7 +15,7 @@ jobs:
     docker:
       - image: continuumio/miniconda3
     environment:
-      PYTHON_VERSION: 3.9.12
+      PYTHON_VERSION: 3.12.3
     # Add steps to the job
     # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:

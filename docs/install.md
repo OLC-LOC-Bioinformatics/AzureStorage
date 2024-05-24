@@ -16,7 +16,7 @@ conda update -q conda
 
 You can now install the AzureStorage package (this command creates a new conda environment with AzureStorage installed):
 
-`conda create -n azurestorage -c olcbioinformatics azure_storage=0.0.4`
+`conda create -n azurestorage -c olcbioinformatics azure_storage`
 
 ### Credentials 
 

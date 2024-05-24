@@ -12,11 +12,20 @@ This suite of tools (written in Python) allows you to manipulate containers/file
 
 Full documentation available at the [AzureStorage GitHub pages site](https://OLC-LOC-Bioinformatics.github.io/AzureStorage/)
 
+## Table of Contents
+
+- [Quickstart](#quickstart)
+- [Credentials](#credentials)
+- [Tests](#tests)
+- [Scripts](#scripts)
+- [Reporting Issues](#reporting-issues)
+- [License](#license)
+
 ## Quickstart
 
 Conda is required to install AzureStorage. See the [documentation](http://bioconda.github.io/) or [AzureStorage installation](https://olc-loc-bioinformatics.github.io/AzureStorage/install/) for instructions of getting conda installed on your system
 
-`conda install -c olcbioinformatics azure_storage=0.0.4`
+`conda install -c olcbioinformatics azure_storage`
 
 ### Credentials
 
@@ -29,7 +38,6 @@ You must store your Azure storage connection string before running any of the ot
 If you encounter issues with the AzureStorage package, tests are available to ensure that the installation was successful and your credentials are valid.
 
 You will need to clone this repository and run the tests with pytest:
-
 
 `git clone https://github.com/OLC-LOC-Bioinformatics/AzureStorage.git`
 
@@ -52,14 +60,10 @@ Ensure that all tests complete successfully before proceeding
 9. [`AzureDelete`](https://olc-loc-bioinformatics.github.io/AzureStorage/delete/): delete a file, folder, or an entire container from your Azure storage account
 10. [`AzureAutomate`](https://olc-loc-bioinformatics.github.io/AzureStorage/automate/): run upload, sas, move, download, set_tier, and/or delete in batch
 
+## Reporting Issues
+
+If you encounter any issues while using AzureStorage, please report them on our [Issues page](https://github.com/OLC-LOC-Bioinformatics/AzureStorage/issues).
+
 ## License
 
-MIT License
-
-Copyright (c) 2022 Government of Canada
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+This project is licensed under the MIT License. See the [LICENSE](https://github.com/OLC-LOC-Bioinformatics/AzureStorage/blob/main/LICENSE) file for details.
