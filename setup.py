@@ -55,7 +55,7 @@ setup(
         # Defines the license of the project
         'License :: OSI Approved :: MIT License',
         # Specifies the supported Python versions
-        'Programming Language :: Python :: 3.12.3',
+        'Programming Language :: Python :: 3.12',
         # Indicates the development status of the project
         'Development Status :: 5 - Production/Stable',
         # Specifies the topic related to the project
