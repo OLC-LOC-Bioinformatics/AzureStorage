@@ -617,8 +617,8 @@ def create_sas_url(account_name, container_name, blob_name, sas_token):
     # name, the blob name, and the SAS token in the following format:
     # 'https://' + account_name + '.blob.core.windows.net/' + container_name
     # + '/' + blob_name + '?' + blob
-    sas_url = f'https://{account_name}.blob.core.windows.net/{
-        container_name}/{blob_name}?{sas_token}'
+    sas_url = f'https://{account_name}.blob.core.windows.net/' \
+              f'{container_name}/{blob_name}?{sas_token}'
     return sas_url
 
 
