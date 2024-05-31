@@ -50,10 +50,9 @@ def file_copy(args):
     Run the AzureMove method for a file with the copy=True argument
     :param args: type ArgumentParser arguments
     """
-    print_str = f'Copying file {
-        args.file}  from {
-        args.container_name}  to {
-        args.target_container} '
+    print_str = \
+        f'Copying file {args.file}  from {args.container_name}  to ' \
+        f'{args.target_container} '
     if args.reset_path:
         print_str += f'. Changing path to {args.reset_path}'
     if args.name:
@@ -126,10 +125,9 @@ def folder_copy(args):
     Run the AzureMove method for a folder with the copy=True argument
     :param args: type ArgumentParser arguments
     """
-    print_str = f'Copying folder {
-        args.folder}  from {
-        args.container_name}  to {
-        args.target_container} '
+    print_str = \
+        f'Copying folder {args.folder}  from {args.container_name}  to ' \
+        f'{args.target_container} '
     if args.reset_path:
         print_str += f'and renaming it to {args.reset_path} '
     print_str += f'in Azure storage account {args.account_name}'

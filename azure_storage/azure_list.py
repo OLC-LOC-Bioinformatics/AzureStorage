@@ -458,11 +458,10 @@ def container_search(args):
     """
     # Welcome message that is adjusted depending on whether an expression has
     # been provided
-    phrase = f'Listing containers in Azure storage account {
-        args.account_name}.'
+    phrase = f'Listing containers in Azure storage account {args.account_name}'
     if args.expression:
-        phrase += f'\nFiltering containers with the expression: {
-            args.expression} '
+        phrase += f'\nFiltering containers with the ' \
+                  f'expression: {args.expression} '
     logging.info(phrase)
     list_containers = AzureContainerList(
         expression=args.expression,
@@ -479,11 +478,11 @@ def azure_search(args):
     """
     # Welcome message that is adjusted depending on whether a container and/or
     # an expression have been provided
-    phrase = f'Searching for files in Azure storage account {
-        args.account_name}.'
+    phrase = f'Searching for files in Azure storage ' \
+             f'account {args.account_name}.'
     if args.container_name:
-        phrase += f'\nFiltering containers with the expression: {
-            args.container_name} '
+        phrase += f'\nFiltering containers with the ' \
+                  f'expression: {args.container_name} '
     phrase += f'\nFiltering files with the expression: {args.expression}'
     logging.info(phrase)
     list_files = AzureList(
