@@ -63,48 +63,68 @@ class AzureContainerDownload:
         :param output_path: type str: Name and path of the folder into which
         the container is to be downloaded
         """
-        # Create a generator containing all the blobs in the container
-        generator = container_client.list_blobs()
         try:
             # Hide the INFO-level messages sent to the logger from Azure by
             # increasing the logging level to WARNING
             logging.getLogger().setLevel(logging.WARNING)
-            for blob_file in generator:
-                # Create the blob client
-                blob_client = create_blob_client(
-                    blob_service_client=blob_service_client,
-                    container_name=container_name,
-                    blob_file=blob_file
-                )
-                # Extract the folder structure of the blob e.g.
-                # 220202-m05722/InterOp
-                folder_structure = os.path.split(
-                    os.path.dirname(blob_file.name)
-                )
-                # Determine the path to output the file. Join the supplied
-                # path, the name of the container and the joined (splatted)
-                # folder structure. Logic: https://stackoverflow.com/a/14826889
-                download_path = os.path.join(
+
+            # Identify all potential directories
+            directories = set()
+            generator = container_client.list_blobs()
+            for blob in generator:
+                # Split the blob name into parts and add each parent directory
+                # to the set
+                parts = blob.name.split('/')
+                for i in range(1, len(parts)):
+                    directories.add(
+                        os.path.join(
+                            output_path,
+                            container_name,
+                            *parts[:i]
+                        )
+                    )
+
+            # Create directories
+            for directory in directories:
+                os.makedirs(directory, exist_ok=True)
+                logging.info("Directory created: %s", directory)
+
+            # Recreate generator
+            generator = container_client.list_blobs()
+            for blob in generator:
+                blob_path = os.path.join(
                     output_path,
                     container_name,
-                    os.path.join(*folder_structure)
+                    blob.name
                 )
-                # Create the path if required
-                os.makedirs(download_path, exist_ok=True)
-                # Set the name of file by removing any path information
-                file_name = os.path.basename(blob_file.name)
-                # Finally, set the name and the path of the output file
-                download_file = os.path.join(download_path, file_name)
-                # Open the target output file as binary
-                with open(download_file, 'wb') as downloaded_file:
-                    # Write the data from the blob client to the local file
-                    downloaded_file.write(
-                        blob_client.download_blob().readall()
+
+                # Ensure the directory for the blob exists
+                os.makedirs(os.path.dirname(blob_path), exist_ok=True)
+
+                # Skip if the blob path conflicts with an existing directory
+                if os.path.isdir(blob_path):
+                    logging.debug(
+                        "Skipping blob with conflicting directory name: %s",
+                        blob.name
                     )
+                    continue
+
+                # Download the blob
+                blob_client = blob_service_client.get_blob_client(
+                    container=container_name,
+                    blob=blob.name
+                )
+                try:
+                    with open(blob_path, 'wb') as file:
+                        file.write(blob_client.download_blob().readall())
+                except Exception as exc:
+                    logging.error(
+                        "Error downloading blob %s: %s", blob.name, exc)
+                    raise SystemExit from exc
+
         except ResourceNotFoundError as exc:
             logging.error(
-                ' The specified container, %s, does not exist.',
-                container_name
+                'The specified container, %s, does not exist.', container_name
             )
             raise SystemExit from exc
 
